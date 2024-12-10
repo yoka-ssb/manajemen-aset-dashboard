@@ -1,0 +1,97 @@
+body {
+  background-color: var(--cui-tertiary-bg);
+}
+
+.wrapper {
+  width: 100%;
+  @include ltr-rtl("padding-left", var(--cui-sidebar-occupy-start, 0));
+  @include ltr-rtl("padding-right", var(--cui-sidebar-occupy-end, 0));
+  will-change: auto;
+  @include transition(padding .15s);
+}
+
+.header > .container-fluid,
+.sidebar-header {
+  min-height: calc(4rem + 1px); 
+}
+
+.sidebar-brand-full {
+  margin-left: 3px;
+}
+
+.sidebar-header {
+  .nav-underline-border {
+    --cui-nav-underline-border-link-padding-x: 1rem;
+    --cui-nav-underline-border-gap: 0;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    min-height: calc(4rem + 1px); 
+  }
+}
+
+.sidebar-toggler {
+  @include ltr-rtl("margin-left", auto);
+}
+
+.sidebar-narrow,
+.sidebar-narrow-unfoldable:not(:hover) {
+  .sidebar-toggler {
+    @include ltr-rtl("margin-right", auto);
+  }
+}
+
+.sidebar {
+  border-right: 2px solid darkred;
+  background-color: red;
+}
+
+.sidebar .nav-link {
+  transition: background-color 0.3s ease, color 0.3s ease; /* Menambahkan transisi pada warna background dan teks */
+}
+
+.sidebar .nav-link:hover, 
+.sidebar .nav-link:active, 
+.sidebar .nav-link:focus { 
+  background-color: darkred; /* Ubah background saat di-hover, ditekan, atau difokuskan */
+  color: white; /* Ubah warna teks saat di-hover, ditekan, atau difokuskan */
+}
+
+.sidebar .sidebar-toggler:hover, 
+.sidebar .sidebar-toggler:active, 
+.sidebar .sidebar-toggler:focus {
+  background-color: darkred; /* Jika tombol sidebar ada, beri warna background saat di-hover, ditekan, atau difokuskan */
+}
+
+.sidebar .nav-link:active {
+  background-color: darkred; /* Latar belakang tetap merah ketika link aktif */
+  color: darkredgreen; /* Teks tetap putih */
+}
+
+/* Opsional: Menambahkan gaya untuk elemen yang memiliki status 'visited' */
+.sidebar .nav-link:visited {
+  background-color: darkred; /* Ganti latar belakang menjadi merah setelah dikunjungi */
+  color: white; /* Teks tetap putih */
+}
+
+.header > .container-fluid + .container-fluid {
+  min-height: 3rem;
+}
+
+.footer {
+  min-height: calc(3rem + 1px); 
+}
+
+@if $enable-dark-mode {
+  @include color-mode(dark) {
+    body {
+      background-color: var(--cui-dark-bg-subtle);
+    }
+
+    .footer {
+      --cui-footer-bg: var(--cui-body-bg);
+    }
+  }
+}
