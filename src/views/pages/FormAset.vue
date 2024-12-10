@@ -55,7 +55,7 @@
                                 </CFormSelect>
                             </div>
                             <div class="flex-1">
-                                <CFormLabel for="submission_outlet">Outlet</CFormLabel>
+                                <CFormLabel for="submission_outlet">Lokasi</CFormLabel>
                                 <CFormInput id="submission_outlet" v-model="submission_outlet" type="text"
                                     placeholder="kosong jika tidak ada" readonly />
                             </div>

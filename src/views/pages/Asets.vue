@@ -19,7 +19,7 @@
               <CTableHeaderCell scope="col">No</CTableHeaderCell>
               <CTableHeaderCell scope="col">Nama Aset</CTableHeaderCell>
               <CTableHeaderCell scope="col">Merk</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Outlet</CTableHeaderCell>
+              <CTableHeaderCell scope="col">Lokasi</CTableHeaderCell>
               <CTableHeaderCell scope="col">Area</CTableHeaderCell>
               <CTableHeaderCell scope="col">Jadwal Perawatan</CTableHeaderCell>
               <CTableHeaderCell scope="col">Status</CTableHeaderCell>

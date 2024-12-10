@@ -23,12 +23,9 @@
                         <div class="mb-3">
                             <CFormLabel for="asset_image">Lampiran (Gambar Aset)</CFormLabel>
                             <CFormInput id="asset_image" ref="assetImage" type="file" accept="image/*"
-                                placeholder="masukkan gambar aset jpg,jpeg, png" @change="handleFileChange" />
-                            <div v-if="oldFileName" class="mt-2 text-sm text-gray-500">
-                                <strong></strong> {{ oldFileName }}
-                            </div>
+                                placeholder="masukkan gambar aset jpg, jpeg, png" @change="handleFileChange" />
+                            <div v-if="oldFileName" class="mt-2 text-sm text-gray-500">{{ oldFileName }}</div>
                         </div>
-
 
                         <div class="mb-3">
                             <CFormLabel for="asset_specification">Spesifikasi Aset</CFormLabel>
@@ -110,10 +107,10 @@
                         </div>
 
                         <div v-if="isOutletRequired" class="mb-4">
-                            <CFormLabel for="outlet_id">Pilih Outlet</CFormLabel>
+                            <CFormLabel for="outlet_id">Pilih Lokasi</CFormLabel>
                             <select id="outlet_id" v-model="selectedOutlet"
                                 class="border border-gray-300 rounded-lg p-2 w-full">
-                                <option value="">Pilih Outlet</option>
+                                <option value="">Pilih Lokasi</option>
                                 <option v-for="outlet in outlets" :key="outlet.outletId" :value="outlet.outletId">{{
                                     outlet.outletName }}</option>
                             </select>
@@ -244,7 +241,7 @@ export default {
                     this.selectedOutlet = assetData.outletId || '';
                     this.selectedPic = assetData.assetPic || '';
                     this.assetName = aset.assetName || "Tidak tersedia";
-                    this.oldFileName = aset.assetImage ? aset.assetImage.split('/').pop() : null; // Simpan nama file lama
+                    this.oldFileName = aset.assetImage ? aset.assetImage.split('/').pop() : null;
 
                     if (this.selectedArea) {
                         await this.fetchOutlets();
@@ -333,13 +330,11 @@ export default {
             let uploadedFilePath = null;
 
             try {
-                let file_path = this.asset_image; // Gunakan file baru jika diupload
+                let file_path = this.asset_image;
                 if (this.asset_image) {
-                    // Upload gambar baru
                     const imageFormData = new FormData();
-        imageFormData.append('file', this.asset_image);
+                    imageFormData.append('file', this.asset_image);
 
-                    // Sertakan nama file lama jika ada
                     if (this.oldFileName) {
                         imageFormData.append('oldFileName', this.oldFileName);
                     }
@@ -347,19 +342,12 @@ export default {
                     const uploadResponse = await axios.post("http://localhost:8081/upload?module=Master%20Aset", imageFormData, {
                         headers: {
                             'X-API-KEY': 'bprfjocmaqfib592338vf',
-                            // 'Content-Type': 'multipart/form-data',
                         },
                     });
 
                     uploadedFilePath = uploadResponse.data.file_path;
                     console.log("Uploaded file path:", uploadedFilePath);
                 }
-
-                // // Tambahkan timestamp jika perlu
-                // const currentDate = new Date();
-                // const formattedDate = currentDate.toISOString().split('T')[0];
-                // const filePathWithDate = `${filePath}?date=${formattedDate}`;
-
                 const payload = {
                     asset_name: this.asset_name,
                     asset_brand: this.asset_brand,

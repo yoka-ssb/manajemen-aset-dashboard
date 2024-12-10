@@ -102,10 +102,10 @@
                         </div>
 
                         <div v-if="isOutletRequired" class="mb-4">
-                            <CFormLabel for="outlet_id">Pilih Outlet</CFormLabel>
+                            <CFormLabel for="outlet_id">Pilih Lokasi</CFormLabel>
                             <select id="outlet_id" v-model="selectedOutlet"
                                 class="border border-gray-300 rounded-lg p-2 w-full">
-                                <option value="">Pilih Outlet</option>
+                                <option value="">Pilih Lokasi</option>
                                 <option v-for="outlet in outlets" :key="outlet.outletId" :value="outlet.outletId">{{
                                     outlet.outletName }}</option>
                             </select>

@@ -21,7 +21,7 @@
                         <CCard class="mb-3">
                             <CCardBody>
                                 <CCardText>
-                                    <strong>Outlet:</strong> {{ outletName || 'Tidak tersedia' }}
+                                    <strong>Lokasi:</strong> {{ outletName || 'Tidak tersedia' }}
                                 </CCardText>
                                 <CCardText>
                                     <strong>Area:</strong> {{ areaName || 'Tidak tersedia' }}
