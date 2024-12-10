@@ -21,11 +21,21 @@
                         </div>
 
                         <div class="mb-3">
-                            <CFormLabel for="asset_image">Lampiran (Gambar Aset)</CFormLabel>
-                            <CFormInput id="asset_image" ref="assetImage" type="file" accept="image/*"
-                                placeholder="masukkan gambar aset jpg, jpeg, png" @change="handleFileChange" />
-                            <div v-if="oldFileName" class="mt-2 text-sm text-gray-500">{{ oldFileName }}</div>
-                        </div>
+    <CFormLabel for="asset_image">Lampiran (Gambar Aset)</CFormLabel>
+    <CFormInput
+        id="asset_image"
+        ref="assetImage"
+        type="file"
+        accept="image/*"
+        placeholder="Masukkan gambar aset jpg, jpeg, png"
+        @change="handleFileChange"
+    />
+    <div v-if="!isNewFileSelected && oldFileName" class="mt-2 text-sm text-gray-500">
+        <span style="font-weight: bold;">
+            📄 Data existing : {{ oldFileName }}
+        </span>
+    </div>
+</div>
 
                         <div class="mb-3">
                             <CFormLabel for="asset_specification">Spesifikasi Aset</CFormLabel>
@@ -45,16 +55,10 @@
                             </select>
                         </div>
 
-                        <div v-if="isPersonalRequired" class="mb-4">
-                            <CFormLabel for="personal_responsible_id">Pilih Penanggung Jawab</CFormLabel>
-                            <select id="personal_responsible_id" v-model="selectedPersonal"
-                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchPersonal">
-                                <option value="">Pilih Penanggung Jawab</option>
-                                <option v-for="personal in personals" :key="personal.personalId"
-                                    :value="personal.personalId">
-                                    {{ personal.personalName }}
-                                </option>
-                            </select>
+                        <div class="mb-4">
+                            <CFormLabel for="personal_responsible">Pilih Penanggung jawab</CFormLabel>
+                            <CFormInput id="personal_responsible" v-model="personal_responsible" type="text"
+                                placeholder="masukkan penanggung jawab" />
                         </div>
 
                         <div class="mb-3 flex space-x-8">
@@ -96,25 +100,27 @@
                         </div>
 
                         <div v-if="isAreaRequired" class="mb-4">
-                            <CFormLabel for="area_id">Pilih Area</CFormLabel>
-                            <select id="area_id" v-model="selectedArea"
-                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets">
-                                <option value="">Pilih Area</option>
-                                <option v-for="area in areas" :key="area.areaId" :value="area.areaId">
-                                    {{ area.areaName }}
-                                </option>
-                            </select>
-                        </div>
+    <CFormLabel for="area_id">Pilih Area</CFormLabel>
+    <select id="area_id" v-model="selectedArea"
+        class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets">
+        <option value="">Pilih Area</option>
+        <option v-for="area in areas" :key="area.areaId" :value="area.areaId">
+            {{ area.areaName }}
+        </option>
+    </select>
+</div>
 
-                        <div v-if="isOutletRequired" class="mb-4">
-                            <CFormLabel for="outlet_id">Pilih Lokasi</CFormLabel>
-                            <select id="outlet_id" v-model="selectedOutlet"
-                                class="border border-gray-300 rounded-lg p-2 w-full">
-                                <option value="">Pilih Lokasi</option>
-                                <option v-for="outlet in outlets" :key="outlet.outletId" :value="outlet.outletId">{{
-                                    outlet.outletName }}</option>
-                            </select>
-                        </div>
+<div v-if="isOutletRequired" class="mb-4">
+    <CFormLabel for="outlet_id">Pilih Lokasi</CFormLabel>
+    <select id="outlet_id" v-model="selectedOutlet"
+        class="border border-gray-300 rounded-lg p-2 w-full">
+        <option value="">Pilih Lokasi</option>
+        <option v-for="outlet in outlets" :key="outlet.outletId" :value="outlet.outletId">
+            {{ outlet.outletName }}
+        </option>
+    </select>
+</div>
+
 
                         <div v-if="isPicRequired" class="mb-4">
                             <CFormLabel for="asset_pic">Pilih PIC Aset</CFormLabel>
@@ -148,29 +154,32 @@ export default {
             assetId: this.$route.params.id,
             asset_name: "",
             asset_brand: "",
+            personal_responsible: "",
             asset_image: null,
-            OldFole: null,
+            oldFileName: "",
+        selectedFile: null, 
+        isNewFileSelected: false, 
             PicOption: [],
             selectedPic: "",
             selectedArea: "",
             selectedOutlet: "",
             selectedKlasifikasi: "",
-            selectedPersonal: "",
+            // selectedPersonal: "",
             areas: [],
             outlets: [],
             klasifikasis: [],
-            personals: [],
+            // personals: [],
             asset_purchase_date: "",
             asset_condition: '',
             asset_status: '',
             asset_pic: "",
-            penanggungjawab: "",
+            // penanggungjawab: "",
             classification_acquisition_value: "",
             isAreaRequired: true,
             isOutletRequired: true,
             isKlasifikasiaRequired: true,
             isPicRequired: true,
-            isPersonalRequired: true,
+            // isPersonalRequired: true,
         };
     },
 
@@ -189,24 +198,10 @@ export default {
         this.fetchOutlets();
         this.fetchPic();
         this.fetchKlasifikasi();
-        this.fetchPersonal();
+        // this.fetchPersonal();
     },
 
     methods: {
-
-        fetchPersonal() {
-            const token = localStorage.getItem("token");
-            axios
-                .get("http://localhost:8080/api/personal-responsibles", { headers: { Authorization: `Bearer ${token}` } })
-                .then((response) => {
-                    console.log("personal fetched:", response.data.data);
-                    this.personals = response.data.data;
-                })
-                .catch((error) => {
-                    console.error("Error fetching personal:", error);
-                    this.personals = [];
-                });
-        },
 
         async fetchAssetData() {
             const token = localStorage.getItem("token");
@@ -236,9 +231,11 @@ export default {
                         : '';
                     this.classification_acquisition_value = assetData.classificationAcquisitionValue || '';
                     this.selectedKlasifikasi = assetData.assetClassification || '';
-                    this.selectedPersonal = assetData.personalResponsibleId || '';
+                    this.personal_responsible = assetData.personalResponsible || '';
                     this.selectedArea = assetData.areaId || '';
                     this.selectedOutlet = assetData.outletId || '';
+                    this.initializeExistingData(assetData);
+                    this.oldFileName = assetData.assetImage;
                     this.selectedPic = assetData.assetPic || '';
                     this.assetName = aset.assetName || "Tidak tersedia";
                     this.oldFileName = aset.assetImage ? aset.assetImage.split('/').pop() : null;
@@ -251,7 +248,6 @@ export default {
                 console.error("Error fetching asset data:", error);
             }
         },
-
 
         fetchKlasifikasi() {
             const token = localStorage.getItem("token");
@@ -268,35 +264,53 @@ export default {
         },
 
         fetchAreas() {
-            const token = localStorage.getItem("token");
-            axios
-                .get("http://localhost:8080/api/areas", { headers: { Authorization: `Bearer ${token}` } })
-                .then((response) => {
-                    console.log("Areas fetched:", response.data.data);
-                    this.areas = response.data.data;
-                })
-                .catch((error) => {
-                    console.error("Error fetching areas:", error);
-                    this.areas = [];
-                });
-        },
+        const token = localStorage.getItem("token");
+        axios
+            .get("http://localhost:8080/api/areas", { headers: { Authorization: `Bearer ${token}` } })
+            .then((response) => {
+                this.areas = response.data.data;
 
-        fetchOutlets() {
-            if (!this.selectedArea) return;
-            const token = localStorage.getItem("token");
-            axios
-                .get(`http://localhost:8080/api/outlets?area_id=${this.selectedArea}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                })
-                .then((response) => {
-                    console.log("Outlets fetched:", response.data.data);
-                    this.outlets = response.data.data;
-                })
-                .catch((error) => {
-                    console.error("Error fetching outlets:", error);
-                    this.outlets = [];
-                });
-        },
+                // Validasi dan pastikan selectedArea tetap valid
+                if (this.selectedArea) {
+                    const existingArea = this.areas.find(area => area.areaId === this.selectedArea);
+                    if (!existingArea) this.selectedArea = ""; // Reset jika tidak ditemukan
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching areas:", error);
+                this.areas = [];
+            });
+    },
+    fetchOutlets() {
+        if (!this.selectedArea) return;
+        const token = localStorage.getItem("token");
+        axios
+            .get(`http://localhost:8080/api/outlets?area_id=${this.selectedArea}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((response) => {
+                this.outlets = response.data.data;
+
+                // Validasi dan pastikan selectedOutlet tetap valid
+                if (this.selectedOutlet) {
+                    const existingOutlet = this.outlets.find(outlet => outlet.outletId === this.selectedOutlet);
+                    if (!existingOutlet) this.selectedOutlet = ""; // Reset jika tidak ditemukan
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching outlets:", error);
+                this.outlets = [];
+            });
+    },
+    initializeExistingData(apiResponse) {
+        // Ambil areaId dan outletId dari response
+        this.selectedArea = apiResponse.areaId;
+        this.selectedOutlet = apiResponse.outletId;
+
+        // Fetch data berdasarkan area yang diatur
+        this.fetchAreas();
+        this.fetchOutlets();
+    },
 
         fetchPic() {
             const token = localStorage.getItem("token");
@@ -313,72 +327,93 @@ export default {
         },
 
         handleFileChange(event) {
-            const file = event.target.files[0];
-            if (file) {
-                this.asset_image = file;
-                console.log("File selected:", file);
+        const file = event.target.files[0];
+        if (file) {
+            this.selectedFile = file; // Simpan file baru
+            this.isNewFileSelected = true; // Tandai bahwa file baru dipilih
+        } else {
+            this.selectedFile = null; // Reset jika tidak ada file dipilih
+            this.isNewFileSelected = false;
+        }
+    },
+    getAssetImageInput() {
+        // Kembalikan file baru jika ada, jika tidak gunakan data existing
+        return this.isNewFileSelected ? this.selectedFile : this.oldFileName;
+    },
+
+
+    async submitForm() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        console.error("Token tidak ditemukan, silakan login terlebih dahulu.");
+        return;
+    }
+
+    let uploadedFilePath = this.oldFileName; // Gunakan nama file existing sebagai default
+    try {
+        // Jika file baru dipilih, unggah file tersebut
+        if (this.asset_image && this.asset_image !== this.oldFileName) {
+            const imageFormData = new FormData();
+            imageFormData.append("file", this.asset_image);
+
+            // Tambahkan nama file lama untuk menghapusnya dari sistem jika diperlukan
+            if (this.oldFileName) {
+                imageFormData.append("oldFileName", this.oldFileName);
             }
-        },
 
-        async submitForm() {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                console.error("Token tidak ditemukan, silakan login terlebih dahulu.");
-                return;
-            }
-
-            let uploadedFilePath = null;
-
-            try {
-                let file_path = this.asset_image;
-                if (this.asset_image) {
-                    const imageFormData = new FormData();
-                    imageFormData.append('file', this.asset_image);
-
-                    if (this.oldFileName) {
-                        imageFormData.append('oldFileName', this.oldFileName);
-                    }
-
-                    const uploadResponse = await axios.post("http://localhost:8081/upload?module=Master%20Aset", imageFormData, {
-                        headers: {
-                            'X-API-KEY': 'bprfjocmaqfib592338vf',
-                        },
-                    });
-
-                    uploadedFilePath = uploadResponse.data.file_path;
-                    console.log("Uploaded file path:", uploadedFilePath);
-                }
-                const payload = {
-                    asset_name: this.asset_name,
-                    asset_brand: this.asset_brand,
-                    asset_image: file_path,
-                    asset_specification: this.asset_specification,
-                    asset_condition: this.asset_condition,
-                    asset_status: this.asset_status,
-                    asset_purchase_date: this.asset_purchase_date,
-                    classification_acquisition_value: this.classification_acquisition_value,
-                    asset_classification: this.selectedKlasifikasi,
-                    outlet_id: this.selectedOutlet,
-                    area_id: this.selectedArea,
-                    asset_pic: this.selectedPic,
-                    personal_responsible_id: this.selectedPersonal,
-                };
-
-                const response = await axios.put(`http://localhost:8080/api/assets/${this.asetId}`, payload, {
+            const uploadResponse = await axios.post(
+                "http://localhost:8081/upload?module=Master%20Aset",
+                imageFormData,
+                {
                     headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
+                        "X-API-KEY": "bprfjocmaqfib592338vf",
                     },
-                });
-
-                if (response.status === 200) {
-                    console.log("Asset updated successfully:", response.data);
-                    this.$router.push('/pages/asets');
                 }
-            } catch (error) {
-                console.error("Error updating asset:", error);
+            );
+
+            // Perbarui path file jika berhasil diunggah
+            uploadedFilePath = this.oldFileName; // Tetap gunakan nama lama
+            console.log("Uploaded file path:", uploadResponse.data.file_path);
+        }
+
+        // Siapkan payload untuk dikirim
+        const payload = {
+            asset_name: this.asset_name,
+            asset_brand: this.asset_brand,
+            asset_image: this.oldFileName, // Selalu gunakan nama file lama
+            asset_specification: this.asset_specification,
+            asset_condition: this.asset_condition,
+            asset_status: this.asset_status,
+            asset_purchase_date: this.asset_purchase_date,
+            classification_acquisition_value: this.classification_acquisition_value,
+            asset_classification: this.selectedKlasifikasi,
+            outlet_id: this.selectedOutlet,
+            area_id: this.selectedArea,
+            asset_pic: this.selectedPic,
+            personal_responsible: this.personal_responsible,
+        };
+
+        // Kirim request untuk update data aset
+        const response = await axios.put(
+            `http://localhost:8080/api/assets/${this.assetId}`,
+            payload,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
             }
-        },
+        );
+
+        if (response.status === 200) {
+            console.log("Asset updated successfully:", response.data);
+            this.$router.push("/pages/asets");
+        }
+    } catch (error) {
+        console.error("Error updating asset:", error);
+    }
+}
+
     },
 };
 </script>

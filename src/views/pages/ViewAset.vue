@@ -64,7 +64,7 @@
                                     <strong>PIC Aset:</strong> {{ assetPicName || 'Tidak tersedia' }}
                                 </CCardText>
                                 <CCardText>
-                                    <strong>Penanggung Jawab Aset:</strong> {{ personalName || 'Tidak tersedia' }}
+                                    <strong>Penanggung Jawab Aset:</strong> {{ personalResponsible || 'Tidak tersedia' }}
                                 </CCardText>
                             </CCardBody>
                         </CCard>
@@ -97,7 +97,7 @@ export default {
             assetPurchaseDate: "",
             classificationLastBookValue: "",
             assetPicName: "",
-            personalName: "",
+            personalResponsible: "",
             assetAge: "",        
         };
     },
@@ -133,24 +133,23 @@ export default {
                 this.assetMaintenanceDate = aset.assetMaintenanceDate
                     ? new Date(aset.assetMaintenanceDate).toLocaleDateString()
                     : "Tidak tersedia";
-                this.personalName = aset.personalName || "Tidak tersedia";
-                // Handling asset image
+                this.personalResponsible = aset.personalResponsible || "Tidak tersedia";
+              
                 const assetImagePath = aset.assetImage || this.defaultImage;
-// const apiKey = "bprfjocmaqfib592338vf"; // Ganti dengan API key yang sesuai
+// const apiKey = "bprfjocmaqfib592338vf"; 
 
-// Encode assetImagePath untuk memastikan URL aman
 const encodedAssetImagePath = encodeURIComponent(aset.assetImage || this.defaultImage);
 console.log("Encoded assetImagePath:", encodedAssetImagePath);
 
 axios
   .get(`http://localhost:8081/get-file?path=${encodedAssetImagePath}`, {
     headers: { 'X-API-KEY': 'bprfjocmaqfib592338vf' },
-    responseType: 'arraybuffer', // Penting: Pastikan menerima data sebagai array buffer
+    responseType: 'arraybuffer', 
   })
   .then((response) => {
     console.log("Response from API:", response);
-    const blob = new Blob([response.data], { type: 'image/jpeg' }); // Pastikan MIME type sesuai
-    this.assetImage = URL.createObjectURL(blob); // Buat URL blob untuk digunakan sebagai src
+    const blob = new Blob([response.data], { type: 'image/jpeg' }); 
+    this.assetImage = URL.createObjectURL(blob); 
   })
   .catch((error) => {
     console.error("Gagal mengambil gambar:", error);

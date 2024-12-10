@@ -62,7 +62,7 @@
         <strong>PIC Aset:</strong> {{ asetData.assetPicName || 'Tidak tersedia' }}
       </CCardText>
       <CCardText>
-        <strong>Penanggung Jawab Aset:</strong> {{ asetData.personalName || 'Tidak tersedia' }}
+        <strong>Penanggung Jawab Aset:</strong> {{ asetData.personalResponsible || 'Tidak tersedia' }}
       </CCardText>
     </CCardBody>
   </CCard>
@@ -99,7 +99,7 @@ export default {
         assetPurchaseDate: "",
         classificationLastBookValue: "",
         assetPicName: "",
-        personalName: "",
+        personalResponsible: "",
         assetAge: "",
       },
     };
@@ -148,7 +148,7 @@ export default {
          assetPurchaseDate: aset.assetPurchaseDate
            ? new Date(aset.assetPurchaseDate).toLocaleDateString()
            : "Tidak tersedia",
-         personalName: aset.personalName || "Tidak tersedia",
+         personalResponsible: aset.personalResponsible || "Tidak tersedia",
        };
        this.generateQRCode();
      })
@@ -158,28 +158,56 @@ export default {
 },
 
 
-    generateQRCode() {
-      const canvasEl = this.$refs.qrcode;
+generateQRCode() {
+  const canvasEl = this.$refs.qrcode;
+  const assetName = this.asetData.assetName; // Replace with the actual asset name field
 
-      if (canvasEl && this.asetData.assetIdHash) {
-        // Generate QR Code
-        QRCode.toCanvas(
-          canvasEl,
-          this.asetData.assetIdHash, 
-          {
-            width: 300, 
-            margin: 2, 
-          },
-          (error) => {
-            if (error) {
-              console.error("QR Code Error:", error);
-            }
-          }
+  if (canvasEl && this.asetData.assetIdHash) {
+    // Generate QR Code
+    QRCode.toCanvas(
+      canvasEl,
+      this.asetData.assetIdHash,
+      {
+        width: 300,
+        margin: 2,
+      },
+      (error) => {
+        if (error) {
+          console.error("QR Code Error:", error);
+          return;
+        }
+
+        // Overlay the asset name in the middle of the QR code
+        const ctx = canvasEl.getContext("2d");
+        const canvasWidth = canvasEl.width;
+        const canvasHeight = canvasEl.height;
+
+        ctx.font = "bold 20px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "black";
+
+        // Add background behind the text (optional)
+        const textWidth = ctx.measureText(assetName).width;
+        const textHeight = 20; // Approximate text height
+        ctx.fillStyle = "white";
+        ctx.fillRect(
+          (canvasWidth - textWidth) / 2 - 5,
+          (canvasHeight - textHeight) / 2 - 5,
+          textWidth + 10,
+          textHeight + 10
         );
-      } else {
-        console.error("Canvas element or assetIdHash is not available.");
+
+        // Add the text
+        ctx.fillStyle = "black";
+        ctx.fillText(assetName, canvasWidth / 2, canvasHeight / 2);
       }
-    },
+    );
+  } else {
+    console.error("Canvas element or assetIdHash is not available.");
+  }
+},
+
 
 
     downloadQRCode() {
@@ -190,7 +218,7 @@ export default {
       }
       const link = document.createElement('a');
       link.href = qrCodeElement.toDataURL();
-      link.download = `qr_${this.asetData.aset_id || 'unknown'}.png`;
+      link.download = `qr_${this.asetData.assetName || 'unknown'}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

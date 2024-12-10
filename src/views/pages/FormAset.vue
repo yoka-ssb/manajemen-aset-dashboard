@@ -140,7 +140,7 @@ export default {
                     const assetData = response.data.data;
                     this.submission_asset_name = assetData.assetName || '';
                     this.submission_pr_name = assetData.assetPicName || '';
-                    this.submission_role_name = assetData.personalName || '';
+                    this.submission_role_name = assetData.personalResponsible || '';
                     this.submission_outlet = assetData.outletName || '';
                     this.submission_area = assetData.areaName || '';
                 }

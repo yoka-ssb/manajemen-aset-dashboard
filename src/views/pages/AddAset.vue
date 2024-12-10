@@ -44,16 +44,22 @@
                             </select>
                         </div>
 
-                        <div v-if="isPersonalRequired" class="mb-4">
+                        <!-- <div v-if="isPersonalRequired" class="mb-4">
                             <CFormLabel for="personal_responsible_id">Pilih Penanggung Jawab</CFormLabel>
                             <select id="personal_responsible_id" v-model="selectedPersonal"
                                 class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchPersonal">
                                 <option value="">Pilih Penanggung Jawab</option>
                                 <option v-for="personal in personals" :key="personal.personalId"
                                     :value="personal.personalId">
-                                    {{ personal.personalName }}
+                                    {{ personal.personalResponsible }}
                                 </option>
                             </select>
+                        </div> -->
+
+                        <div class="mb-4">
+                            <CFormLabel for="personal_responsible_id">Penanggung Jawab</CFormLabel>
+                            <CFormInput id="personal_responsible_id" v-model="personal_responsible_id" type="text"
+                                placeholder="masukkan penanggung jawab" />
                         </div>
 
                         <div class="mb-3 flex space-x-8">
@@ -149,7 +155,8 @@ export default {
             selectedArea: "",
             selectedOutlet: "",
             selectedKlasifikasi: "",
-            selectedPersonal: "",
+            // selectedPersonal: "",
+            personal_responsible_id :"",
             areas: [],
             outlets: [],
             klasifikasis: [],
@@ -172,8 +179,8 @@ export default {
         this.fetchAreas();
         this.fetchPic();
         this.fetchKlasifikasi();
-        this.fetchPersonal();
-        this.selectedPersonal = "";
+        // this.fetchPersonal();
+        // this.selectedPersonal = "";
         this.asset_classification = "";
         this.asset_name = "";
         this.asset_brand = "";
@@ -190,19 +197,19 @@ export default {
 
     methods: {
 
-        fetchPersonal() {
-            const token = localStorage.getItem("token");
-            axios
-                .get("http://localhost:8080/api/personal-responsibles", { headers: { Authorization: `Bearer ${token}` } })
-                .then((response) => {
-                    console.log("personal fetched:", response.data.data);
-                    this.personals = response.data.data;
-                })
-                .catch((error) => {
-                    console.error("Error fetching personal:", error);
-                    this.personals = [];
-                });
-        },
+        // fetchPersonal() {
+        //     const token = localStorage.getItem("token");
+        //     axios
+        //         .get("http://localhost:8080/api/personal-responsibles", { headers: { Authorization: `Bearer ${token}` } })
+        //         .then((response) => {
+        //             console.log("personal fetched:", response.data.data);
+        //             this.personals = response.data.data;
+        //         })
+        //         .catch((error) => {
+        //             console.error("Error fetching personal:", error);
+        //             this.personals = [];
+        //         });
+        // },
 
         fetchKlasifikasi() {
             const token = localStorage.getItem("token");
@@ -278,28 +285,25 @@ export default {
         return;
     }
 
-    let uploadedFilePath = null; // Variabel untuk menyimpan file path gambar
+    let uploadedFilePath = null; 
     try {
-        // 1. Upload gambar terlebih dahulu
         const imageFormData = new FormData();
         imageFormData.append('file', this.asset_image);
 
         const uploadResponse = await axios.post(`http://localhost:8081/upload?module=Master%20Aset`, imageFormData, {
             headers: {
                 'X-API-KEY': 'bprfjocmaqfib592338vf',
-                // 'Content-Type': 'multipart/form-data',
             },
         });
 
-        // Ambil path gambar dari respons
         uploadedFilePath = uploadResponse.data.file_path;
+
         console.log("Uploaded file path:", uploadedFilePath);
 
-        // 2. Siapkan payload untuk pengiriman data aset
         const payload = {
             asset_name: this.asset_name,
             asset_brand: this.asset_brand,
-            asset_image: uploadedFilePath, // Gunakan file path dari respons
+            asset_image: uploadedFilePath, 
             asset_specification: this.asset_specification,
             asset_condition: this.asset_condition,
             personal_responsible_id: this.selectedPersonal,
@@ -314,7 +318,6 @@ export default {
 
         console.log("Payload:", payload);
 
-        // 3. Kirim data aset
         const assetResponse = await axios.post("http://localhost:8080/api/assets", payload, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -324,12 +327,10 @@ export default {
 
         console.log("Form submitted successfully", assetResponse.data);
 
-        // 4. Redirect setelah sukses
         this.$router.push('/pages/asets');
     } catch (error) {
         console.error("There was an error:", error.response ? error.response.data : error);
 
-        // Jika pembuatan aset gagal, hapus gambar yang sudah diupload
         if (uploadedFilePath) {
             try {
                 await axios.delete(`http://localhost:8081/delete`, {
@@ -337,7 +338,7 @@ export default {
                         'X-API-KEY': 'bprfjocmaqfib592338vf',
                     },
                     data: {
-                        file_path: uploadedFilePath, // Kirim path gambar untuk dihapus
+                        file_path: uploadedFilePath, 
                     },
                 });
                 console.log("Uploaded file has been rolled back successfully.");

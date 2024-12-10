@@ -22,7 +22,7 @@ onMounted(() => {
   breadcrumbs.value = getBreadcrumbs()
 })
 </script>
-
+<!-- 
 <template>
   <CBreadcrumb class="my-0">
     <CBreadcrumbItem
@@ -34,4 +34,4 @@ onMounted(() => {
       {{ item.name }}
     </CBreadcrumbItem>
   </CBreadcrumb>
-</template>
+</template> -->

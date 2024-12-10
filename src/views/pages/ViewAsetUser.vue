@@ -51,7 +51,7 @@
                                     <strong>PIC Aset:</strong> {{ assetPicName || 'Tidak tersedia' }}
                                 </CCardText>
                                 <CCardText>
-                                    <strong>Penanggung Jawab Aset:</strong> {{ personalName || 'Tidak tersedia' }}
+                                    <strong>Penanggung Jawab Aset:</strong> {{ personalResponsible || 'Tidak tersedia' }}
                                 </CCardText>
                             </CCardBody>
                         </CCard>
@@ -89,7 +89,7 @@ export default {
       assetStatus: "",
       assetPurchaseDate: "",
       assetPicName: "",
-      personalName: "",
+      personalResponsible: "",
       assetAge: "",
       assetClassification: "", 
     };
@@ -145,7 +145,7 @@ axios
             this.assetMaintenanceDate = aset.assetMaintenanceDate
             ? new Date(aset.assetMaintenanceDate).toLocaleDateString()
             : "Tidak tersedia";
-          this.personalName = aset.personalName || "Tidak tersedia";
+          this.personalResponsible = aset.personalResponsible || "Tidak tersedia";
           this.assetClassification = aset.assetClassification || "Tidak tersedia"; // Simpan assetClassification
         })
         .catch((error) => {
