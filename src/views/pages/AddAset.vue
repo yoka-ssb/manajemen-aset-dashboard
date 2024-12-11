@@ -57,8 +57,8 @@
                         </div> -->
 
                         <div class="mb-4">
-                            <CFormLabel for="personal_responsible_id">Penanggung Jawab</CFormLabel>
-                            <CFormInput id="personal_responsible_id" v-model="personal_responsible_id" type="text"
+                            <CFormLabel for="personal_responsible">Penanggung Jawab</CFormLabel>
+                            <CFormInput id="personal_responsible" v-model="personal_responsible" type="text"
                                 placeholder="masukkan penanggung jawab" />
                         </div>
 
@@ -156,7 +156,6 @@ export default {
             selectedOutlet: "",
             selectedKlasifikasi: "",
             // selectedPersonal: "",
-            personal_responsible_id :"",
             areas: [],
             outlets: [],
             klasifikasis: [],
@@ -165,7 +164,7 @@ export default {
             asset_purchase_date: "",
             asset_status: "",
             asset_pic: "",
-            personal_responsible_id: "",
+            personal_responsible: "",
             classification_acquisition_value: "",
             isAreaRequired: true,
             isOutletRequired: true,
@@ -187,6 +186,7 @@ export default {
         this.asset_image = null;
         this.asset_specification = "";
         this.selectedPic = "";
+        this.personal_responsible = "";
         this.selectedArea = "";
         this.selectedOutlet = "";
         this.asset_condition = "Baru";
@@ -302,11 +302,11 @@ export default {
 
         const payload = {
             asset_name: this.asset_name,
+            personal_responsible: this.personal_responsible,
             asset_brand: this.asset_brand,
             asset_image: uploadedFilePath, 
             asset_specification: this.asset_specification,
             asset_condition: this.asset_condition,
-            personal_responsible_id: this.selectedPersonal,
             asset_status: this.asset_status,
             asset_purchase_date: this.asset_purchase_date,
             classification_acquisition_value: this.classification_acquisition_value,

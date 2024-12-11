@@ -6,7 +6,10 @@
       </CCardHeader>
       <CCardBody>
         <CRow>
-          <CCol :lg="12">
+          <CCol class="text-center" v-if="loading">
+            <CSpinner color="primary" size="lg" class="my-5" />
+          </CCol>
+          <CCol v-else :lg="12">
             <CCard class="mb-3">
               <CCardBody>
                 <strong>Pastikan Aset memenuhi beberapa kondisi berikut:</strong>
@@ -53,8 +56,12 @@
       Pilih tindakan untuk aset dengan kondisi kurang baik
     </CModalBody>
     <CModalFooter>
-      <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 mr-2" @click="abaikanService">Abaikan Kondisi Aset</button>
-      <button class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600" @click="ajukanService">Ajukan Service/Ganti</button>
+      <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 mr-2" @click="abaikanService">
+        Abaikan Kondisi Aset
+      </button>
+      <button class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600" @click="ajukanService">
+        Ajukan Service/Ganti
+      </button>
     </CModalFooter>
   </CModal>
 </template>
@@ -65,21 +72,23 @@ import axios from "axios";
 export default {
   data() {
     return {
-      klasifikasiId: this.$route.params.idklasifikasi, 
-      assetId: null, 
-      parameter_kesehatan_aset: [], 
-      showModal: false, 
+      klasifikasiId: this.$route.params.idklasifikasi,
+      assetId: null,
+      parameter_kesehatan_aset: [],
+      showModal: false,
+      loading: true, 
       token: localStorage.getItem("token"),
     };
   },
   created() {
     this.fetchClassificationData(this.klasifikasiId);
     const urlSegments = this.$route.path.split("/");
-    this.assetId = urlSegments[urlSegments.length - 2]; 
+    this.assetId = urlSegments[urlSegments.length - 2];
     this.fetchClassificationData(this.klasifikasiId);
   },
   methods: {
     fetchClassificationData(klasifikasiId) {
+      this.loading = true;
       axios
         .get(`http://localhost:8080/api/classifications/${klasifikasiId}`, {
           headers: { Authorization: `Bearer ${this.token}` },
@@ -87,17 +96,21 @@ export default {
         .then((response) => {
           const assetHealthyParam = response.data.data.assetHealthyParamMap.param_1;
           this.parameter_kesehatan_aset = assetHealthyParam
-            ? assetHealthyParam.split("\n") 
+            ? assetHealthyParam.split("\n")
             : [];
         })
         .catch((error) => {
           console.error("Gagal mengambil data klasifikasi:", error);
+        })
+        .finally(() => {
+          this.loading = false; 
         });
     },
     updateAsetStatus(status) {
+      this.loading = true; 
       axios
         .put(
-        `http://localhost:8080/api/assets/${this.assetId}/status`,
+          `http://localhost:8080/api/assets/${this.assetId}/status`,
           { asset_status: status },
           {
             headers: { Authorization: `Bearer ${this.token}` },
@@ -108,6 +121,9 @@ export default {
         })
         .catch((error) => {
           console.error("Gagal mengupdate status aset:", error);
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
     showConfirmationModalKKB() {
@@ -118,16 +134,13 @@ export default {
       this.$router.push(`/pages/FormAset/${this.$route.params.assetId}`);
     },
     ajukanService() {
-  this.closeModal();
-  this.$router.push(`/pages/FormAset/${this.assetId}`); 
-},
-abaikanService(){
-  this.closeModal();
-  this.$router.push(`/pages/FormAset/${this.assetId}`); 
-}
-
+      this.closeModal();
+      this.$router.push(`/pages/FormAset/${this.assetId}`);
+    },
+    abaikanService() {
+      this.closeModal();
+      this.$router.push(`/pages/FormAset/${this.assetId}`);
+    },
   },
 };
 </script>
-
-

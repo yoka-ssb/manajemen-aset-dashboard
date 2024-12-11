@@ -19,7 +19,6 @@
                             <CFormInput id="asset_brand" v-model="asset_brand" type="text"
                                 placeholder="masukkan merk aset" />
                         </div>
-
                         <div class="mb-3">
     <CFormLabel for="asset_image">Lampiran (Gambar Aset)</CFormLabel>
     <CFormInput
@@ -36,7 +35,6 @@
         </span>
     </div>
 </div>
-
                         <div class="mb-3">
                             <CFormLabel for="asset_specification">Spesifikasi Aset</CFormLabel>
                             <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3">
@@ -120,8 +118,6 @@
         </option>
     </select>
 </div>
-
-
                         <div v-if="isPicRequired" class="mb-4">
                             <CFormLabel for="asset_pic">Pilih PIC Aset</CFormLabel>
                             <select id="asset_pic" v-model="selectedPic"
@@ -156,30 +152,23 @@ export default {
             asset_brand: "",
             personal_responsible: "",
             asset_image: null,
-            oldFileName: "",
-        selectedFile: null, 
-        isNewFileSelected: false, 
             PicOption: [],
             selectedPic: "",
             selectedArea: "",
             selectedOutlet: "",
             selectedKlasifikasi: "",
-            // selectedPersonal: "",
             areas: [],
             outlets: [],
             klasifikasis: [],
-            // personals: [],
             asset_purchase_date: "",
             asset_condition: '',
             asset_status: '',
             asset_pic: "",
-            // penanggungjawab: "",
             classification_acquisition_value: "",
             isAreaRequired: true,
             isOutletRequired: true,
             isKlasifikasiaRequired: true,
             isPicRequired: true,
-            // isPersonalRequired: true,
         };
     },
 
@@ -270,10 +259,9 @@ export default {
             .then((response) => {
                 this.areas = response.data.data;
 
-                // Validasi dan pastikan selectedArea tetap valid
                 if (this.selectedArea) {
                     const existingArea = this.areas.find(area => area.areaId === this.selectedArea);
-                    if (!existingArea) this.selectedArea = ""; // Reset jika tidak ditemukan
+                    if (!existingArea) this.selectedArea = "";
                 }
             })
             .catch((error) => {
@@ -291,10 +279,9 @@ export default {
             .then((response) => {
                 this.outlets = response.data.data;
 
-                // Validasi dan pastikan selectedOutlet tetap valid
                 if (this.selectedOutlet) {
                     const existingOutlet = this.outlets.find(outlet => outlet.outletId === this.selectedOutlet);
-                    if (!existingOutlet) this.selectedOutlet = ""; // Reset jika tidak ditemukan
+                    if (!existingOutlet) this.selectedOutlet = ""; 
                 }
             })
             .catch((error) => {
@@ -303,11 +290,8 @@ export default {
             });
     },
     initializeExistingData(apiResponse) {
-        // Ambil areaId dan outletId dari response
         this.selectedArea = apiResponse.areaId;
         this.selectedOutlet = apiResponse.outletId;
-
-        // Fetch data berdasarkan area yang diatur
         this.fetchAreas();
         this.fetchOutlets();
     },
@@ -329,58 +313,48 @@ export default {
         handleFileChange(event) {
         const file = event.target.files[0];
         if (file) {
-            this.selectedFile = file; // Simpan file baru
-            this.isNewFileSelected = true; // Tandai bahwa file baru dipilih
-        } else {
-            this.selectedFile = null; // Reset jika tidak ada file dipilih
-            this.isNewFileSelected = false;
+            this.asset_image = file; 
         }
     },
-    getAssetImageInput() {
-        // Kembalikan file baru jika ada, jika tidak gunakan data existing
-        return this.isNewFileSelected ? this.selectedFile : this.oldFileName;
-    },
 
 
-    async submitForm() {
+async submitForm() {
     const token = localStorage.getItem("token");
     if (!token) {
         console.error("Token tidak ditemukan, silakan login terlebih dahulu.");
         return;
     }
 
-    let uploadedFilePath = this.oldFileName; // Gunakan nama file existing sebagai default
-    try {
-        // Jika file baru dipilih, unggah file tersebut
-        if (this.asset_image && this.asset_image !== this.oldFileName) {
-            const imageFormData = new FormData();
-            imageFormData.append("file", this.asset_image);
+    let uploadedFilePath = this.oldFileName;
 
-            // Tambahkan nama file lama untuk menghapusnya dari sistem jika diperlukan
-            if (this.oldFileName) {
-                imageFormData.append("oldFileName", this.oldFileName);
+    try {
+            if (this.asset_image) { // Check if a new file is selected
+                const imageFormData = new FormData();
+                imageFormData.append("file", this.asset_image);
+
+                // Pass the old file name to the backend
+                if (this.oldFileName) {
+                    imageFormData.append("oldFileName", this.oldFileName);
+                }
+
+                const uploadResponse = await axios.post(
+                    "http://localhost:8081/upload?module=Master%20Aset",
+                    imageFormData,
+                    {
+                        headers: {
+                            "X-API-KEY": "bprfjocmaqfib592338vf",
+                        },
+                    }
+                );
+
+                uploadedFilePath = uploadResponse.data.file_path;
+                console.log("Uploaded file path:", uploadedFilePath);
             }
 
-            const uploadResponse = await axios.post(
-                "http://localhost:8081/upload?module=Master%20Aset",
-                imageFormData,
-                {
-                    headers: {
-                        "X-API-KEY": "bprfjocmaqfib592338vf",
-                    },
-                }
-            );
-
-            // Perbarui path file jika berhasil diunggah
-            uploadedFilePath = this.oldFileName; // Tetap gunakan nama lama
-            console.log("Uploaded file path:", uploadResponse.data.file_path);
-        }
-
-        // Siapkan payload untuk dikirim
         const payload = {
             asset_name: this.asset_name,
             asset_brand: this.asset_brand,
-            asset_image: this.oldFileName, // Selalu gunakan nama file lama
+            asset_image: uploadedFilePath, 
             asset_specification: this.asset_specification,
             asset_condition: this.asset_condition,
             asset_status: this.asset_status,
@@ -393,7 +367,6 @@ export default {
             personal_responsible: this.personal_responsible,
         };
 
-        // Kirim request untuk update data aset
         const response = await axios.put(
             `http://localhost:8080/api/assets/${this.assetId}`,
             payload,
@@ -413,6 +386,7 @@ export default {
         console.error("Error updating asset:", error);
     }
 }
+
 
     },
 };

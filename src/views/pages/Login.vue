@@ -9,6 +9,7 @@
                 <CForm @submit.prevent="handleLogin">
                   <h1 class="text-center">Maintenance Aset</h1>
                   <p class="text-body-secondary text-center">Kelola aset dengan mudah dan efisien</p>
+                  <div v-if="errorMessage" class="text-center text-danger mb-4">{{ errorMessage }}</div>
                   <CInputGroup class="mb-3">
                     <CInputGroupText>
                       <CIcon icon="cil-user" />
@@ -59,7 +60,6 @@
 
 <script>
 import axios from 'axios';
-import { useRouter } from 'vue-router';
 import jwt_decode from 'jwt-decode';
 
 export default {
@@ -67,12 +67,14 @@ export default {
     return {
       nip: '',
       user_password: '',
-      loading: false, // Tambahkan state untuk animasi loading
+      loading: false, 
+      errorMessage: '', 
     };
   },
   methods: {
     handleLogin() {
-  this.loading = true; // Aktifkan animasi loading
+  this.loading = true; 
+  this.errorMessage = '';
 
   axios
     .post('http://localhost:8080/api/login', {
@@ -82,41 +84,28 @@ export default {
     .then((response) => {
       const data = response.data;
       const token = data.token;
-
-      // Simpan token di localStorage
       localStorage.setItem('token', token);
-
-      // Decode token untuk mendapatkan role_id
       try {
         const decodedToken = jwt_decode(token);
-        const roleId = decodedToken.role_id; // Sesuaikan dengan struktur payload JWT Anda
-
-        // Simpan role_id di localStorage
+        const roleId = decodedToken.role_id;        
         localStorage.setItem('role_id', roleId);
-
-        // console.log("Role ID saved:", roleId); // Opsional: untuk log role_id
-
       } catch (error) {
         console.error('Invalid token:', error);
       }
-
-      // Navigasi ke dashboard setelah memastikan token dan role_id tersedia
       this.$router.push('/dashboard').then(() => {
-        // Code to execute after navigation (optional)
       });
     })
     .catch((error) => {
-      console.error('Login failed:', error.response);
-      alert('Login failed, please try again.');
-    })
+          console.error('Login failed:', error.response);
+          this.errorMessage = 'Login gagal, cek kembali nip dan password anda!';
+        })
     .finally(() => {
-      this.loading = false; // Matikan animasi loading
+      this.loading = false; 
     });
 },
   },
 };
 </script>
-
 
 <style scoped>
 .wrapper {
@@ -176,5 +165,7 @@ export default {
   }
 }
 </style>
+
+
 
 

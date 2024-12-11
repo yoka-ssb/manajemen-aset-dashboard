@@ -12,6 +12,11 @@
         <input v-model="searchAssets" @input="debouncedSearch" type="text" placeholder="Cari Aset..."
           class="px-4 py-2 border rounded-lg" />
       </div>
+
+      <div v-if="loading" class="loading-overlay">
+      <div class="spinner"></div>
+    </div>
+
       <div class="overflow-x-auto rounded-lg border border-gray-200">
         <CTable>
           <CTableHead>
@@ -80,6 +85,7 @@
         totalPages: 1,
         totalAssets: 0,
         sortOrder: 'asc',
+        loading: false,
       };
     },
     mounted() {
@@ -99,6 +105,7 @@
         console.log("qr generate aset with ID:", assetId);
       },
       async fetchAssets() {
+        this.loading = true;
         try {
           const token = localStorage.getItem("token");
           if (!token) {
@@ -122,6 +129,8 @@
           this.totalPages = Math.ceil(this.totalAssets / 10);
         } catch (error) {
           console.error("Error fetching assets:", error);
+        } finally {
+          this.loading = false;
         }
       },
       changePage(newPage) {
@@ -142,3 +151,32 @@
   };
   </script>
   
+<style scoped>
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

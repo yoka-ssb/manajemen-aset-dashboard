@@ -6,69 +6,77 @@
             </CCardHeader>
             <CCardBody>
                 <CRow>
-                    <CCol :lg="6">
-                        <CCard class="mb-3">
-                            <CCardImage orientation="top" :src="assetImage ? assetImage : defaultImage" />
-                            <CCardBody>
-                                <strong>Spesifikasi Aset:</strong>
-                                <CCardText>
-                                    {{ assetSpecification || 'Tidak tersedia' }}
-                                </CCardText>
-                            </CCardBody>
-                        </CCard>
+                    <CCol class="text-center" v-if="loading">
+                        <CSpinner color="primary" size="lg" class="my-5" />
                     </CCol>
-                    <CCol :lg="6">
-                        <CCard class="mb-3">
-                            <CCardBody>
-                                <CCardText>
-                                    <strong>Lokasi:</strong> {{ outletName || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Area:</strong> {{ areaName || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Nama Aset:</strong> {{ assetName || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Merk Aset:</strong> {{ assetBrand || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Kondisi Awal Aset:</strong> {{ assetCondition || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Tanggal Pembelian Aset:</strong> {{ assetPurchaseDate || 'Tidak tersedia'}}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Usia Aset (Bulan):</strong> {{ assetAge || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Tanggal Maintenance Aset:</strong> {{ assetMaintenanceDate || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Status Aset:</strong> {{ assetStatus || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>PIC Aset:</strong> {{ assetPicName || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Penanggung Jawab Aset:</strong> {{ personalResponsible || 'Tidak tersedia' }}
-                                </CCardText>
-                            </CCardBody>
-                        </CCard>
-                    </CCol>
-                </CRow>
-                <CRow>
-                    <CCol class="text-end mt-3">
-                        <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 mr-2"
-                            @click="navigateToParameterAset">
-                            Maintenance Aset
-                        </button>
+                    <CCol v-else>
+                        <CRow>
+                            <CCol :lg="6">
+                                <CCard class="mb-3">
+                                    <CCardImage orientation="top" :src="assetImage ? assetImage : defaultImage" />
+                                    <CCardBody>
+                                        <strong>Spesifikasi Aset:</strong>
+                                        <CCardText>
+                                            {{ assetSpecification || 'Tidak tersedia' }}
+                                        </CCardText>
+                                    </CCardBody>
+                                </CCard>
+                            </CCol>
+                            <CCol :lg="6">
+                                <CCard class="mb-3">
+                                    <CCardBody>
+                                        <CCardText>
+                                            <strong>Lokasi:</strong> {{ outletName || 'Tidak tersedia' }}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Area:</strong> {{ areaName || 'Tidak tersedia' }}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Nama Aset:</strong> {{ assetName || 'Tidak tersedia' }}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Merk Aset:</strong> {{ assetBrand || 'Tidak tersedia' }}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Kondisi Awal Aset:</strong> {{ assetCondition || 'Tidak tersedia' }}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Tanggal Pembelian Aset:</strong> {{ assetPurchaseDate || 'Tidak tersedia'}}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Usia Aset (Bulan):</strong> {{ assetAge || 'Tidak tersedia' }}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Tanggal Maintenance Aset:</strong> {{ assetMaintenanceDate || 'Tidak tersedia' }}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Status Aset:</strong> {{ assetStatus || 'Tidak tersedia' }}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>PIC Aset:</strong> {{ assetPicName || 'Tidak tersedia' }}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Penanggung Jawab Aset:</strong> {{ personalResponsible || 'Tidak tersedia' }}
+                                        </CCardText>
+                                    </CCardBody>
+                                </CCard>
+                            </CCol>
+                        </CRow>
+                        <CRow>
+                            <CCol class="text-end mt-3">
+                                <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 mr-2"
+                                    @click="navigateToParameterAset">
+                                    Maintenance Aset
+                                </button>
+                            </CCol>
+                        </CRow>
                     </CCol>
                 </CRow>
             </CCardBody>
         </CCard>
     </CCol>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -162,4 +170,3 @@ axios
     },
 };
 </script>
-

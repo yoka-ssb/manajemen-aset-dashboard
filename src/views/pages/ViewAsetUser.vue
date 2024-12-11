@@ -1,74 +1,88 @@
 <template>
-    <CCol :xs="12">
-        <CCard class="mb-4">
-            <CCardHeader>
-                <strong>Detail Aset</strong>
-            </CCardHeader>
-            <CCardBody>
-                <CRow>
-                    <CCol :lg="6">
-                        <CCard class="mb-3">
-                            <CCardImage orientation="top" :src="assetImage ? assetImage : defaultImage" />
-                            <CCardBody>
-                                <strong>Spesifikasi Aset:</strong>
-                                <CCardText>
-                                    {{ assetSpecification || 'Tidak tersedia' }}
-                                </CCardText>
-                            </CCardBody>
-                        </CCard>
-                    </CCol>
-                    <CCol :lg="6">
-                        <CCard class="mb-3">
-                            <CCardBody>
-                                <CCardText>
-                                    <strong>Lokasi:</strong> {{ outletName || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Area:</strong> {{ areaName || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Nama Aset:</strong> {{ assetName || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Merk Aset:</strong> {{ assetBrand || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Kondisi Awal Aset:</strong> {{ assetCondition || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Tanggal Pembelian Aset:</strong> {{ assetPurchaseDate || 'Tidak tersedia'}}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Usia Aset (Bulan):</strong> {{ assetAge || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Tanggal Maintenance Aset:</strong> {{ assetMaintenanceDate || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Status Aset:</strong> {{ assetStatus || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>PIC Aset:</strong> {{ assetPicName || 'Tidak tersedia' }}
-                                </CCardText>
-                                <CCardText>
-                                    <strong>Penanggung Jawab Aset:</strong> {{ personalResponsible || 'Tidak tersedia' }}
-                                </CCardText>
-                            </CCardBody>
-                        </CCard>
-                    </CCol>
-                </CRow>
-                <CRow>
-                    <CCol class="text-end mt-3">
-                        <button class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600"
-                        @click="navigateToFromAset">
-                            Laporkan Barang Hilang
-                        </button>
-                    </CCol>
-                </CRow>
-            </CCardBody>
-        </CCard>
-    </CCol>
+  <CCol :xs="12">
+    <CCard class="mb-4">
+      <CCardHeader>
+        <strong>Detail Aset</strong>
+      </CCardHeader>
+      <CCardBody>
+        <CRow>
+          <CCol class="text-center" v-if="loading">
+            <CSpinner color="primary" size="lg" class="my-5" />
+          </CCol>
+          <CCol v-else>
+            <CRow>
+              <CCol :lg="6">
+                <CCard class="mb-3">
+                  <CCardImage 
+                    orientation="top" 
+                    :src="assetImage ? assetImage : defaultImage" 
+                    alt="Gambar aset"
+                  />
+                  <CCardBody>
+                    <strong>Spesifikasi Aset:</strong>
+                    <CCardText>
+                      {{ assetSpecification || 'Tidak tersedia' }}
+                    </CCardText>
+                  </CCardBody>
+                </CCard>
+              </CCol>
+              <CCol :lg="6">
+                <CCard class="mb-3">
+                  <CCardBody>
+                    <CCardText>
+                      <strong>Lokasi:</strong> {{ outletName || 'Tidak tersedia' }}
+                    </CCardText>
+                    <CCardText>
+                      <strong>Area:</strong> {{ areaName || 'Tidak tersedia' }}
+                    </CCardText>
+                    <CCardText>
+                      <strong>Nama Aset:</strong> {{ assetName || 'Tidak tersedia' }}
+                    </CCardText>
+                    <CCardText>
+                      <strong>Merk Aset:</strong> {{ assetBrand || 'Tidak tersedia' }}
+                    </CCardText>
+                    <CCardText>
+                      <strong>Kondisi Awal Aset:</strong> {{ assetCondition || 'Tidak tersedia' }}
+                    </CCardText>
+                    <CCardText>
+                      <strong>Tanggal Pembelian Aset:</strong> {{ assetPurchaseDate || 'Tidak tersedia' }}
+                    </CCardText>
+                    <CCardText>
+                      <strong>Usia Aset (Bulan):</strong> {{ assetAge || 'Tidak tersedia' }}
+                    </CCardText>
+                    <CCardText>
+                      <strong>Tanggal Maintenance Aset:</strong> {{ assetMaintenanceDate || 'Tidak tersedia' }}
+                    </CCardText>
+                    <CCardText>
+                      <strong>Status Aset:</strong> {{ assetStatus || 'Tidak tersedia' }}
+                    </CCardText>
+                    <CCardText>
+                      <strong>PIC Aset:</strong> {{ assetPicName || 'Tidak tersedia' }}
+                    </CCardText>
+                    <CCardText>
+                      <strong>Penanggung Jawab Aset:</strong> {{ personalResponsible || 'Tidak tersedia' }}
+                    </CCardText>
+                  </CCardBody>
+                </CCard>
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol class="text-end mt-3">
+                <button 
+                  class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600"
+                  @click="navigateToFromAset"
+                >
+                  Laporkan Barang Hilang
+                </button>
+              </CCol>
+            </CRow>
+          </CCol>
+        </CRow>
+      </CCardBody>
+    </CCard>
+  </CCol>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -92,6 +106,7 @@ export default {
       personalResponsible: "",
       assetAge: "",
       assetClassification: "", 
+      loading: false,
     };
   },
   created() {
@@ -99,6 +114,7 @@ export default {
   },
   methods: {
     fetchAsetData(asetId) {
+      this.loading = true; 
       const token = localStorage.getItem("token");
       axios
         .get(`http://localhost:8080/api/assets/${asetId}`, {
@@ -113,25 +129,24 @@ export default {
           this.assetCondition = aset.assetCondition || "Tidak tersedia";
           this.assetSpecification = aset.assetSpecification || "Tidak tersedia";
           const assetImagePath = aset.assetImage || this.defaultImage;
-// const apiKey = "bprfjocmaqfib592338vf"; // Ganti dengan API key yang sesuai
 
-// Encode assetImagePath untuk memastikan URL aman
+
 const encodedAssetImagePath = encodeURIComponent(aset.assetImage || this.defaultImage);
 console.log("Encoded assetImagePath:", encodedAssetImagePath);
 
 axios
   .get(`http://localhost:8081/get-file?path=${encodedAssetImagePath}`, {
     headers: { 'X-API-KEY': 'bprfjocmaqfib592338vf' },
-    responseType: 'arraybuffer', // Penting: Pastikan menerima data sebagai array buffer
+    responseType: 'arraybuffer',
   })
   .then((response) => {
     console.log("Response from API:", response);
-    const blob = new Blob([response.data], { type: 'image/jpeg' }); // Pastikan MIME type sesuai
-    this.assetImage = URL.createObjectURL(blob); // Buat URL blob untuk digunakan sebagai src
+    const blob = new Blob([response.data], { type: 'image/jpeg' }); 
+    this.assetImage = URL.createObjectURL(blob); 
   })
   .catch((error) => {
     console.error("Gagal mengambil gambar:", error);
-    this.assetImage = this.defaultImage; // Fallback jika terjadi error
+    this.assetImage = this.defaultImage;
   });
           this.outletName = aset.outletName || "Tidak tersedia";
           this.areaName = aset.areaName || "Tidak tersedia";
@@ -146,12 +161,15 @@ axios
             ? new Date(aset.assetMaintenanceDate).toLocaleDateString()
             : "Tidak tersedia";
           this.personalResponsible = aset.personalResponsible || "Tidak tersedia";
-          this.assetClassification = aset.assetClassification || "Tidak tersedia"; // Simpan assetClassification
+          this.assetClassification = aset.assetClassification || "Tidak tersedia";
         })
         .catch((error) => {
-          console.error("Gagal mengambil data aset:", error);
-        });
-    },
+        console.error("Gagal mengambil data aset:", error.message);
+      })
+      .finally(() => {
+                    this.loading = false; 
+                });
+  },
         navigateToParameterAset() {
     this.$router.push({
       name: "ParameterAset",
