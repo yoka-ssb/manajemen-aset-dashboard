@@ -44,18 +44,6 @@
                             </select>
                         </div>
 
-                        <!-- <div v-if="isPersonalRequired" class="mb-4">
-                            <CFormLabel for="personal_responsible_id">Pilih Penanggung Jawab</CFormLabel>
-                            <select id="personal_responsible_id" v-model="selectedPersonal"
-                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchPersonal">
-                                <option value="">Pilih Penanggung Jawab</option>
-                                <option v-for="personal in personals" :key="personal.personalId"
-                                    :value="personal.personalId">
-                                    {{ personal.personalResponsible }}
-                                </option>
-                            </select>
-                        </div> -->
-
                         <div class="mb-4">
                             <CFormLabel for="personal_responsible">Penanggung Jawab</CFormLabel>
                             <CFormInput id="personal_responsible" v-model="personal_responsible" type="text"
@@ -155,7 +143,6 @@ export default {
             selectedArea: "",
             selectedOutlet: "",
             selectedKlasifikasi: "",
-            // selectedPersonal: "",
             areas: [],
             outlets: [],
             klasifikasis: [],
@@ -178,8 +165,6 @@ export default {
         this.fetchAreas();
         this.fetchPic();
         this.fetchKlasifikasi();
-        // this.fetchPersonal();
-        // this.selectedPersonal = "";
         this.asset_classification = "";
         this.asset_name = "";
         this.asset_brand = "";
@@ -196,21 +181,6 @@ export default {
     },
 
     methods: {
-
-        // fetchPersonal() {
-        //     const token = localStorage.getItem("token");
-        //     axios
-        //         .get("http://localhost:8080/api/personal-responsibles", { headers: { Authorization: `Bearer ${token}` } })
-        //         .then((response) => {
-        //             console.log("personal fetched:", response.data.data);
-        //             this.personals = response.data.data;
-        //         })
-        //         .catch((error) => {
-        //             console.error("Error fetching personal:", error);
-        //             this.personals = [];
-        //         });
-        // },
-
         fetchKlasifikasi() {
             const token = localStorage.getItem("token");
             axios
@@ -278,77 +248,76 @@ export default {
         },
 
         async submitForm() {
-    const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token");
 
-    if (!token) {
-        console.error("Token tidak ditemukan, silakan login terlebih dahulu.");
-        return;
-    }
+            if (!token) {
+                console.error("Token tidak ditemukan, silakan login terlebih dahulu.");
+                return;
+            }
 
-    let uploadedFilePath = null; 
-    try {
-        const imageFormData = new FormData();
-        imageFormData.append('file', this.asset_image);
-
-        const uploadResponse = await axios.post(`http://localhost:8081/upload?module=Master%20Aset`, imageFormData, {
-            headers: {
-                'X-API-KEY': 'bprfjocmaqfib592338vf',
-            },
-        });
-
-        uploadedFilePath = uploadResponse.data.file_path;
-
-        console.log("Uploaded file path:", uploadedFilePath);
-
-        const payload = {
-            asset_name: this.asset_name,
-            personal_responsible: this.personal_responsible,
-            asset_brand: this.asset_brand,
-            asset_image: uploadedFilePath, 
-            asset_specification: this.asset_specification,
-            asset_condition: this.asset_condition,
-            asset_status: this.asset_status,
-            asset_purchase_date: this.asset_purchase_date,
-            classification_acquisition_value: this.classification_acquisition_value,
-            outlet_id: this.selectedOutlet,
-            area_id: this.selectedArea,
-            asset_pic: this.selectedPic,
-            asset_classification: this.selectedKlasifikasi,
-        };
-
-        console.log("Payload:", payload);
-
-        const assetResponse = await axios.post("http://localhost:8080/api/assets", payload, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        console.log("Form submitted successfully", assetResponse.data);
-
-        this.$router.push('/pages/asets');
-    } catch (error) {
-        console.error("There was an error:", error.response ? error.response.data : error);
-
-        if (uploadedFilePath) {
+            let uploadedFilePath = null;
             try {
-                await axios.delete(`http://localhost:8081/delete`, {
+                const imageFormData = new FormData();
+                imageFormData.append('file', this.asset_image);
+
+                const uploadResponse = await axios.post(`http://localhost:8081/upload?module=Master%20Aset`, imageFormData, {
                     headers: {
                         'X-API-KEY': 'bprfjocmaqfib592338vf',
                     },
-                    data: {
-                        file_path: uploadedFilePath, 
+                });
+
+                uploadedFilePath = uploadResponse.data.file_path;
+
+                console.log("Uploaded file path:", uploadedFilePath);
+
+                const payload = {
+                    asset_name: this.asset_name,
+                    personal_responsible: this.personal_responsible,
+                    asset_brand: this.asset_brand,
+                    asset_image: uploadedFilePath,
+                    asset_specification: this.asset_specification,
+                    asset_condition: this.asset_condition,
+                    asset_status: this.asset_status,
+                    asset_purchase_date: this.asset_purchase_date,
+                    classification_acquisition_value: this.classification_acquisition_value,
+                    outlet_id: this.selectedOutlet,
+                    area_id: this.selectedArea,
+                    asset_pic: this.selectedPic,
+                    asset_classification: this.selectedKlasifikasi,
+                };
+
+                console.log("Payload:", payload);
+
+                const assetResponse = await axios.post("http://localhost:8080/api/assets", payload, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
                     },
                 });
-                console.log("Uploaded file has been rolled back successfully.");
-            } catch (deleteError) {
-                console.error("Failed to rollback uploaded file:", deleteError.response ? deleteError.response.data : deleteError);
+
+                console.log("Form submitted successfully", assetResponse.data);
+
+                this.$router.push('/pages/AsetList');
+            } catch (error) {
+                console.error("There was an error:", error.response ? error.response.data : error);
+
+                if (uploadedFilePath) {
+                    try {
+                        await axios.delete(`http://localhost:8081/delete`, {
+                            headers: {
+                                'X-API-KEY': 'bprfjocmaqfib592338vf',
+                            },
+                            data: {
+                                file_path: uploadedFilePath,
+                            },
+                        });
+                        console.log("Uploaded file has been rolled back successfully.");
+                    } catch (deleteError) {
+                        console.error("Failed to rollback uploaded file:", deleteError.response ? deleteError.response.data : deleteError);
+                    }
+                }
             }
         }
-    }
-}
-
     }
 };
 </script>

@@ -63,11 +63,10 @@
                         <div class="mb-3 flex items-center justify-between">
                             <div class="flex-1">
                                 <CFormLabel for="attachment">Lampiran (Bukti Aset)</CFormLabel>
-                                <CFormInput id="attachment" type="file" accept="/*" @change="handleFileChange"
-                                    placeholder="Masukkan lampiran" />
+                                <CFormInput id="attachment" ref="Attachment" type="file" accept="image/*"
+                                    @change="handleFileChange" placeholder="Masukkan lampiran" />
                             </div>
                         </div>
-
                         <div class="mb-3">
                             <CFormLabel for="submission_description">Keterangan Pengajuan Aset</CFormLabel>
                             <CFormTextarea id="submission_description" v-model="submission_description" rows="3"
@@ -78,7 +77,9 @@
                     <div class="flex justify-end mt-4">
                         <button
                             class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 flex items-center"
-                            @click.prevent="submitForm">Submit</button>
+                            type="button" @click="handleSubmit">
+                            Submit
+                        </button>
                     </div>
                 </CCardBody>
             </CCard>
@@ -102,20 +103,22 @@ export default {
             submission_name: "",
             submission_description: "",
             submission_area: "",
-            attachment: "",
+            attachment: null,
+            submission_status: "Diajukan",
             nip: "",
         };
     },
 
     created() {
+        this.attachment = null;
         this.fetchAssetData(this.assetId);
         const token = localStorage.getItem("token");
 
         if (token) {
             try {
-                const decodedToken = jwt_decode(token); // Decode token
-                this.submission_name = decodedToken.name; // Sesuaikan dengan struktur payload token
-                this.nip = decodedToken.sub; // Sesuaikan dengan struktur payload token
+                const decodedToken = jwt_decode(token);
+                this.submission_name = decodedToken.name;
+                this.nip = decodedToken.sub;
             } catch (error) {
                 console.error("Error decoding token:", error);
             }
@@ -123,6 +126,7 @@ export default {
             console.warn("Token not found in localStorage");
         }
     },
+
     methods: {
         async fetchAssetData() {
             const token = localStorage.getItem("token");
@@ -139,8 +143,8 @@ export default {
                 if (response.status === 200 && response.data && response.data.data) {
                     const assetData = response.data.data;
                     this.submission_asset_name = assetData.assetName || '';
-                    this.submission_pr_name = assetData.assetPicName || '';
-                    this.submission_role_name = assetData.personalResponsible || '';
+                    this.submission_pr_name = assetData.personalResponsible || '';
+                    this.submission_role_name = assetData.assetPicName || '';
                     this.submission_outlet = assetData.outletName || '';
                     this.submission_area = assetData.areaName || '';
                 }
@@ -148,12 +152,21 @@ export default {
                 console.error("Error fetching asset data:", error);
             }
         },
+
+        handleSubmit() {
+            console.log("Submit button clicked");
+            this.submitForm();
+        },
+
         handleFileChange(event) {
             const file = event.target.files[0];
             if (file) {
                 this.attachment = file;
+            } else {
+                console.error("No file selected");
             }
         },
+
 
         async submitForm() {
             const token = localStorage.getItem("token");
@@ -162,37 +175,73 @@ export default {
                 return;
             }
 
-            const formData = new FormData();
-            formData.append("submission_name", this.submission_name);
-            formData.append("nip", this.nip);
-            formData.append("submission_pr_name", this.submission_pr_name);
-            formData.append("submission_asset_name", this.submission_asset_name);
-            formData.append("submission_role_name", this.submission_role_name);
-            formData.append("submission_area", this.submission_area);
-            formData.append("submission_outlet", this.submission_outlet);
-            formData.append("submission_category", this.submission_category);
-            formData.append("submission_description", this.submission_description);
-            if (this.attachment) {
-                formData.append("lampiran", this.attachment);
-            }
+            let uploadedFilePath = null;
 
             try {
-                const response = await axios.post("http://localhost:8080/api/submissions", formData, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "multipart/form-data",
-                    },
-                });
+                const attachmentFormData = new FormData();
+                attachmentFormData.append('file', this.attachment);
+
+                const uploadResponse = await axios.post(
+                    'http://localhost:8081/upload?module=Pengajuan', attachmentFormData,
+                    {
+                        headers: {
+                            'X-API-KEY': 'bprfjocmaqfib592338vf',
+                        },
+                    });
+
+                uploadedFilePath = uploadResponse.data.file_path;
+                console.log("Uploaded file path:", uploadedFilePath);
+
+                const payload = {
+                    asset_id: this.assetId,
+                    submission_name: this.submission_name,
+                    nip: this.nip,
+                    submission_pr_name: this.submission_pr_name,
+                    submission_asset_name: this.submission_asset_name,
+                    submission_role_name: this.submission_role_name,
+                    submission_area: this.submission_area,
+                    submission_outlet: this.submission_outlet,
+                    submission_category: this.submission_category,
+                    submission_description: this.submission_description,
+                    attachment: uploadedFilePath,
+                    submission_status: this.submission_status,
+                };
+
+                console.log("payload:", payload);
+
+                const response = await axios.post(
+                    "http://localhost:8080/api/submissions",
+                    payload,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json",
+                        },
+                    });
 
                 if (response.status === 200) {
-                    console.log("Pengajuan berhasil dibuat:", response.data);
-                } else {
-                    console.error("Gagal membuat pengajuan.");
+                    this.$router.push({ name: 'AsetList' });
                 }
             } catch (error) {
-                console.error("Terjadi kesalahan saat mengirimkan form:", error);
+                console.error("There was an error:", error.response ? error.response.data : error);
+
+                if (uploadedFilePath) {
+                    try {
+                        await axios.delete(`http://localhost:8081/delete`, {
+                            headers: {
+                                'X-API-KEY': 'bprfjocmaqfib592338vf',
+                            },
+                            data: {
+                                file_path: uploadedFilePath,
+                            },
+                        });
+                        console.log("Uploaded file has been rolled back successfully.");
+                    } catch (deleteError) {
+                        console.error("Failed to rollback uploaded file:", deleteError.response ? deleteError.response.data : deleteError);
+                    }
+                }
             }
-        },
-    },
+        }
+    }
 };
 </script>

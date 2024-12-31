@@ -62,6 +62,11 @@ const routes = [
       component: () => import('@/views/pages/ViewAset.vue'),
     },
     {
+      path: '/pages/DetailPengajuan/:submissionId',
+      name: 'DetailPengajuan',
+      component: () => import('@/views/pages/DetailPengajuan.vue'),
+    },
+    {
       path: '/pages/ViewAsetUser/:id',
       name: 'ViewAsetUser',
       component: () => import('@/views/pages/ViewAsetUser.vue'),
@@ -101,9 +106,9 @@ const routes = [
       component: () => import('@/views/pages/QrGenerate.vue'),
     },
     {
-      path: '/pages/PengajuanService', 
-      name: 'Pengajuan Service', 
-      component: () => import('@/views/pages/PengajuanService.vue'),
+      path: '/pages/ListPengajuan', 
+      name: 'List Pengajuan', 
+      component: () => import('@/views/pages/ListPengajuan.vue'),
     },
 
       {

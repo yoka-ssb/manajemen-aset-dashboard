@@ -83,7 +83,6 @@
   </CCol>
 </template>
 
-
 <script>
 import axios from "axios";
 

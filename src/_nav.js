@@ -53,8 +53,8 @@ export default [
     items: [ 
       {
         component: 'CNavItem',
-        name: 'Pengajuan Service', 
-        to: '/pages/PengajuanService', 
+        name: 'List Pengajuan', 
+        to: '/pages/ListPengajuan', 
         badge: {
           color: 'primary',
         },
