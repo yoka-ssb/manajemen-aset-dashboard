@@ -7,10 +7,10 @@
                 </CCardHeader>
                 <CCardBody>
                     <CForm @submit.prevent="submitForm">
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <CFormLabel for="nip">NIP</CFormLabel>
                             <CFormInput id="nip" v-model="nip" type="text" placeholder="masukkan nip" />
-                        </div>
+                        </div> -->
                         <div class="mb-3">
                             <CFormLabel for="user_full_name">Nama Lengkap Pengguna</CFormLabel>
                             <CFormInput id="user_full_name" v-model="user_full_name" type="text"
@@ -125,7 +125,7 @@ export default {
         fetchAreas() {
             const token = localStorage.getItem("token");
             axios
-                .get("http://localhost:8080/api/areas", {
+                .get(`http://localhost:8080/api/areas`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 .then((response) => {
@@ -156,7 +156,7 @@ export default {
         fetchRoles() {
             const token = localStorage.getItem("token");
             axios
-                .get("http://localhost:8080/api/roles", { headers: { Authorization: `Bearer ${token}` } })
+                .get(`http://localhost:8080/api/roles`, { headers: { Authorization: `Bearer ${token}` } })
                 .then((response) => (this.roles = response.data.data))
                 .catch(() => (this.roles = []));
         },
@@ -167,21 +167,20 @@ export default {
                 return;
             }
 
-            const nip = this.$route.params.nip;
+            const originalNip = this.$route.params.nip;
             const token = localStorage.getItem("token");
             const dataToSend = {
+                // nip: this.nip,
                 user_full_name: this.user_full_name,
                 user_email: this.user_email,
                 role_id: this.userRole, // Pastikan ini benar
                 area_id: this.isAreaRequired ? this.selectedArea : null,
                 outlet_id: this.isAreaRequired ? this.selectedOutlet : null,
-
             };
-
 
             console.log("Data yang dikirim:", dataToSend);
 
-            axios.put(`http://localhost:8080/api/users/${nip}`, dataToSend, {
+            axios.put(`http://localhost:8080/api/users/${originalNip}`, dataToSend, {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then((response) => {
