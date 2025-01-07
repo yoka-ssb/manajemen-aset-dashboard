@@ -85,7 +85,10 @@
 
 <script>
 import axios from "axios";
+import { apiBaseUrl, apiUploadUrl } from '../../plugins/env.js'
 
+const apiUrl = apiBaseUrl;
+const uploadUrl = apiUploadUrlL;
 export default {
   data() {
     return {
@@ -116,7 +119,7 @@ export default {
       this.loading = true; 
       const token = localStorage.getItem("token");
       axios
-        .get(`http://localhost:8080/api/assets/${asetId}`, {
+        .get(`${apiUrl}/api/assets/${asetId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
@@ -134,7 +137,7 @@ const encodedAssetImagePath = encodeURIComponent(aset.assetImage || this.default
 console.log("Encoded assetImagePath:", encodedAssetImagePath);
 
 axios
-  .get(`http://localhost:8081/get-file?path=${encodedAssetImagePath}`, {
+  .get(`${uploadUrl}/get-file?path=${encodedAssetImagePath}`, {
     headers: { 'X-API-KEY': 'bprfjocmaqfib592338vf' },
     responseType: 'arraybuffer',
   })

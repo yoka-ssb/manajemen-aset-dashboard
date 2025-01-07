@@ -61,7 +61,9 @@
 <script>
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
+import { apiBaseUrl, apiUploadUrl } from '../../plugins/env.js'
 
+const apiUrl = apiBaseUrl;
 export default {
   data() {
     return {
@@ -77,7 +79,7 @@ export default {
   this.errorMessage = '';
 
   axios
-    .post('http://localhost:8080/api/login', {
+    .post(apiUrl + '/api/login', {
       nip: this.nip,
       user_password: this.user_password,
     })

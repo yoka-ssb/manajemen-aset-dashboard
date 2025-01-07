@@ -78,7 +78,10 @@
 import { ref, onMounted } from 'vue';
 import QRCode from 'qrcode';
 import axios from 'axios';
+import { apiBaseUrl, apiUploadUrl } from '../../plugins/env.js'
 
+const apiUrl = apiBaseUrl;
+const uploadUrl = apiUploadUrl;
 export default {
   name: 'AssetQRGenerator',
   data() {
@@ -122,12 +125,12 @@ export default {
     fetchAsetData(asetId) {
    const token = localStorage.getItem("token");
    axios
-     .get(`http://localhost:8080/api/assets/${asetId}`, {
+     .get(`${apiUrl}/api/assets/${asetId}`, {
        headers: { Authorization: `Bearer ${token}` },
      })
      .then((response) => {
        const aset = response.data.data;
-       const baseURL = "http://localhost:8080/";
+       const baseURL = apiUrl;
 
        this.asetData = {
          ...this.asetData,

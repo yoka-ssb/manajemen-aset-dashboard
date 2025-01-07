@@ -90,7 +90,10 @@
 <script>
 import axios from "axios";
 import jwt_decode from "jwt-decode";
+import { apiBaseUrl, apiUploadUrl } from '../../plugins/env.js'
 
+const apiUrl = apiBaseUrl;
+const uploadUrl = apiUploadUrl;
 export default {
     data() {
         return {
@@ -136,7 +139,7 @@ export default {
             }
 
             try {
-                const response = await axios.get(`http://localhost:8080/api/assets/${this.assetId}`, {
+                const response = await axios.get(`${apiUrl}/api/assets/${this.assetId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log("Response Data:", response.data);
@@ -182,7 +185,7 @@ export default {
                 attachmentFormData.append('file', this.attachment);
 
                 const uploadResponse = await axios.post(
-                    'http://localhost:8081/upload?module=Pengajuan', attachmentFormData,
+                    uploadUrl + '/upload?module=Pengajuan', attachmentFormData,
                     {
                         headers: {
                             'X-API-KEY': 'bprfjocmaqfib592338vf',
@@ -210,7 +213,7 @@ export default {
                 console.log("payload:", payload);
 
                 const response = await axios.post(
-                    "http://localhost:8080/api/submissions",
+                    apiUrl + "/api/submissions",
                     payload,
                     {
                         headers: {
@@ -227,7 +230,7 @@ export default {
 
                 if (uploadedFilePath) {
                     try {
-                        await axios.delete(`http://localhost:8081/delete`, {
+                        await axios.delete(`${uploadUrl}/delete`, {
                             headers: {
                                 'X-API-KEY': 'bprfjocmaqfib592338vf',
                             },

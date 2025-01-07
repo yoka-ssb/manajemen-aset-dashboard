@@ -34,7 +34,9 @@
 
 <script>
 import axios from "axios";
+import { apiBaseUrl, apiUploadUrl } from '../../plugins/env.js'
 
+const apiUrl = apiBaseUrl;
 export default {
   data() {
     return {
@@ -60,7 +62,7 @@ export default {
 
 
       axios
-        .post(`http://localhost:8080/api/reset-password`, dataToSend, {
+        .post(`${apiUrl}/api/reset-password`, dataToSend, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

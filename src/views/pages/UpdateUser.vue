@@ -72,7 +72,9 @@
 
 <script>
 import axios from "axios";
+import { apiBaseUrl, apiUploadUrl } from '../../plugins/env.js'
 
+const apiUrl = apiBaseUrl;
 export default {
     data() {
         return {
@@ -104,7 +106,7 @@ export default {
         fetchUserData(nip) {
             const token = localStorage.getItem("token");
             axios
-                .get(`http://localhost:8080/api/users/${nip}`, {
+                .get(`${apiUrl}/api/users/${nip}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 .then((response) => {
@@ -125,7 +127,7 @@ export default {
         fetchAreas() {
             const token = localStorage.getItem("token");
             axios
-                .get(`http://localhost:8080/api/areas`, {
+                .get(apiUrl + "/api/areas", {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 .then((response) => {
@@ -142,7 +144,7 @@ export default {
         fetchOutlets() {
             const token = localStorage.getItem("token");
             axios
-                .get(`http://localhost:8080/api/outlets?area_id=${this.selectedArea}`, {
+                .get(`${apiUrl}/api/outlets?area_id=${this.selectedArea}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 .then((response) => {
@@ -156,7 +158,7 @@ export default {
         fetchRoles() {
             const token = localStorage.getItem("token");
             axios
-                .get(`http://localhost:8080/api/roles`, { headers: { Authorization: `Bearer ${token}` } })
+                .get(apiUrl + "/api/roles", { headers: { Authorization: `Bearer ${token}` } })
                 .then((response) => (this.roles = response.data.data))
                 .catch(() => (this.roles = []));
         },
@@ -180,7 +182,7 @@ export default {
 
             console.log("Data yang dikirim:", dataToSend);
 
-            axios.put(`http://localhost:8080/api/users/${originalNip}`, dataToSend, {
+            axios.put(`${apiUrl}/api/users/${nip}`, dataToSend, {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then((response) => {

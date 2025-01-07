@@ -20,7 +20,9 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";  
 import jsQR from "jsqr";
 import axios from "axios";
+import { apiBaseUrl, apiUploadUrl } from '../../plugins/env.js'
 
+const apiUrl = apiBaseUrl;
 export default {
   name: "QrCodeReader",
   setup() {
@@ -61,7 +63,7 @@ export default {
         const token = localStorage.getItem("token");
 
         axios
-          .get(`http://localhost:8080/api/assets/hash`, {
+          .get(`${apiUrl}/api/assets/hash`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

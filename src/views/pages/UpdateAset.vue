@@ -143,6 +143,10 @@
 
 <script>
 import axios from "axios";
+import { apiBaseUrl, apiUploadUrl } from '../../plugins/env.js'
+
+const apiUrl = apiBaseUrl;
+const uploadUrl = apiUploadUrl;
 
 export default {
     data() {
@@ -200,7 +204,7 @@ export default {
             }
 
             try {
-                const response = await axios.get(`http://localhost:8080/api/assets/${this.assetId}`, {
+                const response = await axios.get(`${apiUrl}/api/assets/${this.assetId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
@@ -241,7 +245,7 @@ export default {
         fetchKlasifikasi() {
             const token = localStorage.getItem("token");
             axios
-                .get("http://localhost:8080/api/classifications", { headers: { Authorization: `Bearer ${token}` } })
+                .get(apiUrl + "/api/classifications", { headers: { Authorization: `Bearer ${token}` } })
                 .then((response) => {
                     console.log("Klasifikasi fetched:", response.data.data);
                     this.klasifikasis = response.data.data;
@@ -255,7 +259,7 @@ export default {
         fetchAreas() {
         const token = localStorage.getItem("token");
         axios
-            .get("http://localhost:8080/api/areas", { headers: { Authorization: `Bearer ${token}` } })
+            .get(apiUrl + "/api/areas", { headers: { Authorization: `Bearer ${token}` } })
             .then((response) => {
                 this.areas = response.data.data;
 
@@ -273,7 +277,7 @@ export default {
         if (!this.selectedArea) return;
         const token = localStorage.getItem("token");
         axios
-            .get(`http://localhost:8080/api/outlets?area_id=${this.selectedArea}`, {
+            .get(`${apiUrl}/api/outlets?area_id=${this.selectedArea}`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((response) => {
@@ -299,7 +303,7 @@ export default {
         fetchPic() {
             const token = localStorage.getItem("token");
             axios
-                .get("http://localhost:8080/api/roles", { headers: { Authorization: `Bearer ${token}` } })
+                .get(apiUrl + "/api/roles", { headers: { Authorization: `Bearer ${token}` } })
                 .then((response) => {
                     console.log("Fetched roles:", response.data.data);
                     this.PicOption = response.data.data;
@@ -338,7 +342,7 @@ async submitForm() {
                 }
 
                 const uploadResponse = await axios.post(
-                    "http://localhost:8081/upload?module=Master%20Aset",
+                    uploadUrl + "/upload?module=Master%20Aset",
                     imageFormData,
                     {
                         headers: {
@@ -368,7 +372,7 @@ async submitForm() {
         };
 
         const response = await axios.put(
-            `http://localhost:8080/api/assets/${this.assetId}`,
+            `${apiUrl}/api/assets/${this.assetId}`,
             payload,
             {
                 headers: {

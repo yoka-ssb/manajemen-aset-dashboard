@@ -75,7 +75,9 @@
   
   import axios from 'axios';
   import { debounce } from 'lodash';
-  
+  import { apiBaseUrl } from '../../plugins/env.js'
+
+  const apiUrl = apiBaseUrl;
   export default {
     data() {
       return {
@@ -113,7 +115,7 @@
             return;
           }
   
-          const response = await axios.get("http://localhost:8080/api/assets", {
+          const response = await axios.get(apiUrl + "/api/assets", {
             params: {
               page_number: this.page, 
               page_size: 10, 

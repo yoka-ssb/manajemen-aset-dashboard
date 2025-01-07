@@ -3,8 +3,10 @@ import { ref } from 'vue'
 import avatar from '@/assets/images/avatars/avatar.png'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { apiBaseUrl } from '../plugins/env.js'
 
 const router = useRouter()
+const apiUrl = apiBaseUrl;
 
 // Fungsi logout
 const logout = async () => {
@@ -18,7 +20,7 @@ const logout = async () => {
 
     // Lakukan permintaan logout dengan token sebagai payload
     await axios.post(
-      'http://localhost:8080/api/logout',
+      apiUrl + '/api/logout',
       { token }, 
       {
         headers: {
