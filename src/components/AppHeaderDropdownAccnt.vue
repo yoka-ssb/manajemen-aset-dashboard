@@ -3,10 +3,9 @@ import { ref } from 'vue'
 import avatar from '@/assets/images/avatars/avatar.png'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
-import { apiBaseUrl } from '../plugins/env.js'
 
 const router = useRouter()
-const apiUrl = apiBaseUrl;
+const apiUrl = import.meta.env.VITE_API_URL;
 
 // Fungsi logout
 const logout = async () => {

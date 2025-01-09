@@ -60,9 +60,8 @@
 import axios from 'axios';
 import { debounce } from 'lodash';
 import DetailPengajuan from './DetailPengajuan.vue';
-import { apiBaseUrl } from '../../plugins/env.js'
 
-const apiUrl = apiBaseUrl;
+const apiUrl = import.meta.env.VITE_API_URL;
 export default {
     data() {
         return {

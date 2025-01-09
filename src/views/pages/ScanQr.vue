@@ -20,9 +20,8 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";  
 import jsQR from "jsqr";
 import axios from "axios";
-import { apiBaseUrl, apiUploadUrl } from '../../plugins/env.js'
 
-const apiUrl = apiBaseUrl;
+const apiUrl = import.meta.env.VITE_API_URL;
 export default {
   name: "QrCodeReader",
   setup() {

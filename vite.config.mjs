@@ -4,8 +4,13 @@ import path from 'path';
 import autoprefixer from 'autoprefixer'
 
 export default defineConfig(() => {
+  const env = process.env;
   return {
     plugins: [vue()],
+    define: {
+      __API_URL__: JSON.stringify(env.VITE_API_URL),
+      __UPLOAD_URL__: JSON.stringify(env.VITE_UPLOAD_URL),
+    },
     base: './',
     css: {
       postcss: {

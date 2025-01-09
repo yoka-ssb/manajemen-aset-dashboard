@@ -70,9 +70,8 @@
 <script>
 import axios from 'axios';
 import { debounce } from 'lodash';
-import { apiBaseUrl, apiUploadUrl } from '../../plugins/env.js'
 
-const apiUrl = apiBaseUrl;
+const apiUrl = import.meta.env.VITE_API_URL;
 export default {
     data() {
         return {

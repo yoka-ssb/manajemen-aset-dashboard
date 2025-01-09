@@ -90,10 +90,9 @@
 <script>
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import { apiBaseUrl, apiUploadUrl } from '../../plugins/env.js'
 
-const apiUrl = apiBaseUrl;
-const uploadUrl = apiUploadUrl;
+const apiUrl = import.meta.env.VITE_API_URL;
+const uploadUrl = import.meta.env.VITE_UPLOAD_URL;
 export default {
     data() {
         return {
