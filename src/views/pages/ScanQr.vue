@@ -28,7 +28,7 @@ export default {
     const router = useRouter(); 
 
     const startCamera = () => {
-      if (video.value) {
+      if (video.value && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices
           .getUserMedia({ video: { facingMode: "environment" } })
           .then((stream) => {
@@ -40,55 +40,59 @@ export default {
             console.error("Error accessing the camera:", error);
             alert("Error accessing the camera. Please check permissions.");
           });
+      } else {
+        console.error("navigator.mediaDevices.getUserMedia is not supported on this browser.");
+        alert("Camera access is not supported on this browser.");
       }
     };
 
     const scanQRCode = () => {
-  const canvasElement = document.createElement("canvas");
-  const ctx = canvasElement.getContext("2d");
+      const canvasElement = document.createElement("canvas");
+      const ctx = canvasElement.getContext("2d");
 
-  const scan = () => {
-    if (video.value && video.value.readyState === video.value.HAVE_ENOUGH_DATA) {
-      canvasElement.width = video.value.videoWidth;
-      canvasElement.height = video.value.videoHeight;
-      ctx.drawImage(video.value, 0, 0, canvasElement.width, canvasElement.height);
+      const scan = () => {
+        if (video.value && video.value.readyState === video.value.HAVE_ENOUGH_DATA) {
+          canvasElement.width = video.value.videoWidth;
+          canvasElement.height = video.value.videoHeight;
+          ctx.drawImage(video.value, 0, 0, canvasElement.width, canvasElement.height);
 
-      const imgData = ctx.getImageData(0, 0, canvasElement.width, canvasElement.height);
-      const code = jsQR(imgData.data, imgData.width, imgData.height);
+          const imgData = ctx.getImageData(0, 0, canvasElement.width, canvasElement.height);
+          const code = jsQR(imgData.data, imgData.width, imgData.height);
 
-      if (code) {
-        console.log("QR Code detected:", code.data);
-        const token = localStorage.getItem("token");
+          if (code) {
+            console.log("QR Code detected:", code.data);
+            const token = localStorage.getItem("token");
 
-        axios
-          .get(`http://localhost:8080/api/assets/hash`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            params: { hash_id: code.data },
-          })
-          .then((response) => {
-            if (response.status === 200) {
-              console.log("Valid QR Code, redirecting...");
-              router.push({ name: "ViewAsetScan", params: { IdHash: code.data } });
-            } else {
-              throw new Error("Invalid response status");
-            }
-          })
-          .catch((error) => {
-            console.error("Error validating QR Code:", error);
-            router.push({ name: "Page404" }); // Redirect ke halaman 404
-          });
+            axios
+              .get(`${process.env.VUE_APP_API_BASE_URL}/api/assets/hash`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                params: { hash_id: code.data },
+              })
+              .then((response) => {
+                if (response.status === 200) {
+                  console.log("Valid QR Code, redirecting...");
+                  router.push({ name: "ViewAsetScan", params: { IdHash: code.data } });
+                } else {
+                  throw new Error("Invalid response status");
+                }
+              })
+              .catch((error) => {
+                console.error("Error validating QR Code:", error);
+                router.push({ name: "Page404" }); // Redirect ke halaman 404
+              });
 
-        return;
-      }
-    }
+            return;
+          }
+        }
 
-    requestAnimationFrame(scan);
-  };
+        requestAnimationFrame(scan);
+      };
 
-  scan();
-};
+      scan();
+    };
+
     onMounted(() => {
       startCamera();
     });
@@ -119,5 +123,3 @@ body {
   font-family: Arial, sans-serif;
 }
 </style>
-
-
