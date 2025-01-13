@@ -62,6 +62,8 @@
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+console.log("Base url: ", import.meta.env.VITE_API_URL);
 export default {
   data() {
     return {
@@ -77,7 +79,7 @@ export default {
   this.errorMessage = '';
 
   axios
-    .post('http://localhost:8080/api/login', {
+    .post(apiUrl + '/api/login', {
       nip: this.nip,
       user_password: this.user_password,
     })

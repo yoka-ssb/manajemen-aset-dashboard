@@ -81,6 +81,8 @@
 <script>
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+const uploadUrl = import.meta.env.VITE_UPLOAD_URL;
 export default {
     data() {
         return {
@@ -120,7 +122,7 @@ export default {
     }
 
     axios
-      .get(`http://localhost:8080/api/assets/${asetId}`, {
+      .get(`${apiUrl}/api/assets/${asetId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
@@ -152,7 +154,7 @@ export default {
         console.log("Encoded assetImagePath:", encodedAssetImagePath);
 
         axios
-          .get(`http://localhost:8081/get-file?path=${encodedAssetImagePath}`, {
+          .get(`${uploadUrl}/get-file?path=${encodedAssetImagePath}`, {
             headers: { "X-API-KEY": "bprfjocmaqfib592338vf" },
             responseType: "arraybuffer",
           })

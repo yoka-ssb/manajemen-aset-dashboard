@@ -5,6 +5,7 @@ import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const apiUrl = import.meta.env.VITE_API_URL;
 
 // Fungsi logout
 const logout = async () => {
@@ -18,7 +19,7 @@ const logout = async () => {
 
     // Lakukan permintaan logout dengan token sebagai payload
     await axios.post(
-      'http://localhost:8080/api/logout',
+      apiUrl + '/api/logout',
       { token }, 
       {
         headers: {

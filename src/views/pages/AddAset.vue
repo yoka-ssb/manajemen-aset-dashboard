@@ -131,7 +131,8 @@
 </template>
 <script>
 import axios from "axios";
-
+const apiUrl = import.meta.env.VITE_API_URL;
+const uploadUrl = import.meta.env.VITE_UPLOAD_URL;
 export default {
     data() {
         return {
@@ -184,7 +185,7 @@ export default {
         fetchKlasifikasi() {
             const token = localStorage.getItem("token");
             axios
-                .get("http://localhost:8080/api/classifications", { headers: { Authorization: `Bearer ${token}` } })
+                .get(apiUrl + "/api/classifications", { headers: { Authorization: `Bearer ${token}` } })
                 .then((response) => {
                     console.log("Klasifikasi fetched:", response.data.data);
                     this.klasifikasis = response.data.data;
@@ -198,7 +199,7 @@ export default {
         fetchAreas() {
             const token = localStorage.getItem("token");
             axios
-                .get("http://localhost:8080/api/areas", { headers: { Authorization: `Bearer ${token}` } })
+                .get(apiUrl+ "/api/areas", { headers: { Authorization: `Bearer ${token}` } })
                 .then((response) => {
                     console.log("Areas fetched:", response.data.data);
                     this.areas = response.data.data;
@@ -213,7 +214,7 @@ export default {
             if (!this.selectedArea) return;
             const token = localStorage.getItem("token");
             axios
-                .get(`http://localhost:8080/api/outlets?area_id=${this.selectedArea}`, {
+                .get(`${apiUrl}/api/outlets?area_id=${this.selectedArea}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 .then((response) => (this.outlets = response.data.data))
@@ -223,7 +224,7 @@ export default {
         fetchPic() {
             const token = localStorage.getItem("token");
             axios
-                .get("http://localhost:8080/api/roles", { headers: { Authorization: `Bearer ${token}` } })
+                .get(apiUrl + "/api/roles", { headers: { Authorization: `Bearer ${token}` } })
                 .then((response) => {
                     console.log("Fetched roles:", response.data.data);
                     this.PicOption = response.data.data;
@@ -260,7 +261,7 @@ export default {
                 const imageFormData = new FormData();
                 imageFormData.append('file', this.asset_image);
 
-                const uploadResponse = await axios.post(`http://localhost:8081/upload?module=Master%20Aset`, imageFormData, {
+                const uploadResponse = await axios.post(`${uploadUrl}/upload?module=Master%20Aset`, imageFormData, {
                     headers: {
                         'X-API-KEY': 'bprfjocmaqfib592338vf',
                     },
@@ -288,7 +289,7 @@ export default {
 
                 console.log("Payload:", payload);
 
-                const assetResponse = await axios.post("http://localhost:8080/api/assets", payload, {
+                const assetResponse = await axios.post(apiUrl + "/api/assets", payload, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
@@ -303,7 +304,7 @@ export default {
 
                 if (uploadedFilePath) {
                     try {
-                        await axios.delete(`http://localhost:8081/delete`, {
+                        await axios.delete(`${uploadUrl}/delete`, {
                             headers: {
                                 'X-API-KEY': 'bprfjocmaqfib592338vf',
                             },

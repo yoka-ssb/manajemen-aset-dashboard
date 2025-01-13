@@ -61,6 +61,7 @@ import axios from 'axios';
 import { debounce } from 'lodash';
 import DetailPengajuan from './DetailPengajuan.vue';
 
+const apiUrl = import.meta.env.VITE_API_URL;
 export default {
     data() {
         return {
@@ -89,7 +90,7 @@ export default {
                     return;
                 }
 
-                const response = await axios.get(`http://localhost:8080/api/submission`, {
+                const response = await axios.get(`${apiUrl}/api/submission`, {
                     params: {
                         page_number: this.page, 
                         page_size: 10,          

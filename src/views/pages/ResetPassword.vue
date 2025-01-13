@@ -35,6 +35,7 @@
 <script>
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_API_URL;
 export default {
   data() {
     return {
@@ -60,7 +61,7 @@ export default {
 
 
       axios
-        .post(`http://localhost:8080/api/reset-password`, dataToSend, {
+        .post(`${apiUrl}/api/reset-password`, dataToSend, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

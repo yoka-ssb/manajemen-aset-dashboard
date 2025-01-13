@@ -71,6 +71,7 @@
 import axios from 'axios';
 import { debounce } from 'lodash';
 
+const apiUrl = import.meta.env.VITE_API_URL;
 export default {
     data() {
         return {
@@ -120,7 +121,7 @@ export default {
                     return;
                 }
 
-                const response = await axios.get(`http://localhost:8080/api/users`, {
+                const response = await axios.get(`${apiUrl}/api/users`, {
                     params: {
                         page_number: this.page, 
                         page_size: 10,          

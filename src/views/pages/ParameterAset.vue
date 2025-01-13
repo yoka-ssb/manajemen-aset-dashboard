@@ -69,6 +69,7 @@
 <script>
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_API_URL;
 export default {
   data() {
     return {
@@ -90,7 +91,7 @@ export default {
     fetchClassificationData(klasifikasiId) {
       this.loading = true;
       axios
-        .get(`http://localhost:8080/api/classifications/${klasifikasiId}`, {
+        .get(`${apiUrl}/api/classifications/${klasifikasiId}`, {
           headers: { Authorization: `Bearer ${this.token}` },
         })
         .then((response) => {
@@ -110,7 +111,7 @@ export default {
       this.loading = true; 
       axios
         .put(
-          `http://localhost:8080/api/assets/${this.assetId}/status`,
+          `${apiUrl}/api/assets/${this.assetId}/status`,
           { asset_status: status },
           {
             headers: { Authorization: `Bearer ${this.token}` },

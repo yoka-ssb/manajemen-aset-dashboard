@@ -81,6 +81,8 @@
 <script>
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+const uploadUrl = import.meta.env.VITE_UPLOAD_URL;
 export default {
     data() {
         return {
@@ -110,7 +112,7 @@ export default {
         fetchAsetData(IdHash) {
             const token = localStorage.getItem("token");
             axios
-                .get("http://localhost:8080/api/assets/hash", {
+                .get(apiUrl + "/api/assets/hash", {
                     headers: { Authorization: `Bearer ${token}` },
                     params: { hash_id: IdHash },
                 })
@@ -129,7 +131,7 @@ const encodedAssetImagePath = encodeURIComponent(aset.assetImage || this.default
 console.log("Encoded assetImagePath:", encodedAssetImagePath);
 
 axios
-  .get(`http://localhost:8081/get-file?path=${encodedAssetImagePath}`, {
+  .get(`${apiUrl}/api/get-file?path=${encodedAssetImagePath}`, {
     headers: { 'X-API-KEY': 'bprfjocmaqfib592338vf' },
     responseType: 'arraybuffer', // Penting: Pastikan menerima data sebagai array buffer
   })

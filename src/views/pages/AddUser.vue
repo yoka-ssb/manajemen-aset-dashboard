@@ -70,7 +70,7 @@
   
   <script>
   import axios from "axios";
-  
+  const apiUrl = import.meta.env.VITE_API_URL;
   export default {
     data() {
       return {
@@ -99,7 +99,7 @@
       fetchAreas() {
         const token = localStorage.getItem("token");
         axios
-          .get("http://localhost:8080/api/areas", { headers: { Authorization: `Bearer ${token}` } })
+          .get(apiUrl + "/api/areas", { headers: { Authorization: `Bearer ${token}` } })
           .then((response) => (this.areas = response.data.data))
           .catch(() => (this.areas = []));
       },
@@ -107,7 +107,7 @@
         if (!this.selectedArea) return;
         const token = localStorage.getItem("token");
         axios
-          .get(`http://localhost:8080/api/outlets?area_id=${this.selectedArea}`, {
+          .get(`${apiUrl}/api/outlets?area_id=${this.selectedArea}`, {
             headers: { Authorization: `Bearer ${token}` }
           })
           .then((response) => (this.outlets = response.data.data))
@@ -116,7 +116,7 @@
       fetchRoles() {
         const token = localStorage.getItem("token");
         axios
-          .get("http://localhost:8080/api/roles", { headers: { Authorization: `Bearer ${token}` } })
+          .get(apiUrl + "/api/roles", { headers: { Authorization: `Bearer ${token}` } })
           .then((response) => (this.roles = response.data.data))
           .catch(() => (this.roles = []));
       },
@@ -136,7 +136,7 @@
           outlet_id: this.isOutletRequired ? this.selectedOutlet : null
         };
         axios
-          .post("http://localhost:8080/api/users", payload, {
+          .post(apiUrl + "/api/users", payload, {
             headers: { Authorization: `Bearer ${token}` }
           })
           .then(() => this.$router.push("/pages/users"))

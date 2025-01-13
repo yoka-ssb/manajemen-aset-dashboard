@@ -99,6 +99,8 @@
 <script>
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+const uploadUrl = import.meta.env.VITE_UPLOAD_URL;
 export default {
     data() {
         return {
@@ -133,7 +135,7 @@ export default {
             }
 
             try {
-                const response = await axios.get(`http://localhost:8080/api/submissions/${this.submissionId}`, {
+                const response = await axios.get(`${apiUrl}/api/submissions/${this.submissionId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log("Response Data:", response.data);
@@ -153,7 +155,7 @@ export default {
                     const attachment = submissionData.attachment || this.defaultImage;
                     const encodedSubmissionImagePath = encodeURIComponent(submissionData.attachment || this.defaultImage);
                     console.log("path:", encodedSubmissionImagePath);
-                    axios.get(`http://localhost:8081/get-file?path=${encodedSubmissionImagePath}`, {
+                    axios.get(`${uploadUrl}/get-file?path=${encodedSubmissionImagePath}`, {
                         headers: { 'X-API-KEY': 'bprfjocmaqfib592338vf' },
                         responseType: 'arraybuffer',
                     })
