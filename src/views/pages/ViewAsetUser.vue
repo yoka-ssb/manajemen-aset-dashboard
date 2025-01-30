@@ -13,11 +13,7 @@
             <CRow>
               <CCol :lg="6">
                 <CCard class="mb-3">
-                  <CCardImage 
-                    orientation="top" 
-                    :src="assetImage ? assetImage : defaultImage" 
-                    alt="Gambar aset"
-                  />
+                  <CCardImage orientation="top" :src="assetImage ? assetImage : defaultImage" alt="Gambar aset" />
                   <CCardBody>
                     <strong>Spesifikasi Aset:</strong>
                     <CCardText>
@@ -68,10 +64,8 @@
             </CRow>
             <CRow>
               <CCol class="text-end mt-3">
-                <button 
-                  class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600"
-                  @click="navigateToFromAset"
-                >
+                <button v-if="assetStatus && assetStatus.toLowerCase() === 'baik'"
+                  class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600" @click="navigateToFromAset">
                   Laporkan Barang Hilang
                 </button>
               </CCol>
@@ -106,7 +100,7 @@ export default {
       assetPicName: "",
       personalResponsible: "",
       assetAge: "",
-      assetClassification: "", 
+      assetClassification: "",
       loading: false,
     };
   },
@@ -115,7 +109,7 @@ export default {
   },
   methods: {
     fetchAsetData(asetId) {
-      this.loading = true; 
+      this.loading = true;
       const token = localStorage.getItem("token");
       axios
         .get(`${apiUrl}/api/assets/${asetId}`, {
@@ -125,30 +119,28 @@ export default {
           const aset = response.data.data;
 
           this.assetName = aset.assetName || "Tidak tersedia";
-          
           this.assetBrand = aset.assetBrand || "Tidak tersedia";
           this.assetCondition = aset.assetCondition || "Tidak tersedia";
           this.assetSpecification = aset.assetSpecification || "Tidak tersedia";
           const assetImagePath = aset.assetImage || this.defaultImage;
 
+          const encodedAssetImagePath = encodeURIComponent(aset.assetImage || this.defaultImage);
+          console.log("Encoded assetImagePath:", encodedAssetImagePath);
 
-const encodedAssetImagePath = encodeURIComponent(aset.assetImage || this.defaultImage);
-console.log("Encoded assetImagePath:", encodedAssetImagePath);
-
-axios
-  .get(`${uploadUrl}/get-file?path=${encodedAssetImagePath}`, {
-    headers: { 'X-API-KEY': 'bprfjocmaqfib592338vf' },
-    responseType: 'arraybuffer',
-  })
-  .then((response) => {
-    console.log("Response from API:", response);
-    const blob = new Blob([response.data], { type: 'image/jpeg' }); 
-    this.assetImage = URL.createObjectURL(blob); 
-  })
-  .catch((error) => {
-    console.error("Gagal mengambil gambar:", error);
-    this.assetImage = this.defaultImage;
-  });
+          axios
+            .get(`${uploadUrl}/get-file?path=${encodedAssetImagePath}`, {
+              headers: { 'X-API-KEY': 'bprfjocmaqfib592338vf' },
+              responseType: 'arraybuffer',
+            })
+            .then((response) => {
+              console.log("Response from API:", response);
+              const blob = new Blob([response.data], { type: 'image/jpeg' });
+              this.assetImage = URL.createObjectURL(blob);
+            })
+            .catch((error) => {
+              console.error("Gagal mengambil gambar:", error);
+              this.assetImage = this.defaultImage;
+            });
           this.outletName = aset.outletName || "Tidak tersedia";
           this.areaName = aset.areaName || "Tidak tersedia";
           this.assetStatus = aset.assetStatus || "Tidak tersedia";
@@ -158,25 +150,25 @@ axios
             ? new Date(aset.assetPurchaseDate).toLocaleDateString()
             : "Tidak tersedia";
 
-            this.assetMaintenanceDate = aset.assetMaintenanceDate
+          this.assetMaintenanceDate = aset.assetMaintenanceDate
             ? new Date(aset.assetMaintenanceDate).toLocaleDateString()
             : "Tidak tersedia";
           this.personalResponsible = aset.personalResponsible || "Tidak tersedia";
           this.assetClassification = aset.assetClassification || "Tidak tersedia";
         })
         .catch((error) => {
-        console.error("Gagal mengambil data aset:", error.message);
-      })
-      .finally(() => {
-                    this.loading = false; 
-                });
-  },
-        navigateToParameterAset() {
-    this.$router.push({
-      name: "ParameterAset",
-      params: { id: this.asetId, idklasifikasi: this.assetClassification },
-    });
-  },
+          console.error("Gagal mengambil data aset:", error.message);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+    navigateToParameterAset() {
+      this.$router.push({
+        name: "ParameterAset",
+        params: { id: this.asetId, idklasifikasi: this.assetClassification },
+      });
+    },
     navigateToFromAset() {
       this.$router.push({ name: "FormAset", params: { id: this.asetId } });
     },

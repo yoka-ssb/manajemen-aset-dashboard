@@ -7,7 +7,7 @@
             <CCard class="p-4">
               <CCardBody>
                 <CForm @submit.prevent="handleLogin">
-                  <h1 class="text-center">Maintenance Aset</h1>
+                  <h1 class="text-center">Management Aset</h1>
                   <p class="text-body-secondary text-center">Kelola aset dengan mudah dan efisien</p>
                   <div v-if="errorMessage" class="text-center text-danger mb-4">{{ errorMessage }}</div>
                   <CInputGroup class="mb-3">

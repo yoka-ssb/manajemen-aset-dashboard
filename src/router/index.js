@@ -33,6 +33,12 @@ const routes = [
         name: 'UpdateUser',
         component: () => import('@/views/pages/UpdateUser.vue'),
     },
+
+    {
+      path: '/pages/Notification',
+      name: 'Notification',
+      component: () => import('@/views/pages/Notification.vue'),
+    },
     
 
     {
@@ -46,6 +52,7 @@ const routes = [
         name: 'Asets',
         component: () => import('@/views/pages/Asets.vue'),
       },
+
       {
         path: '/pages/AsetList',
         name: 'AsetList',

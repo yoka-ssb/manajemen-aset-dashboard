@@ -161,41 +161,39 @@ export default {
                 .then((response) => (this.roles = response.data.data))
                 .catch(() => (this.roles = []));
         },
-
         submitForm() {
-            if (this.user_password !== this.password_confirmation) {
-                alert("Password dan konfirmasi password tidak sama.");
-                return;
+    if (this.user_password !== this.password_confirmation) {
+        alert("Password dan konfirmasi password tidak sama.");
+        return;
+    }
+
+    const token = localStorage.getItem("token");
+    const dataToSend = {
+        nip: this.nip, // Use this.nip here instead of nip
+        user_full_name: this.user_full_name,
+        user_email: this.user_email,
+        role_id: this.userRole,
+        area_id: this.isAreaRequired ? this.selectedArea : null,
+        outlet_id: this.isAreaRequired ? this.selectedOutlet : null,
+    };
+
+    console.log("Data yang dikirim:", dataToSend);
+
+    axios.put(`${apiUrl}/api/users/${this.nip}`, dataToSend, { // Use this.nip here as well
+        headers: { Authorization: `Bearer ${token}` }
+    })
+        .then((response) => {
+            console.log("Pengguna berhasil diupdate:", response.data);
+            this.$router.push('/pages/users'); // Arahkan setelah berhasil
+        })
+        .catch((error) => {
+            if (error.response && error.response.data) {
+                console.error("Gagal update pengguna:", error.response.data);
+            } else {
+                console.error("Gagal update pengguna:", error);
             }
-
-            const originalNip = this.$route.params.nip;
-            const token = localStorage.getItem("token");
-            const dataToSend = {
-                // nip: this.nip,
-                user_full_name: this.user_full_name,
-                user_email: this.user_email,
-                role_id: this.userRole, // Pastikan ini benar
-                area_id: this.isAreaRequired ? this.selectedArea : null,
-                outlet_id: this.isAreaRequired ? this.selectedOutlet : null,
-            };
-
-            console.log("Data yang dikirim:", dataToSend);
-
-            axios.put(`${apiUrl}/api/users/${nip}`, dataToSend, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then((response) => {
-                    console.log("Pengguna berhasil diupdate:", response.data);
-                    this.$router.push('/pages/users'); // Arahkan setelah berhasil
-                })
-                .catch((error) => {
-                    if (error.response && error.response.data) {
-                        console.error("Gagal update pengguna:", error.response.data);
-                    } else {
-                        console.error("Gagal update pengguna:", error);
-                    }
-                });
-        }
-    },
+        });
+}
+    }
 };
 </script>

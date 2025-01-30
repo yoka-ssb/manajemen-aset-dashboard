@@ -77,10 +77,27 @@
                     <div class="flex justify-end mt-4">
                         <button
                             class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 flex items-center"
-                            type="button" @click="handleSubmit">
+                            type="button" @click="handleSubmit" :disabled="isSubmitting">
+                            <!-- Loading spinner here -->
+                            <span v-if="isSubmitting" class="spinner-border spinner-border-sm mr-2" role="status"
+                                aria-hidden="true"></span>
                             Submit
                         </button>
                     </div>
+                    <CModal v-model="showUploadErrorModal" backdrop="static" keyboard="false">
+                        <CModalHeader>
+                            <CModalTitle>File Upload Error</CModalTitle>
+                        </CModalHeader>
+                        <CModalBody>
+                            <p>File upload failed. Please upload a valid file.</p>
+                        </CModalBody>
+                        <CModalFooter>
+                            <CButton color="secondary" @click="showUploadErrorModal = false">
+                                Close
+                            </CButton>
+                        </CModalFooter>
+                    </CModal>
+
                 </CCardBody>
             </CCard>
         </CCol>
@@ -90,9 +107,11 @@
 <script>
 import axios from "axios";
 import jwt_decode from "jwt-decode";
+import { CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton } from '@coreui/vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 const uploadUrl = import.meta.env.VITE_UPLOAD_URL;
+
 export default {
     data() {
         return {
@@ -108,6 +127,8 @@ export default {
             attachment: null,
             submission_status: "Diajukan",
             nip: "",
+            isSubmitting: false, 
+            showUploadErrorModal: false, 
         };
     },
 
@@ -130,6 +151,8 @@ export default {
     },
 
     methods: {
+
+
         async fetchAssetData() {
             const token = localStorage.getItem("token");
             if (!token) {
@@ -169,11 +192,14 @@ export default {
             }
         },
 
-
         async submitForm() {
+            this.isSubmitting = true; 
+            this.showUploadErrorModal = false; 
+
             const token = localStorage.getItem("token");
             if (!token) {
                 alert("Token tidak ditemukan, silakan login terlebih dahulu.");
+                this.isSubmitting = false;
                 return;
             }
 
@@ -184,12 +210,20 @@ export default {
                 attachmentFormData.append('file', this.attachment);
 
                 const uploadResponse = await axios.post(
-                    uploadUrl + '/upload?module=Pengajuan', attachmentFormData,
+                    `${uploadUrl}/upload?module=Pengajuan`,
+                    attachmentFormData,
                     {
                         headers: {
                             'X-API-KEY': 'bprfjocmaqfib592338vf',
                         },
-                    });
+                    }
+                );
+
+                if (uploadResponse.status === 204) {
+                    console.error("File upload gagal dengan status 204.");
+                    this.showUploadErrorModal = true; 
+                    throw new Error("File upload gagal.");
+                }
 
                 uploadedFilePath = uploadResponse.data.file_path;
                 console.log("Uploaded file path:", uploadedFilePath);
@@ -209,17 +243,17 @@ export default {
                     submission_status: this.submission_status,
                 };
 
-                console.log("payload:", payload);
-
+                console.log("Payload:", payload);
                 const response = await axios.post(
-                    apiUrl + "/api/submissions",
+                    `${apiUrl}/api/submissions`,
                     payload,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
                             "Content-Type": "application/json",
                         },
-                    });
+                    }
+                );
 
                 if (response.status === 200) {
                     this.$router.push({ name: 'AsetList' });
@@ -242,8 +276,17 @@ export default {
                         console.error("Failed to rollback uploaded file:", deleteError.response ? deleteError.response.data : deleteError);
                     }
                 }
+            } finally {
+                this.isSubmitting = false; 
             }
         }
+
     }
 };
 </script>
+
+<style scoped>
+.c-modal {
+    display: block !important;
+}
+</style>
