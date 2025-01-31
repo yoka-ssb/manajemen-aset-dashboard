@@ -185,7 +185,7 @@ export default {
         fetchKlasifikasi() {
             const token = localStorage.getItem("token");
             axios
-                .get(apiUrl + "/api/classifications", { headers: { Authorization: `Bearer ${token}` } })
+                .get(apiUrl + "/api/classification", { headers: { Authorization: `Bearer ${token}` } })
                 .then((response) => {
                     console.log("Klasifikasi fetched:", response.data.data);
                     this.klasifikasis = response.data.data;
