@@ -42,6 +42,12 @@ export default [
   },
   {
     component: 'CNavItem', 
+    name: 'Buat Pengajuan', 
+    to: '/pages/PengajuanBaru', 
+    icon: 'cil-calculator',
+  },
+  {
+    component: 'CNavItem', 
     name: 'Scan Qr', 
     to: '/pages/ScanQr', 
     icon: 'cil-calculator',

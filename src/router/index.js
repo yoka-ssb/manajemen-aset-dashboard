@@ -97,6 +97,11 @@ const routes = [
       component: () => import('@/views/pages/FormAset.vue'),
     },
     {
+      path: '/pages/PengajuanBaru',
+      name: 'PengajuanBaru',
+      component: () => import('@/views/pages/PengajuanBaru.vue'),
+    },
+    {
       path: '/pages/updateAset/:id',
       name: 'updateAset',
       component: () => import('@/views/pages/UpdateAset.vue'),

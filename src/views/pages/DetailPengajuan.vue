@@ -217,40 +217,40 @@ export default {
         </table>
         <table>
             <tr>
-                <td class="label"><strong>Tanggal Pengajuan:</strong></td>
-                <td class="value">${this.submissionDate}</td>
+                <td class="label"><strong>Tanggal Pengajuan</strong></td>
+                <td class="value">:${this.submissionDate}</td>
             </tr>
             <tr>
-                <td class="label"><strong>Nama Pengaju:</strong></td>
-                <td class="value">${this.submissionName}</td>
+                <td class="label"><strong>Nama Pengaju</strong></td>
+                <td class="value">:${this.submissionName}</td>
             </tr>
             <tr>
-                <td class="label"><strong>PIC Aset:</strong></td>
-                <td class="value">${this.submissionRoleName}</td>
+                <td class="label"><strong>PIC Aset</strong></td>
+                <td class="value">:${this.submissionRoleName}</td>
             </tr>
             <tr>
-                <td class="label"><strong>Penanggung Jawab/Pengguna Aset:</strong></td>
-                <td class="value">${this.submissionPrName} - ${this.submissionOutlet}</td>
+                <td class="label"><strong>PJ/Pengguna Aset</strong></td>
+                <td class="value">:${this.submissionPrName} - ${this.submissionOutlet}</td>
             </tr>
             <tr>
-                <td class="label"><strong>Lokasi:</strong></td>
-                <td class="value">${this.submissionOutlet}</td>
+                <td class="label"><strong>Lokasi</strong></td>
+                <td class="value">:${this.submissionOutlet}</td>
             </tr>
             <tr>
-                <td class="label"><strong>Area:</strong></td>
-                <td class="value">${this.submissionArea}</td>
+                <td class="label"><strong>Area</strong></td>
+                <td class="value">:${this.submissionArea}</td>
             </tr>
             <tr>
-                <td class="label"><strong>Kategori Pengajuan:</strong></td>
-                <td class="value">${this.submissionCategory}</td>
+                <td class="label"><strong>Kategori Pengajuan</strong></td>
+                <td class="value">:${this.submissionCategory}</td>
             </tr>
             <tr>
-                <td class="label"><strong>Keterangan:</strong></td>
-                <td class="value">${this.submissionDescription}</td>
+                <td class="label"><strong>Keterangan</strong></td>
+                <td class="value">:${this.submissionDescription}</td>
             </tr>
                         <tr>
-                <td class="label"><strong>Sifat Pengajuan:</strong></td>
-                <td class="value">Penting Segera / Penting Tidak Segera / Tidak Urgent</td>
+                <td class="label"><strong>Sifat Pengajuan</strong></td>
+                <td class="value">:Penting Segera / Penting Tidak Segera / Tidak Urgent</td>
             </tr>
         </table>
         <br>
