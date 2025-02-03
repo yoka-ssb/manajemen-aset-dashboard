@@ -2,7 +2,7 @@
   <CCol :xs="12">
     <CCard class="mb-4">
       <CCardHeader>
-        <strong>Detail Aset</strong>
+        <strong>Detail Aset/Perkap</strong>
       </CCardHeader>
       <CCardBody>
         <CRow>
@@ -15,7 +15,11 @@
                 <CCard class="mb-3">
                   <CCardImage orientation="top" :src="assetImage ? assetImage : defaultImage" alt="Gambar aset" />
                   <CCardBody>
-                    <strong>Spesifikasi Aset:</strong>
+                    <strong>Spesifikasi Aset/Perkap :</strong>
+                    <CCardText>
+                      {{ assetSpecification || 'Tidak tersedia' }}
+                    </CCardText>
+                    <strong>Jumlah Standard Asset/Perkap :</strong>
                     <CCardText>
                       {{ assetSpecification || 'Tidak tersedia' }}
                     </CCardText>
@@ -32,31 +36,31 @@
                       <strong>Area:</strong> {{ areaName || 'Tidak tersedia' }}
                     </CCardText>
                     <CCardText>
-                      <strong>Nama Aset:</strong> {{ assetName || 'Tidak tersedia' }}
+                      <strong>Nama Aset/Perkap:</strong> {{ assetName || 'Tidak tersedia' }}
                     </CCardText>
                     <CCardText>
-                      <strong>Merk Aset:</strong> {{ assetBrand || 'Tidak tersedia' }}
+                      <strong>Merk Aset/Perkap:</strong> {{ assetBrand || 'Tidak tersedia' }}
                     </CCardText>
                     <CCardText>
-                      <strong>Kondisi Awal Aset:</strong> {{ assetCondition || 'Tidak tersedia' }}
+                      <strong>Kondisi Awal Aset/Perkap:</strong> {{ assetCondition || 'Tidak tersedia' }}
                     </CCardText>
                     <CCardText>
-                      <strong>Tanggal Pembelian Aset:</strong> {{ assetPurchaseDate || 'Tidak tersedia' }}
+                      <strong>Tanggal Pembelian Aset/Perkap:</strong> {{ assetPurchaseDate || 'Tidak tersedia' }}
                     </CCardText>
                     <CCardText>
-                      <strong>Usia Aset (Bulan):</strong> {{ assetAge || 'Tidak tersedia' }}
+                      <strong>Usia Aset/Perkap (Bulan):</strong> {{ assetAge || 'Tidak tersedia' }}
                     </CCardText>
                     <CCardText>
-                      <strong>Tanggal Maintenance Aset:</strong> {{ assetMaintenanceDate || 'Tidak tersedia' }}
+                      <strong>Tanggal Maintenance Aset/Perkap:</strong> {{ assetMaintenanceDate || 'Tidak tersedia' }}
                     </CCardText>
                     <CCardText>
-                      <strong>Status Aset:</strong> {{ assetStatus || 'Tidak tersedia' }}
+                      <strong>Status Aset/Perkap:</strong> {{ assetStatus || 'Tidak tersedia' }}
                     </CCardText>
                     <CCardText>
-                      <strong>PIC Aset:</strong> {{ assetPicName || 'Tidak tersedia' }}
+                      <strong>PIC Aset/Perkap:</strong> {{ assetPicName || 'Tidak tersedia' }}
                     </CCardText>
                     <CCardText>
-                      <strong>Penanggung Jawab Aset:</strong> {{ personalResponsible || 'Tidak tersedia' }}
+                      <strong>Penanggung Jawab Aset/Perkap:</strong> {{ personalResponsible || 'Tidak tersedia' }}
                     </CCardText>
                   </CCardBody>
                 </CCard>
@@ -66,7 +70,7 @@
               <CCol class="text-end mt-3">
                 <button v-if="assetStatus && assetStatus.toLowerCase() === 'baik'"
                   class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600" @click="navigateToFromAset">
-                  Laporkan Barang Hilang
+                  Laporkan Kondisi Aset/Perkap
                 </button>
               </CCol>
             </CRow>

@@ -51,13 +51,25 @@
                                     <option value="Laporan Barang Hilang">Laporan Barang Hilang</option>
                                     <option value="Pengajuan Service">Pengajuan Service</option>
                                     <option value="Pengajuan Ganti">Pengajuan Ganti</option>
-                                    <option value="Non-Maintenance">Pengabaian (Non-Maintenance)</option>
+                                    <option value="Pemenuhan Aset/Perkap">Pemenuhan Aset/Perkap</option>
                                 </CFormSelect>
                             </div>
                             <div class="flex-1">
                                 <CFormLabel for="submission_outlet">Lokasi</CFormLabel>
                                 <CFormInput id="submission_outlet" v-model="submission_outlet" type="text"
                                     placeholder="kosong jika tidak ada" readonly />
+                            </div>
+                        </div>
+                        <div class="mb-3 flex space-x-4">
+                            <div class="flex-1">
+                                <CFormLabel for="submission_quantity">Jumlah Kebutuhan</CFormLabel>
+                                <CFormInput id="submission_quantity" v-model="submission_quantity" type="number"
+                                    placeholder="Masukkan jumlah kebutuhan" />
+                            </div>
+                            <div class="flex-1">
+                                <CFormLabel for="submission_price">Harga Satuan</CFormLabel>
+                                <CFormInput id="submission_price" v-model="submission_price" type="number"
+                                    placeholder="Masukkan harga satuan" />
                             </div>
                         </div>
                         <div class="mb-3 flex items-center justify-between">
@@ -124,11 +136,15 @@ export default {
             submission_name: "",
             submission_description: "",
             submission_area: "",
+            submission_quantity:0, // Tambahkan state untuk menyimpan jumlah kebutuhan
+            submission_price: 0, // Tambahkan state untuk menyimpan harga satuan
             attachment: null,
             submission_status: "Diajukan",
             nip: "",
             isSubmitting: false, 
             showUploadErrorModal: false, 
+            outletId: null, // Tambahkan state untuk menyimpan outletId
+            areaId: null, // Tambahkan state untuk menyimpan areaId
         };
     },
 
@@ -151,8 +167,6 @@ export default {
     },
 
     methods: {
-
-
         async fetchAssetData() {
             const token = localStorage.getItem("token");
             if (!token) {
@@ -172,6 +186,8 @@ export default {
                     this.submission_role_name = assetData.assetPicName || '';
                     this.submission_outlet = assetData.outletName || '';
                     this.submission_area = assetData.areaName || '';
+                    this.outletId = assetData.outletId || null;
+                    this.areaId = assetData.areaId || null;
                 }
             } catch (error) {
                 console.error("Error fetching asset data:", error);
@@ -239,8 +255,12 @@ export default {
                     submission_outlet: this.submission_outlet,
                     submission_category: this.submission_category,
                     submission_description: this.submission_description,
+                    submission_quantity: this.submission_quantity, // Tambahkan jumlah kebutuhan ke payload
+                    submission_price: this.submission_price, // Tambahkan harga satuan ke payload
                     attachment: uploadedFilePath,
                     submission_status: this.submission_status,
+                    outlet_id: this.outletId, // Tambahkan outlet_id yang dipilih
+                    area_id: this.areaId, // Tambahkan area_id yang dipilih
                 };
 
                 console.log("Payload:", payload);

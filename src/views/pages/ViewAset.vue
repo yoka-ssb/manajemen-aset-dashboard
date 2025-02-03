@@ -15,7 +15,7 @@
                                 <CCard class="mb-3">
                                     <CCardImage orientation="top" :src="assetImage ? assetImage : defaultImage" />
                                     <CCardBody>
-                                        <strong>Spesifikasi Aset:</strong>
+                                        <strong>Spesifikasi Aset/Perkap :</strong>
                                         <CCardText>
                                             {{ assetSpecification || 'Tidak tersedia' }}
                                         </CCardText>
@@ -32,51 +32,56 @@
                                             <strong>Area:</strong> {{ areaName || 'Tidak tersedia' }}
                                         </CCardText>
                                         <CCardText>
-                                            <strong>Nama Aset:</strong> {{ assetName || 'Tidak tersedia' }}
+                                            <strong>Nama Aset/Perkap </strong> {{ assetName || 'Tidak tersedia' }}
                                         </CCardText>
                                         <CCardText>
-                                            <strong>Merk Aset:</strong> {{ assetBrand || 'Tidak tersedia' }}
+                                            <strong>Merk Aset/Perkap:</strong> {{ assetBrand || 'Tidak tersedia' }}
                                         </CCardText>
                                         <CCardText>
-                                            <strong>Kondisi Awal Aset:</strong> {{ assetCondition || 'Tidak tersedia' }}
+                                            <strong>Kondisi Awal Aset/Perkap : </strong> {{ assetCondition || 'Tidak tersedia' }}
                                         </CCardText>
                                         <CCardText>
-                                            <strong>Tanggal Pembelian Aset:</strong> {{ assetPurchaseDate || 'Tidak tersedia'}}
+                                            <strong>Tanggal Pembelian Aset/Perkap : </strong> {{ assetPurchaseDate || 'Tidak tersedia'}}
                                         </CCardText>
                                         <CCardText>
-                                            <strong>Usia Aset (Bulan):</strong> {{ assetAge || 'Tidak tersedia' }}
+                                            <strong>Usia Aset/Perkap (Bulan):</strong> {{ assetAge || 'Tidak tersedia' }}
                                         </CCardText>
                                         <CCardText>
-                                            <strong>Tanggal Maintenance Aset:</strong> {{ assetMaintenanceDate || 'Tidak tersedia' }}
+                                            <strong>Status Aset/Perkap :</strong> {{ assetStatus || 'Tidak tersedia' }}
                                         </CCardText>
                                         <CCardText>
-                                            <strong>Status Aset:</strong> {{ assetStatus || 'Tidak tersedia' }}
+                                            <strong>PIC Aset/Perkap :</strong> {{ assetPicName || 'Tidak tersedia' }}
                                         </CCardText>
                                         <CCardText>
-                                            <strong>PIC Aset:</strong> {{ assetPicName || 'Tidak tersedia' }}
+                                            <strong>Penanggung Jawab Aset/Perkap: </strong> {{ personalResponsible || 'Tidak tersedia' }}
                                         </CCardText>
                                         <CCardText>
-                                            <strong>Penanggung Jawab Aset:</strong> {{ personalResponsible || 'Tidak tersedia' }}
+                                            <strong>Nilai Perolehan Aset:</strong> {{ classificationAcquisitionValue || 'Tidak tersedia' }}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Nilai Buku Terakhir:</strong> {{ classificationLastBookValue || 'Tidak tersedia' }}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Nilai Penyusutan:</strong> {{ deprecationValue || 'Tidak tersedia' }}
                                         </CCardText>
                                     </CCardBody>
                                 </CCard>
                             </CCol>
                         </CRow>
-                        <CRow>
+                        <!-- <CRow>
                             <CCol class="text-end mt-3">
                                 <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 mr-2"
                                     @click="navigateToParameterAset">
-                                    Maintenance Aset
+                                    Laporan Kondisi Aset/Perkap
                                 </button>
                             </CCol>
-                        </CRow>
+                        </CRow> -->
                     </CCol>
                 </CRow>
             </CCardBody>
         </CCard>
     </CCol>
 </template>
-
 
 <script>
 import axios from "axios";
@@ -111,73 +116,69 @@ export default {
         this.fetchAsetData(this.asetId);
     },
     methods: {
-  fetchAsetData(asetId) {
-    this.loading = true; 
-    
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Token tidak ditemukan di localStorage.");
-      this.loading = false;
-      return;
-    }
+        fetchAsetData(asetId) {
+            this.loading = true; 
+            
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("Token tidak ditemukan di localStorage.");
+                this.loading = false;
+                return;
+            }
 
-    axios
-      .get(`${apiUrl}/api/assets/${asetId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        const aset = response.data.data;
+            axios
+                .get(`${apiUrl}/api/assets/${asetId}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then((response) => {
+                    const aset = response.data.data;
 
-        this.assetName = aset.assetName || "Tidak tersedia";
-        this.assetBrand = aset.assetBrand || "Tidak tersedia";
-        this.assetCondition = aset.assetCondition || "Tidak tersedia";
-        this.assetSpecification = aset.assetSpecification || "Tidak tersedia";
-        this.outletName = aset.outletName || "Tidak tersedia";
-        this.areaName = aset.areaName || "Tidak tersedia";
-        this.assetStatus = aset.assetStatus || "Tidak tersedia";
-        this.assetAge = aset.assetAge || "Tidak tersedia";
-        this.deprecationValue = aset.deprecationValue || "Tidak tersedia";
-        this.classificationAcquisitionValue = aset.classificationAcquisitionValue || "Tidak tersedia";
-        this.classificationLastBookValue = aset.classificationLastBookValue || "Tidak tersedia";
-        this.assetPicName = aset.assetPicName || "Tidak tersedia";
-        this.assetPurchaseDate = aset.assetPurchaseDate
-          ? new Date(aset.assetPurchaseDate).toLocaleDateString("id-ID")
-          : "Tidak tersedia";
-        this.assetMaintenanceDate = aset.assetMaintenanceDate
-          ? new Date(aset.assetMaintenanceDate).toLocaleDateString("id-ID")
-          : "Tidak tersedia";
-        this.personalResponsible = aset.personalResponsible || "Tidak tersedia";
+                    this.assetName = aset.assetName || "Tidak tersedia";
+                    this.assetBrand = aset.assetBrand || "Tidak tersedia";
+                    this.assetCondition = aset.assetCondition || "Tidak tersedia";
+                    this.assetSpecification = aset.assetSpecification || "Tidak tersedia";
+                    this.outletName = aset.outletName || "Tidak tersedia";
+                    this.areaName = aset.areaName || "Tidak tersedia";
+                    this.assetStatus = aset.assetStatus || "Tidak tersedia";
+                    this.assetAge = aset.assetAge || "Tidak tersedia";
+                    this.deprecationValue = aset.deprecationValue || "Tidak tersedia";
+                    this.classificationAcquisitionValue = aset.classificationAcquisitionValue || "Tidak tersedia";
+                    this.classificationLastBookValue = aset.classificationLastBookValue || "Tidak tersedia";
+                    this.assetPicName = aset.assetPicName || "Tidak tersedia";
+                    this.assetPurchaseDate = aset.assetPurchaseDate
+                        ? new Date(aset.assetPurchaseDate).toLocaleDateString("id-ID")
+                        : "Tidak tersedia";
+                    this.assetMaintenanceDate = aset.assetMaintenanceDate
+                        ? new Date(aset.assetMaintenanceDate).toLocaleDateString("id-ID")
+                        : "Tidak tersedia";
+                    this.personalResponsible = aset.personalResponsible || "Tidak tersedia";
 
-        const assetImagePath = aset.assetImage || this.defaultImage;
-        const encodedAssetImagePath = encodeURIComponent(assetImagePath);
+                    const assetImagePath = aset.assetImage || this.defaultImage;
+                    const encodedAssetImagePath = encodeURIComponent(assetImagePath);
 
-        console.log("Encoded assetImagePath:", encodedAssetImagePath);
+                    console.log("Encoded assetImagePath:", encodedAssetImagePath);
 
-        axios
-          .get(`${uploadUrl}/get-file?path=${encodedAssetImagePath}`, {
-            headers: { "X-API-KEY": "bprfjocmaqfib592338vf" },
-            responseType: "arraybuffer",
-          })
-          .then((imageResponse) => {
-            const blob = new Blob([imageResponse.data], { type: "image/jpeg" });
-            this.assetImage = URL.createObjectURL(blob); 
-          })
-          .catch((error) => {
-            console.error("Gagal mengambil gambar:", error.message);
-            this.assetImage = this.defaultImage;
-          });
-      })
-      .catch((error) => {
-        console.error("Gagal mengambil data aset:", error.message);
-      })
-      .finally(() => {
+                    axios
+                        .get(`${uploadUrl}/get-file?path=${encodedAssetImagePath}`, {
+                            headers: { "X-API-KEY": "bprfjocmaqfib592338vf" },
+                            responseType: "arraybuffer",
+                        })
+                        .then((imageResponse) => {
+                            const blob = new Blob([imageResponse.data], { type: "image/jpeg" });
+                            this.assetImage = URL.createObjectURL(blob); 
+                        })
+                        .catch((error) => {
+                            console.error("Gagal mengambil gambar:", error.message);
+                            this.assetImage = this.defaultImage;
+                        });
+                })
+                .catch((error) => {
+                    console.error("Gagal mengambil data aset:", error.message);
+                })
+                .finally(() => {
                     this.loading = false; 
                 });
-  },
-
-
+        },
     }
 }
 </script>
-
-

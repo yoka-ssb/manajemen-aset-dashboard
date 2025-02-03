@@ -3,32 +3,32 @@
         <CCol :xs="12">
             <CCard class="mb-4">
                 <CCardHeader>
-                    <strong>Tambah Data Aset</strong>
+                    <strong>Tambah Data Aset/Perkap</strong>
                 </CCardHeader>
                 <CCardBody>
                     <CForm @submit.prevent="submitForm">
 
                         <div class="mb-3">
-                            <CFormLabel for="asset_name">Nama Aset</CFormLabel>
+                            <CFormLabel for="asset_name">Nama Aset/Perkap</CFormLabel>
                             <CFormInput id="asset_name" v-model="asset_name" type="text"
-                                placeholder="masukkan nama aset" />
+                                placeholder="masukkan nama aset/perkap" />
                         </div>
 
                         <div class="mb-3">
-                            <CFormLabel for="asset_brand">Nama Merk</CFormLabel>
+                            <CFormLabel for="asset_brand">Nama Merk Aset/Perkap</CFormLabel>
                             <CFormInput id="asset_brand" v-model="asset_brand" type="text"
-                                placeholder="masukkan merk aset" />
+                                placeholder="masukkan merk aset/perkap" />
                         </div>
 
                         <div class="mb-3">
                             <CFormLabel for="asset_image">Lampiran (Gambar Aset)</CFormLabel>
                             <CFormInput id="asset_image" ref="assetImage" type="file" accept="image/*"
-                                placeholder="masukkan gambar aset jpg,jpeg, png" @change="handleFileChange" />
+                                placeholder="masukkan gambar aset/perkap jpg,jpeg, png" @change="handleFileChange" />
                         </div>
 
                         <div class="mb-3">
-                            <CFormLabel for="asset_specification">Spesifikasi Aset</CFormLabel>
-                            <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3">
+                            <CFormLabel for="asset_specification">Spesifikasi Aset/Perkap </CFormLabel>
+                            <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3" placeholder="masukkan spesifikasi/komponent/ukuran aset/perkap">
                             </CFormTextarea>
                         </div>
 
@@ -47,7 +47,7 @@
                         <div class="mb-4">
                             <CFormLabel for="personal_responsible">Penanggung Jawab</CFormLabel>
                             <CFormInput id="personal_responsible" v-model="personal_responsible" type="text"
-                                placeholder="masukkan penanggung jawab" />
+                                placeholder="masukkan penanggung jawab/pengguna aset/perkap" />
                         </div>
 
                         <div class="mb-3 flex space-x-8">
@@ -82,6 +82,18 @@
                             <CFormLabel for="classification_acquisition_value">Nilai Perolehan Aset</CFormLabel>
                             <CFormInput id="classification_acquisition_value" v-model="classification_acquisition_value"
                                 type="number" placeholder="masukkan nilai perolehan" />
+                        </div>
+
+                        <div class="mb-3">
+                            <CFormLabel for="asset_quantity_standar">Jumlah Standar Aset/Perkap </CFormLabel>
+                            <CFormInput id="asset_quantity_standar" v-model="asset_quantity_standar"
+                                type="number" placeholder="masukkan jumlah standar" />
+                        </div>
+
+                        <div class="mb-3">
+                            <CFormLabel for="asset_quantity">Jumlah Aset/Perkap</CFormLabel>
+                            <CFormInput id="asset_quantity" v-model="asset_quantity"
+                                type="number" placeholder="masukkan jumlah aset/perkap" />
                         </div>
 
                         <div v-if="isAreaRequired" class="mb-4">
@@ -154,6 +166,8 @@ export default {
             asset_pic: "",
             personal_responsible: "",
             classification_acquisition_value: "",
+            asset_quantity_standar: 0, // Tambahkan state untuk menyimpan jumlah standar
+            asset_quantity: 0, // Tambahkan state untuk menyimpan jumlah aset/perkap
             isAreaRequired: true,
             isOutletRequired: true,
             isKlasifikasiaRequired: true,
@@ -179,6 +193,8 @@ export default {
         this.asset_purchase_date = "";
         this.asset_status = "Baik";
         this.classification_acquisition_value = "";
+        this.asset_quantity_standar = 0; // Inisialisasi jumlah standar
+        this.asset_quantity = 0; // Inisialisasi jumlah aset/perkap
     },
 
     methods: {
@@ -281,6 +297,8 @@ export default {
                     asset_status: this.asset_status,
                     asset_purchase_date: this.asset_purchase_date,
                     classification_acquisition_value: this.classification_acquisition_value,
+                    asset_quantity_standar: this.asset_quantity_standar, // Tambahkan jumlah standar ke payload
+                    asset_quantity: this.asset_quantity, // Tambahkan jumlah aset/perkap ke payload
                     outlet_id: this.selectedOutlet,
                     area_id: this.selectedArea,
                     asset_pic: this.selectedPic,

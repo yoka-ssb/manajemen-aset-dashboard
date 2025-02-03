@@ -59,6 +59,16 @@ const routes = [
         component: () => import('@/views/pages/AsetList.vue'),
       },
       {
+        path: '/pages/PerkapList',
+        name: 'PerkapList',
+        component: () => import('@/views/pages/PerkapList.vue'),
+      },
+      {
+        path: '/pages/Perkaps',
+        name: 'Perkaps',
+        component: () => import('@/views/pages/Perkaps.vue'),
+      },
+      {
         path: '/pages/AddAset',
         name: 'AddAset',
         component: () => import('@/views/pages/AddAset.vue'),

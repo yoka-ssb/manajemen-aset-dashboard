@@ -90,7 +90,7 @@ export default {
                     return;
                 }
 
-                const response = await axios.get(`${apiUrl}/api/submission`, {
+                const response = await axios.get(`${apiUrl}/api/submissions`, {
                     params: {
                         page_number: this.page, 
                         page_size: 10,          

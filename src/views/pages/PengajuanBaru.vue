@@ -3,7 +3,7 @@
         <CCol :xs="12">
             <CCard class="mb-4">
                 <CCardHeader>
-                    <strong>Formulir Pengajuan Aset</strong>
+                    <strong>Formulir Pengajuan Baru</strong>
                 </CCardHeader>
                 <CCardBody>
                     <CForm @submit.prevent="submitForm">
@@ -20,9 +20,9 @@
                         </div>
                         <div class="mb-3 flex items-center justify-between">
                             <div class="flex-1">
-                                <CFormLabel for="submission_pr_name">Penanggung Jawab Aset</CFormLabel>
+                                <CFormLabel for="submission_pr_name">Penanggung Jawab Aset/Perkap</CFormLabel>
                                 <CFormInput id="submission_pr_name" v-model="submission_pr_name" type="text"
-                                    placeholder="Masukkan nama penanggung jawab/Pengguna aset" />
+                                    placeholder="Masukkan nama penanggung jawab/Pengguna" />
                             </div>
                             <div class="flex-1 ml-4">
                                 <CFormLabel for="submission_asset_name">Nama Aset/Perkap</CFormLabel>
@@ -32,9 +32,9 @@
                         </div>
                         <div class="mb-3 flex justify-between">
                             <div class="flex-1 mr-4">
-                                <CFormLabel for="submission_role_name">Nama PIC Aset</CFormLabel>
+                                <CFormLabel for="submission_role_name">Nama PIC</CFormLabel>
                                 <CFormInput id="submission_role_name" v-model="submission_role_name" type="text"
-                                    placeholder="Masukkan nama PIC aset" />
+                                    placeholder="Masukkan nama PIC aset/perkap" />
                             </div>
                             <div class="flex-1">
                                 <CFormLabel for="submission_area">Area Kerja</CFormLabel>
@@ -51,9 +51,7 @@
                                     aria-label="Pilih Kategori Pengajuan">
                                     <option value="" disabled selected>Pilih Kategori Pengajuan</option>
                                     <option value="Pengajuan Baru">Pengajuan Baru</option>
-                                    <option value="Laporan Barang Hilang">Laporan Barang Hilang</option>
-                                    <option value="Pengajuan Service">Pengajuan Service</option>
-                                    <option value="Pengajuan Ganti">Pengajuan Ganti</option>
+                                    <option value="Pengajuan Penambahan Asset/Perkap">Pengajuan Penambahan Asset/Perkap</option>
                                 </CFormSelect>
                             </div>
                             <div class="flex-1">
@@ -64,17 +62,15 @@
                                 </CFormSelect>
                             </div>
                         </div>
-                        <div class="mb-3 flex items-center justify-between">
-                            <div class="flex-1">
-                                <CFormLabel for="attachment">Lampiran (Bukti Aset)</CFormLabel>
-                                <CFormInput id="attachment" ref="Attachment" type="file" accept="image/*"
-                                    @change="handleFileChange" placeholder="Masukkan lampiran" />
-                            </div>
+                        <div class="mb-3">
+                            <CFormLabel for="submission_quantity">Jumlah</CFormLabel>
+                            <CFormInput id="submission_quantity" v-model="submission_quantity" type="number"
+                                placeholder="Masukkan jumlah pengajuan" />
                         </div>
                         <div class="mb-3">
-                            <CFormLabel for="submission_description">Keterangan Pengajuan Aset</CFormLabel>
+                            <CFormLabel for="submission_description">Keterangan Pengajuan</CFormLabel>
                             <CFormTextarea id="submission_description" v-model="submission_description" rows="3"
-                                placeholder="Masukkan keterangan">
+                                placeholder="Masukkan keterangan pengajuan asset/perkap">
                             </CFormTextarea>
                         </div>
                     </CForm>
@@ -126,18 +122,18 @@ export default {
             submission_name: "",
             submission_description: "",
             submission_area: "",
+            submission_quantity: 0, // Tambahkan state untuk menyimpan jumlah pengajuan
             attachment: null,
             submission_status: "Diajukan",
             nip: "",
             isSubmitting: false, 
             showUploadErrorModal: false, 
-            areas: [], // Tambahkan state untuk menyimpan data area
-            outlets: [], // Tambahkan state untuk menyimpan data outlet
+            areas: [], 
+            outlets: [], 
         };
     },
 
     created() {
-        this.attachment = null;
         const token = localStorage.getItem("token");
 
         if (token) {
@@ -152,22 +148,13 @@ export default {
             console.warn("Token not found in localStorage");
         }
 
-        this.fetchAreas(); // Panggil metode untuk mengambil data area saat komponen dibuat
-        this.fetchOutlets(); // Panggil metode untuk mengambil data outlet saat komponen dibuat
+        this.fetchAreas();
+        this.fetchOutlets();
     },
     methods: {
         handleSubmit() {
             console.log("Submit button clicked");
             this.submitForm();
-        },
-
-        handleFileChange(event) {
-            const file = event.target.files[0];
-            if (file) {
-                this.attachment = file;
-            } else {
-                console.error("No file selected");
-            }
         },
 
         async fetchAreas() {
@@ -183,7 +170,7 @@ export default {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                this.areas = response.data.data; // Sesuaikan dengan struktur respons
+                this.areas = response.data.data;
             } catch (error) {
                 console.error("Error fetching areas:", error);
             }
@@ -202,7 +189,7 @@ export default {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                this.outlets = response.data.data; // Sesuaikan dengan struktur respons
+                this.outlets = response.data.data; 
             } catch (error) {
                 console.error("Error fetching outlets:", error);
             }
@@ -219,30 +206,7 @@ export default {
                 return;
             }
 
-            let uploadedFilePath = null;
-
             try {
-                const attachmentFormData = new FormData();
-                attachmentFormData.append('file', this.attachment);
-
-                const uploadResponse = await axios.post(
-                    `${uploadUrl}/upload?module=Pengajuan`,
-                    attachmentFormData,
-                    {
-                        headers: {
-                            'X-API-KEY': 'bprfjocmaqfib592338vf',
-                        },
-                    }
-                );
-
-                if (uploadResponse.status === 204) {
-                    console.error("File upload gagal dengan status 204.");
-                    this.showUploadErrorModal = true; 
-                    throw new Error("File upload gagal.");
-                }
-
-                uploadedFilePath = uploadResponse.data.file_path;
-                console.log("Uploaded file path:", uploadedFilePath);
 
                 const payload = {
                     asset_id: this.assetId,
@@ -255,7 +219,7 @@ export default {
                     submission_outlet: this.submission_outlet,
                     submission_category: this.submission_category,
                     submission_description: this.submission_description,
-                    attachment: uploadedFilePath,
+                    submission_quantity: this.submission_quantity, // Tambahkan jumlah pengajuan ke payload
                     submission_status: this.submission_status,
                 };
 
@@ -277,22 +241,7 @@ export default {
             } catch (error) {
                 console.error("There was an error:", error.response ? error.response.data : error);
 
-                if (uploadedFilePath) {
-                    try {
-                        await axios.delete(`${uploadUrl}/delete`, {
-                            headers: {
-                                'X-API-KEY': 'bprfjocmaqfib592338vf',
-                            },
-                            data: {
-                                file_path: uploadedFilePath,
-                            },
-                        });
-                        console.log("Uploaded file has been rolled back successfully.");
-                    } catch (deleteError) {
-                        console.error("Failed to rollback uploaded file:", deleteError.response ? deleteError.response.data : deleteError);
-                    }
-                }
-            } finally {
+             } finally {
                 this.isSubmitting = false; 
             }
         }
