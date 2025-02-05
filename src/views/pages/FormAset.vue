@@ -51,6 +51,7 @@
                                     <option value="Laporan Barang Hilang">Laporan Barang Hilang</option>
                                     <option value="Pengajuan Service">Pengajuan Service</option>
                                     <option value="Pengajuan Ganti">Pengajuan Ganti</option>
+                                    <option value="Pengabaian Kondisi Aset">Pengabaian Kondisi Aset</option>
                                     <option value="Pemenuhan Aset/Perkap">Pemenuhan Aset/Perkap</option>
                                 </CFormSelect>
                             </div>
@@ -60,7 +61,7 @@
                                     placeholder="kosong jika tidak ada" readonly />
                             </div>
                         </div>
-                        <div class="mb-3 flex space-x-4">
+                        <div v-if="showAdditionalFields" class="mb-3 flex space-x-4">
                             <div class="flex-1">
                                 <CFormLabel for="submission_quantity">Jumlah Kebutuhan</CFormLabel>
                                 <CFormInput id="submission_quantity" v-model="submission_quantity" type="number"
@@ -72,7 +73,7 @@
                                     placeholder="Masukkan harga satuan" />
                             </div>
                         </div>
-                        <div class="mb-3 flex items-center justify-between">
+                        <div v-if="showAdditionalFields" class="mb-3 flex items-center justify-between">
                             <div class="flex-1">
                                 <CFormLabel for="attachment">Lampiran (Bukti Aset)</CFormLabel>
                                 <CFormInput id="attachment" ref="Attachment" type="file" accept="image/*"
@@ -119,7 +120,6 @@
 <script>
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import { CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton } from '@coreui/vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 const uploadUrl = import.meta.env.VITE_UPLOAD_URL;
@@ -136,7 +136,7 @@ export default {
             submission_name: "",
             submission_description: "",
             submission_area: "",
-            submission_quantity:0, // Tambahkan state untuk menyimpan jumlah kebutuhan
+            submission_quantity: 0, // Tambahkan state untuk menyimpan jumlah kebutuhan
             submission_price: 0, // Tambahkan state untuk menyimpan harga satuan
             attachment: null,
             submission_status: "Diajukan",
@@ -146,6 +146,12 @@ export default {
             outletId: null, // Tambahkan state untuk menyimpan outletId
             areaId: null, // Tambahkan state untuk menyimpan areaId
         };
+    },
+
+    computed: {
+        showAdditionalFields() {
+            return this.submission_category !== 'Pengabaian Kondisi Aset';
+        }
     },
 
     created() {
@@ -222,27 +228,29 @@ export default {
             let uploadedFilePath = null;
 
             try {
-                const attachmentFormData = new FormData();
-                attachmentFormData.append('file', this.attachment);
+                if (this.showAdditionalFields && this.attachment) {
+                    const attachmentFormData = new FormData();
+                    attachmentFormData.append('file', this.attachment);
 
-                const uploadResponse = await axios.post(
-                    `${uploadUrl}/upload?module=Pengajuan`,
-                    attachmentFormData,
-                    {
-                        headers: {
-                            'X-API-KEY': 'bprfjocmaqfib592338vf',
-                        },
+                    const uploadResponse = await axios.post(
+                        `${uploadUrl}/upload?module=Pengajuan`,
+                        attachmentFormData,
+                        {
+                            headers: {
+                                'X-API-KEY': 'bprfjocmaqfib592338vf',
+                            },
+                        }
+                    );
+
+                    if (uploadResponse.status === 204) {
+                        console.error("File upload gagal dengan status 204.");
+                        this.showUploadErrorModal = true; 
+                        throw new Error("File upload gagal.");
                     }
-                );
 
-                if (uploadResponse.status === 204) {
-                    console.error("File upload gagal dengan status 204.");
-                    this.showUploadErrorModal = true; 
-                    throw new Error("File upload gagal.");
+                    uploadedFilePath = uploadResponse.data.file_path;
+                    console.log("Uploaded file path:", uploadedFilePath);
                 }
-
-                uploadedFilePath = uploadResponse.data.file_path;
-                console.log("Uploaded file path:", uploadedFilePath);
 
                 const payload = {
                     asset_id: this.assetId,
@@ -255,13 +263,16 @@ export default {
                     submission_outlet: this.submission_outlet,
                     submission_category: this.submission_category,
                     submission_description: this.submission_description,
-                    submission_quantity: this.submission_quantity, // Tambahkan jumlah kebutuhan ke payload
-                    submission_price: this.submission_price, // Tambahkan harga satuan ke payload
-                    attachment: uploadedFilePath,
                     submission_status: this.submission_status,
                     outlet_id: this.outletId, // Tambahkan outlet_id yang dipilih
                     area_id: this.areaId, // Tambahkan area_id yang dipilih
                 };
+
+                if (this.showAdditionalFields) {
+                    payload.submission_quantity = this.submission_quantity; // Tambahkan jumlah kebutuhan ke payload
+                    payload.submission_price = this.submission_price; // Tambahkan harga satuan ke payload
+                    payload.attachment = uploadedFilePath;
+                }
 
                 console.log("Payload:", payload);
                 const response = await axios.post(

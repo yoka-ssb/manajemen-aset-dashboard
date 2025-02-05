@@ -16,7 +16,7 @@
                 <CCardText v-if="parameter_kesehatan_aset.length">
                   <ul>
                     <li v-for="(param, index) in parameter_kesehatan_aset" :key="index">
-                      {{ param }}
+                      - {{ param }}
                     </li>
                   </ul>
                 </CCardText>
@@ -95,10 +95,8 @@ export default {
           headers: { Authorization: `Bearer ${this.token}` },
         })
         .then((response) => {
-          const assetHealthyParam = response.data.data.assetHealthyParamMap.param_1;
-          this.parameter_kesehatan_aset = assetHealthyParam
-            ? assetHealthyParam.split("\n")
-            : [];
+          const assetHealthyParamMap = response.data.data.assetHealthyParamMap;
+          this.parameter_kesehatan_aset = Object.values(assetHealthyParamMap).map(param => param.trim());
         })
         .catch((error) => {
           console.error("Gagal mengambil data klasifikasi:", error);
