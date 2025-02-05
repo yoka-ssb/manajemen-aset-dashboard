@@ -62,10 +62,17 @@
                                 </CFormSelect>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <CFormLabel for="submission_quantity">Jumlah</CFormLabel>
-                            <CFormInput id="submission_quantity" v-model="submission_quantity" type="number"
-                                placeholder="Masukkan jumlah pengajuan" />
+                        <div class="mb-3 flex space-x-4">
+                            <div class="flex-1">
+                                <CFormLabel for="submission_quantity">Jumlah</CFormLabel>
+                                <CFormInput id="submission_quantity" v-model="submission_quantity" type="number"
+                                    placeholder="Masukkan jumlah pengajuan" />
+                            </div>
+                            <div class="flex-1">
+                                <CFormLabel for="submission_price">Harga Satuan</CFormLabel>
+                                <CFormInput id="submission_price" v-model="submission_price" type="number"
+                                    placeholder="Masukkan harga satuan" />
+                            </div>
                         </div>
                         <div class="mb-3">
                             <CFormLabel for="submission_description">Keterangan Pengajuan</CFormLabel>
@@ -123,6 +130,7 @@ export default {
             submission_description: "",
             submission_area: "",
             submission_quantity: 0, // Tambahkan state untuk menyimpan jumlah pengajuan
+            submission_price: 0, // Tambahkan state untuk menyimpan harga satuan
             attachment: null,
             submission_status: "Diajukan",
             nip: "",
@@ -220,6 +228,7 @@ export default {
                     submission_category: this.submission_category,
                     submission_description: this.submission_description,
                     submission_quantity: this.submission_quantity, // Tambahkan jumlah pengajuan ke payload
+                    submission_price: this.submission_price, // Tambahkan harga satuan ke payload
                     submission_status: this.submission_status,
                 };
 

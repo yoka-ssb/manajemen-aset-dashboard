@@ -45,8 +45,6 @@
                     class="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600">View</button>
                   <button @click="updateAset(asset.assetId)"
                     class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600">Update</button>
-                  <button @click="QrGenerate(asset.assetId)"
-                    class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600">QR Generate</button>
                 </div>
               </CTableDataCell>
             </CTableRow>

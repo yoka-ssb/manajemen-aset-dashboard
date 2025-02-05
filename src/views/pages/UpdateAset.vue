@@ -377,7 +377,7 @@ export default {
 
                 if (response.status === 200) {
                     console.log("Asset updated successfully:", response.data);
-                    this.$router.push("/pages/asets");
+                    this.$router.push("/pages/Perkaps");
                 }
             } catch (error) {
                 console.error("Error updating asset:", error);

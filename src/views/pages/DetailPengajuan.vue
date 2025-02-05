@@ -159,6 +159,7 @@ export default {
                     this.submissionArea = submissionData.submissionArea || '';
                     this.nip = submissionData.nip || '';
                     this.submissionPrName = submissionData.submissionPrName || '';
+                    this.submissionQuantity = submissionData.submissionQuantity || '';
                     this.submissionCategory = submissionData.submissionCategory || '';
                     const formattedDate = new Date(submissionData.submissionDate).toLocaleDateString();
                     this.submissionDate = formattedDate;
@@ -265,7 +266,7 @@ export default {
             <tr>
                 <td>1.</td>
                 <td>${this.submissionAssetName}</td>
-                <td></td>
+                <td>${this.submissionQuantity}</td>
                 <td></td>
                 <td></td>
             </tr>
