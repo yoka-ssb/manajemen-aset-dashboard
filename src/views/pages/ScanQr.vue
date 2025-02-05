@@ -26,6 +26,7 @@ export default {
   setup() {
     const video = ref(null);
     const router = useRouter(); 
+    let scanTimeout = null;
 
     const startCamera = () => {
       if (video.value) {
@@ -44,53 +45,60 @@ export default {
     };
 
     const scanQRCode = () => {
-  const canvasElement = document.createElement("canvas");
-  const ctx = canvasElement.getContext("2d");
+      const canvasElement = document.createElement("canvas");
+      const ctx = canvasElement.getContext("2d");
 
-  const scan = () => {
-    if (video.value && video.value.readyState === video.value.HAVE_ENOUGH_DATA) {
-      canvasElement.width = video.value.videoWidth;
-      canvasElement.height = video.value.videoHeight;
-      ctx.drawImage(video.value, 0, 0, canvasElement.width, canvasElement.height);
+      const scan = () => {
+        if (video.value && video.value.readyState === video.value.HAVE_ENOUGH_DATA) {
+          canvasElement.width = video.value.videoWidth;
+          canvasElement.height = video.value.videoHeight;
+          ctx.drawImage(video.value, 0, 0, canvasElement.width, canvasElement.height);
 
-      const imgData = ctx.getImageData(0, 0, canvasElement.width, canvasElement.height);
-      const code = jsQR(imgData.data, imgData.width, imgData.height);
+          const imgData = ctx.getImageData(0, 0, canvasElement.width, canvasElement.height);
+          const code = jsQR(imgData.data, imgData.width, imgData.height);
 
-      if (code) {
-        console.log("QR Code detected:", code.data);
-        const token = localStorage.getItem("token");
+          if (code) {
+            console.log("QR Code detected:", code.data);
+            const token = localStorage.getItem("token");
 
-        axios
-          .get(`http://localhost:8080/api/assets/hash`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            params: { hash_id: code.data },
-          })
-          .then((response) => {
-            if (response.status === 200) {
-              console.log("Valid QR Code, redirecting...");
-              router.push({ name: "ViewAsetScan", params: { IdHash: code.data } });
-            } else {
-              throw new Error("Invalid response status");
-            }
-          })
-          .catch((error) => {
-            console.error("Error validating QR Code:", error);
-            router.push({ name: "Page404" }); // Redirect ke halaman 404
-          });
+            axios
+              .get(`http://localhost:8080/api/assets/hash`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                params: { hash_id: code.data },
+              })
+              .then((response) => {
+                if (response.status === 200) {
+                  console.log("Valid QR Code, redirecting...");
+                  clearTimeout(scanTimeout);
+                  router.push({ name: "ViewAsetScan", params: { IdHash: code.data } });
+                } else {
+                  throw new Error("Invalid response status");
+                }
+              })
+              .catch((error) => {
+                console.error("Error validating QR Code:", error);
+                clearTimeout(scanTimeout);
+                router.push({ name: "Page404" }); // Redirect ke halaman 404
+              });
 
-        return;
-      }
-    }
+            return;
+          }
+        }
 
-    requestAnimationFrame(scan);
-  };
+        requestAnimationFrame(scan);
+      };
 
-  scan();
-};
+      scan();
+    };
+
     onMounted(() => {
       startCamera();
+      scanTimeout = setTimeout(() => {
+        console.error("QR Code not detected within the time limit.");
+        router.push({ name: "Page404" });
+      }, 10000); // Set timeout to 10 seconds
     });
 
     onUnmounted(() => {
@@ -99,6 +107,7 @@ export default {
         const tracks = stream.getTracks();
         tracks.forEach(track => track.stop());
       }
+      clearTimeout(scanTimeout);
     });
 
     return {
@@ -119,5 +128,3 @@ body {
   font-family: Arial, sans-serif;
 }
 </style>
-
-
