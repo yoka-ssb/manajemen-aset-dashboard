@@ -26,7 +26,6 @@ export default {
   setup() {
     const video = ref(null);
     const router = useRouter(); 
-    let scanTimeout = null;
 
     const startCamera = () => {
       if (video.value) {
@@ -71,7 +70,6 @@ export default {
               .then((response) => {
                 if (response.status === 200) {
                   console.log("Valid QR Code, redirecting...");
-                  clearTimeout(scanTimeout);
                   router.push({ name: "ViewAsetScan", params: { IdHash: code.data } });
                 } else {
                   throw new Error("Invalid response status");
@@ -79,8 +77,7 @@ export default {
               })
               .catch((error) => {
                 console.error("Error validating QR Code:", error);
-                clearTimeout(scanTimeout);
-                router.push({ name: "Page404" }); // Redirect ke halaman 404
+                // Do not redirect to 404, continue scanning
               });
 
             return;
@@ -95,10 +92,6 @@ export default {
 
     onMounted(() => {
       startCamera();
-      scanTimeout = setTimeout(() => {
-        console.error("QR Code not detected within the time limit.");
-        router.push({ name: "Page404" });
-      }, 10000); // Set timeout to 10 seconds
     });
 
     onUnmounted(() => {
@@ -107,7 +100,6 @@ export default {
         const tracks = stream.getTracks();
         tracks.forEach(track => track.stop());
       }
-      clearTimeout(scanTimeout);
     });
 
     return {
