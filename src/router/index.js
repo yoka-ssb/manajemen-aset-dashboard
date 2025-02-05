@@ -49,7 +49,7 @@ const routes = [
       
       {
         path: '/pages/asets',
-        name: 'Asets',
+        name: 'Aset',
         component: () => import('@/views/pages/Asets.vue'),
       },
 
@@ -65,7 +65,7 @@ const routes = [
       },
       {
         path: '/pages/Perkaps',
-        name: 'Perkaps',
+        name: 'Perkap',
         component: () => import('@/views/pages/Perkaps.vue'),
       },
       {

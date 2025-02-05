@@ -41,7 +41,7 @@ export default [
       },
       {
         component: 'CNavItem',
-        name: 'Asets',
+        name: 'Aset',
         to: '/pages/asets', 
         badge: {
           color: 'primary',
@@ -49,7 +49,7 @@ export default [
       },
       {
         component: 'CNavItem',
-        name: 'Perkaps',
+        name: 'Perkap',
         to: '/pages/Perkaps',
         badge: {
           color: 'primary',

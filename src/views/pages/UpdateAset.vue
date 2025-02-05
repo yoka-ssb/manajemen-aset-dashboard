@@ -20,21 +20,15 @@
                                 placeholder="masukkan merk aset" />
                         </div>
                         <div class="mb-3">
-    <CFormLabel for="asset_image">Lampiran (Gambar Aset)</CFormLabel>
-    <CFormInput
-        id="asset_image"
-        ref="assetImage"
-        type="file"
-        accept="image/*"
-        placeholder="Masukkan gambar aset jpg, jpeg, png"
-        @change="handleFileChange"
-    />
-    <div v-if="!isNewFileSelected && oldFileName" class="mt-2 text-sm text-gray-500">
-        <span style="font-weight: bold;">
-            📄 Data existing : {{ oldFileName }}
-        </span>
-    </div>
-</div>
+                            <CFormLabel for="asset_image">Lampiran (Gambar Aset)</CFormLabel>
+                            <CFormInput id="asset_image" ref="assetImage" type="file" accept="image/*"
+                                placeholder="Masukkan gambar aset jpg, jpeg, png" @change="handleFileChange" />
+                            <div v-if="!isNewFileSelected && oldFileName" class="mt-2 text-sm text-gray-500">
+                                <span style="font-weight: bold;">
+                                    📄 Data existing : {{ oldFileName }}
+                                </span>
+                            </div>
+                        </div>
                         <div class="mb-3">
                             <CFormLabel for="asset_specification">Spesifikasi Aset</CFormLabel>
                             <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3">
@@ -98,26 +92,26 @@
                         </div>
 
                         <div v-if="isAreaRequired" class="mb-4">
-    <CFormLabel for="area_id">Pilih Area</CFormLabel>
-    <select id="area_id" v-model="selectedArea"
-        class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets">
-        <option value="">Pilih Area</option>
-        <option v-for="area in areas" :key="area.areaId" :value="area.areaId">
-            {{ area.areaName }}
-        </option>
-    </select>
-</div>
+                            <CFormLabel for="area_id">Pilih Area</CFormLabel>
+                            <select id="area_id" v-model="selectedArea"
+                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets">
+                                <option value="">Pilih Area</option>
+                                <option v-for="area in areas" :key="area.areaId" :value="area.areaId">
+                                    {{ area.areaName }}
+                                </option>
+                            </select>
+                        </div>
 
-<div v-if="isOutletRequired" class="mb-4">
-    <CFormLabel for="outlet_id">Pilih Lokasi</CFormLabel>
-    <select id="outlet_id" v-model="selectedOutlet"
-        class="border border-gray-300 rounded-lg p-2 w-full">
-        <option value="">Pilih Lokasi</option>
-        <option v-for="outlet in outlets" :key="outlet.outletId" :value="outlet.outletId">
-            {{ outlet.outletName }}
-        </option>
-    </select>
-</div>
+                        <div v-if="isOutletRequired" class="mb-4">
+                            <CFormLabel for="outlet_id">Pilih Lokasi</CFormLabel>
+                            <select id="outlet_id" v-model="selectedOutlet"
+                                class="border border-gray-300 rounded-lg p-2 w-full">
+                                <option value="">Pilih Lokasi</option>
+                                <option v-for="outlet in outlets" :key="outlet.outletId" :value="outlet.outletId">
+                                    {{ outlet.outletName }}
+                                </option>
+                            </select>
+                        </div>
                         <div v-if="isPicRequired" class="mb-4">
                             <CFormLabel for="asset_pic">Pilih PIC Aset</CFormLabel>
                             <select id="asset_pic" v-model="selectedPic"
@@ -244,7 +238,7 @@ export default {
         fetchKlasifikasi() {
             const token = localStorage.getItem("token");
             axios
-                .get(apiUrl + "/api/classifications", { headers: { Authorization: `Bearer ${token}` } })
+                .get(apiUrl + "/api/classification", { headers: { Authorization: `Bearer ${token}` } })
                 .then((response) => {
                     console.log("Klasifikasi fetched:", response.data.data);
                     this.klasifikasis = response.data.data;
@@ -256,48 +250,48 @@ export default {
         },
 
         fetchAreas() {
-        const token = localStorage.getItem("token");
-        axios
-            .get(apiUrl + "/api/areas", { headers: { Authorization: `Bearer ${token}` } })
-            .then((response) => {
-                this.areas = response.data.data;
+            const token = localStorage.getItem("token");
+            axios
+                .get(apiUrl + "/api/areas", { headers: { Authorization: `Bearer ${token}` } })
+                .then((response) => {
+                    this.areas = response.data.data;
 
-                if (this.selectedArea) {
-                    const existingArea = this.areas.find(area => area.areaId === this.selectedArea);
-                    if (!existingArea) this.selectedArea = "";
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching areas:", error);
-                this.areas = [];
-            });
-    },
-    fetchOutlets() {
-        if (!this.selectedArea) return;
-        const token = localStorage.getItem("token");
-        axios
-            .get(`${apiUrl}/api/outlets?area_id=${this.selectedArea}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            .then((response) => {
-                this.outlets = response.data.data;
+                    if (this.selectedArea) {
+                        const existingArea = this.areas.find(area => area.areaId === this.selectedArea);
+                        if (!existingArea) this.selectedArea = "";
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching areas:", error);
+                    this.areas = [];
+                });
+        },
+        fetchOutlets() {
+            if (!this.selectedArea) return;
+            const token = localStorage.getItem("token");
+            axios
+                .get(`${apiUrl}/api/outlets?area_id=${this.selectedArea}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then((response) => {
+                    this.outlets = response.data.data;
 
-                if (this.selectedOutlet) {
-                    const existingOutlet = this.outlets.find(outlet => outlet.outletId === this.selectedOutlet);
-                    if (!existingOutlet) this.selectedOutlet = ""; 
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching outlets:", error);
-                this.outlets = [];
-            });
-    },
-    initializeExistingData(apiResponse) {
-        this.selectedArea = apiResponse.areaId;
-        this.selectedOutlet = apiResponse.outletId;
-        this.fetchAreas();
-        this.fetchOutlets();
-    },
+                    if (this.selectedOutlet) {
+                        const existingOutlet = this.outlets.find(outlet => outlet.outletId === this.selectedOutlet);
+                        if (!existingOutlet) this.selectedOutlet = "";
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching outlets:", error);
+                    this.outlets = [];
+                });
+        },
+        initializeExistingData(apiResponse) {
+            this.selectedArea = apiResponse.areaId;
+            this.selectedOutlet = apiResponse.outletId;
+            this.fetchAreas();
+            this.fetchOutlets();
+        },
 
         fetchPic() {
             const token = localStorage.getItem("token");
@@ -314,81 +308,81 @@ export default {
         },
 
         handleFileChange(event) {
-        const file = event.target.files[0];
-        if (file) {
-            this.asset_image = file; 
-        }
-    },
+            const file = event.target.files[0];
+            if (file) {
+                this.asset_image = file;
+            }
+        },
 
 
-async submitForm() {
-    const token = localStorage.getItem("token");
-    if (!token) {
-        console.error("Token tidak ditemukan, silakan login terlebih dahulu.");
-        return;
-    }
+        async submitForm() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("Token tidak ditemukan, silakan login terlebih dahulu.");
+                return;
+            }
 
-    let uploadedFilePath = this.oldFileName;
+            let uploadedFilePath = this.oldFileName;
 
-    try {
-            if (this.asset_image) { // Check if a new file is selected
-                const imageFormData = new FormData();
-                imageFormData.append("file", this.asset_image);
+            try {
+                if (this.asset_image) { // Check if a new file is selected
+                    const imageFormData = new FormData();
+                    imageFormData.append("file", this.asset_image);
 
-                // Pass the old file name to the backend
-                if (this.oldFileName) {
-                    imageFormData.append("oldFileName", this.oldFileName);
+                    // Pass the old file name to the backend
+                    if (this.oldFileName) {
+                        imageFormData.append("oldFileName", this.oldFileName);
+                    }
+
+                    const uploadResponse = await axios.post(
+                        uploadUrl + "/upload?module=Master%20Aset",
+                        imageFormData,
+                        {
+                            headers: {
+                                "X-API-KEY": "bprfjocmaqfib592338vf",
+                            },
+                        }
+                    );
+
+                    uploadedFilePath = uploadResponse.data.file_path;
+                    console.log("Uploaded file path:", uploadedFilePath);
                 }
 
-                const uploadResponse = await axios.post(
-                    uploadUrl + "/upload?module=Master%20Aset",
-                    imageFormData,
+                const payload = {
+                    asset_name: this.asset_name,
+                    asset_brand: this.asset_brand,
+                    asset_image: uploadedFilePath,
+                    asset_specification: this.asset_specification,
+                    asset_condition: this.asset_condition,
+                    asset_status: this.asset_status,
+                    asset_purchase_date: this.asset_purchase_date,
+                    classification_acquisition_value: this.classification_acquisition_value,
+                    asset_classification: this.selectedKlasifikasi,
+                    outlet_id: this.selectedOutlet,
+                    area_id: this.selectedArea,
+                    asset_pic: this.selectedPic,
+                    personal_responsible: this.personal_responsible,
+                };
+
+                const response = await axios.put(
+                    `${apiUrl}/api/assets/${this.assetId}`,
+                    payload,
                     {
                         headers: {
-                            "X-API-KEY": "bprfjocmaqfib592338vf",
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json",
                         },
                     }
                 );
 
-                uploadedFilePath = uploadResponse.data.file_path;
-                console.log("Uploaded file path:", uploadedFilePath);
+                if (response.status === 200) {
+                    console.log("Asset updated successfully:", response.data);
+                    this.$router.push("/pages/asets");
+                }
+            } catch (error) {
+                console.error("Error updating asset:", error);
             }
-
-        const payload = {
-            asset_name: this.asset_name,
-            asset_brand: this.asset_brand,
-            asset_image: uploadedFilePath, 
-            asset_specification: this.asset_specification,
-            asset_condition: this.asset_condition,
-            asset_status: this.asset_status,
-            asset_purchase_date: this.asset_purchase_date,
-            classification_acquisition_value: this.classification_acquisition_value,
-            asset_classification: this.selectedKlasifikasi,
-            outlet_id: this.selectedOutlet,
-            area_id: this.selectedArea,
-            asset_pic: this.selectedPic,
-            personal_responsible: this.personal_responsible,
-        };
-
-        const response = await axios.put(
-            `${apiUrl}/api/assets/${this.assetId}`,
-            payload,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-
-        if (response.status === 200) {
-            console.log("Asset updated successfully:", response.data);
-            this.$router.push("/pages/asets");
         }
-    } catch (error) {
-        console.error("Error updating asset:", error);
-    }
-}
 
 
     },
