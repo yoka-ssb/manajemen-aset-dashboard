@@ -20,12 +20,17 @@
               <CCardBody>
                 <CCardText v-if="nearestMaintenance.length">
                   <ul>
-                    <li v-for="item in nearestMaintenance" :key="item.id">
-                      - Asset {{ item.assetName }} harus dimaintenance pada {{ formatDate(item.maintenanceOrSubmitted)
-                      }}
-                      <router-link to="/pages/ScanQr" class="hover:underline text-blue-500 cursor-pointer">
-                        maintenance sekarang
-                      </router-link>
+                    <li v-for="item in nearestMaintenance" :key="item.id" class="mb-4">
+                      <CCard class="mb-3">
+                        <CCardBody>
+                          - Asset {{ item.assetName }} harus dimaintenance pada {{ formatDate(item.maintenanceOrSubmitted) }}
+                          <router-link to="/pages/ScanQr">
+                            <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 ml-2">
+                              Maintenance Sekarang
+                            </button>
+                          </router-link>
+                        </CCardBody>
+                      </CCard>
                     </li>
                   </ul>
                 </CCardText>
@@ -47,12 +52,17 @@
               <CCardBody>
                 <CCardText v-if="submittedMaintenance.length">
                   <ul>
-                    <li v-for="item in submittedMaintenance" :key="item.id">
-                      - Asset {{ item.assetName }} diajukan untuk maintenance pada {{
-                        formatDate(item.maintenanceOrSubmitted) }}
-                      <router-link to="/pages/ListPengajuan" class="hover:underline text-blue-500 cursor-pointer">
-                        lihat detail
-                      </router-link>
+                    <li v-for="item in submittedMaintenance" :key="item.id" class="mb-4">
+                      <CCard class="mb-3">
+                        <CCardBody>
+                          - Asset {{ item.assetName }} dilakukan pengajuan pada {{ formatDate(item.maintenanceOrSubmitted) }}
+                          <router-link to="/pages/ListPengajuan">
+                            <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 ml-2">
+                              Lihat Detail
+                            </button>
+                          </router-link>
+                        </CCardBody>
+                      </CCard>
                     </li>
                   </ul>
                 </CCardText>
@@ -74,11 +84,17 @@
               <CCardBody>
                 <CCardText v-if="overdueMaintenance.length">
                   <ul>
-                    <li v-for="item in overdueMaintenance" :key="item.id">
-                      - Asset {{ item.assetName }} terlambat sejak {{ formatDate(item.maintenanceOrSubmitted) }}
-                      <router-link to="/pages/ScanQr" class="hover:underline text-blue-500 cursor-pointer">
-                        maintenance sekarang
-                      </router-link>
+                    <li v-for="item in overdueMaintenance" :key="item.id" class="mb-4">
+                      <CCard class="mb-3">
+                        <CCardBody>
+                          - Asset {{ item.assetName }} terlambat sejak {{ formatDate(item.maintenanceOrSubmitted) }}
+                          <router-link to="/pages/ScanQr">
+                            <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 ml-2">
+                              Maintenance Sekarang
+                            </button>
+                          </router-link>
+                        </CCardBody>
+                      </CCard>
                     </li>
                   </ul>
                 </CCardText>
@@ -96,7 +112,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'; // Import 'ref' from Vue
+import { ref } from 'vue'; 
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 const apiUrl = import.meta.env.VITE_API_URL;

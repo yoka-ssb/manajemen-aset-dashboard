@@ -43,15 +43,7 @@
       <CCardText>
         <strong>Tanggal Pembelian Aset:</strong> {{ asetData.assetPurchaseDate || 'Tidak tersedia' }}
       </CCardText>
-      <CCardText>
-        <strong>Nilai Ekonomis Aset:</strong> {{ asetData.classificationAcquisitionValue || 'Tidak tersedia' }}
-      </CCardText>
-      <CCardText>
-        <strong>Nilai Penyusutan Aset:</strong> {{ asetData.deprecationValue || 'Tidak tersedia' }}
-      </CCardText>
-      <CCardText>
-        <strong>Nilai Buku Terakhir:</strong> {{ asetData.classificationLastBookValue || 'Tidak tersedia' }}
-      </CCardText>
+     
       <CCardText>
         <strong>Usia Aset (Bulan):</strong> {{ asetData.assetAge || 'Tidak tersedia' }}
       </CCardText>

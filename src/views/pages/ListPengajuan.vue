@@ -16,6 +16,7 @@
                         <CTableHeaderCell scope="col">No</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Nama Pengaju</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Kategori</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Tanggal Pengajuan</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Lokasi</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Area</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Status</CTableHeaderCell>
@@ -27,6 +28,7 @@
                         <CTableHeaderCell scope="row">{{ (page - 1) * 10 + index + 1 }}</CTableHeaderCell>
                         <CTableDataCell>{{ submission.submissionName }}</CTableDataCell>
                         <CTableDataCell>{{ submission.submissionCategory }}</CTableDataCell>
+                        <CTableDataCell>{{ formatDate(submission.submissionDate) }}</CTableDataCell>
                         <CTableDataCell>{{ submission.submissionOutlet }}</CTableDataCell>
                         <CTableDataCell>{{ submission.submissionArea }}</CTableDataCell>
                         <CTableDataCell>{{ submission.submissionStatus }}</CTableDataCell>
@@ -121,6 +123,14 @@ export default {
             this.page = 1; 
             this.fetchSubmissions();
         }, 500),
+        
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
     },
     watch: {
         page() {

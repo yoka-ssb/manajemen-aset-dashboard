@@ -80,8 +80,9 @@
 
                         <div class="mb-3">
                             <CFormLabel for="classification_acquisition_value">Nilai Perolehan Aset</CFormLabel>
-                            <CFormInput id="classification_acquisition_value" v-model="classification_acquisition_value"
-                                type="number" placeholder="masukkan nilai perolehan" />
+                            <CFormInput id="classification_acquisition_value" :value="formattedAcquisitionValue"
+                                @input="updateAcquisitionValue($event.target.value)" type="text"
+                                placeholder="masukkan nilai perolehan" />
                         </div>
 
                         <div class="mb-3">
@@ -175,6 +176,11 @@ export default {
             isPersonalRequired: true,
         };
     },
+    computed: {
+        formattedAcquisitionValue() {
+            return this.classification_acquisition_value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+    },
     created() {
         this.fetchOutlets();
         this.fetchAreas();
@@ -263,6 +269,10 @@ export default {
                 console.log("File selected:", file);
             }
         },
+        updateAcquisitionValue(value) {
+            this.classification_acquisition_value = value.replace(/\./g, '');
+        },
+
 
         async submitForm() {
             const token = localStorage.getItem("token");
