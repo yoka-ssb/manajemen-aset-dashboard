@@ -70,7 +70,8 @@
                             </div>
                             <div class="flex-1">
                                 <CFormLabel for="submission_price">Harga Satuan</CFormLabel>
-                                <CFormInput id="submission_price" v-model="submission_price" type="number"
+                                <CFormInput id="submission_price" :value="formattedPrice"
+                                    @input="updatePrice($event.target.value)" type="text"
                                     placeholder="Masukkan harga satuan" />
                             </div>
                         </div>
@@ -113,7 +114,6 @@
 <script>
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import { CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle, CButton } from '@coreui/vue';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 const uploadUrl = import.meta.env.VITE_UPLOAD_URL;
@@ -139,6 +139,12 @@ export default {
             areas: [], 
             outlets: [], 
         };
+    },
+
+    computed: {
+        formattedPrice() {
+            return this.submission_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
     },
 
     created() {
@@ -201,6 +207,10 @@ export default {
             } catch (error) {
                 console.error("Error fetching outlets:", error);
             }
+        },
+
+        updatePrice(value) {
+            this.submission_price = value.replace(/\./g, '');
         },
 
         async submitForm() {

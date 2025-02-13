@@ -87,7 +87,7 @@
 
                         <div class="mb-3">
                             <CFormLabel for="asset_quantity_standar">Jumlah Standar Aset/Perkap </CFormLabel>
-                            <CFormInput id="asset_quantity_standar" v-model="asset_quantity_standar"
+                            <CFormInput id="asset_quantity_standar" v-model="asset_quantity_standard"
                                 type="number" placeholder="masukkan jumlah standar" />
                         </div>
 
@@ -167,7 +167,7 @@ export default {
             asset_pic: "",
             personal_responsible: "",
             classification_acquisition_value: "",
-            asset_quantity_standar: 0, // Tambahkan state untuk menyimpan jumlah standar
+            asset_quantity_standard: 0, // Tambahkan state untuk menyimpan jumlah standar
             asset_quantity: 0, // Tambahkan state untuk menyimpan jumlah aset/perkap
             isAreaRequired: true,
             isOutletRequired: true,
@@ -199,7 +199,7 @@ export default {
         this.asset_purchase_date = "";
         this.asset_status = "Baik";
         this.classification_acquisition_value = "";
-        this.asset_quantity_standar = 0; // Inisialisasi jumlah standar
+        this.asset_quantity_standard = 0; // Inisialisasi jumlah standar
         this.asset_quantity = 0; // Inisialisasi jumlah aset/perkap
     },
 
@@ -272,7 +272,13 @@ export default {
         updateAcquisitionValue(value) {
             this.classification_acquisition_value = value.replace(/\./g, '');
         },
-
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        },
 
         async submitForm() {
             const token = localStorage.getItem("token");
@@ -298,6 +304,8 @@ export default {
                 console.log("Uploaded file path:", uploadedFilePath);
 
                 const payload = {
+                    assets: [
+                        {
                     asset_name: this.asset_name,
                     personal_responsible: this.personal_responsible,
                     asset_brand: this.asset_brand,
@@ -305,14 +313,16 @@ export default {
                     asset_specification: this.asset_specification,
                     asset_condition: this.asset_condition,
                     asset_status: this.asset_status,
-                    asset_purchase_date: this.asset_purchase_date,
+                    asset_purchase_date: this.formatDate(this.asset_purchase_date),
                     classification_acquisition_value: this.classification_acquisition_value,
-                    asset_quantity_standar: this.asset_quantity_standar, // Tambahkan jumlah standar ke payload
-                    asset_quantity: this.asset_quantity, // Tambahkan jumlah aset/perkap ke payload
+                    asset_quantity_standard: parseInt(this.asset_quantity_standard), // Konversi ke angka
+                            asset_quantity: parseInt(this.asset_quantity), // Tambahkan jumlah aset/perkap ke payload
                     outlet_id: this.selectedOutlet,
                     area_id: this.selectedArea,
                     asset_pic: this.selectedPic,
                     asset_classification: this.selectedKlasifikasi,
+                        }
+                    ]
                 };
 
                 console.log("Payload:", payload);

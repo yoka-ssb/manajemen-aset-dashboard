@@ -88,9 +88,6 @@ export default {
       const token = data.token;
       localStorage.setItem('token', token);
       try {
-        const decodedToken = jwt_decode(token);
-        const roleId = decodedToken.role_id;        
-        localStorage.setItem('role_id', roleId);
       } catch (error) {
         console.error('Invalid token:', error);
       }

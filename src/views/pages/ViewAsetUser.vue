@@ -21,7 +21,7 @@
                     </CCardText>
                     <strong>Jumlah Standard Asset/Perkap :</strong>
                     <CCardText>
-                      {{ assetSpecification || 'Tidak tersedia' }}
+                      {{ assetQuantityStandard || 'Tidak tersedia' }}
                     </CCardText>
                   </CCardBody>
                 </CCard>
@@ -106,6 +106,7 @@ export default {
       assetAge: "",
       assetClassification: "",
       loading: false,
+      assetQuantityStandard: "",
     };
   },
   created() {
@@ -159,6 +160,7 @@ export default {
             : "Tidak tersedia";
           this.personalResponsible = aset.personalResponsible || "Tidak tersedia";
           this.assetClassification = aset.assetClassification || "Tidak tersedia";
+          this.assetQuantityStandard = aset.assetQuantityStandard || "Tidak tersedia";
         })
         .catch((error) => {
           console.error("Gagal mengambil data aset:", error.message);

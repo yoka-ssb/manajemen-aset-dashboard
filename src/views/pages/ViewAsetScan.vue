@@ -63,7 +63,7 @@
                             <CCol class="text-end mt-3">
                                 <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 mr-2"
                                     @click="navigateToParameterAset">
-                                    Laporkan Kondisi Aset/Perkap
+                                    Maintenance Aset
                                 </button>
                             </CCol>
                         </CRow>

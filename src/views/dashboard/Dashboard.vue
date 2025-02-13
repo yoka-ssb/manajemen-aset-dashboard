@@ -166,7 +166,7 @@ const tableExample = [
 <template>
   <div>
     <WidgetsStatsA class="mb-4" />
-    <!-- <CRow>
+    <CRow>
       <CCol :md="12">
         <CCard class="mb-4">
           <CCardBody>
@@ -231,7 +231,7 @@ const tableExample = [
           </CCardFooter>
         </CCard>
       </CCol>
-    </CRow> -->
+    </CRow>
     <CRow>
       <CCol :md="5">
         <CCard class="mb-4">
@@ -244,8 +244,8 @@ const tableExample = [
       </CCard>
       </CCol>
     </CRow>
-    <!-- <WidgetsStatsD class="mb-4" /> -->
-    <!-- <CRow>
+    <WidgetsStatsD class="mb-4" />
+    
       <CCol :md="12">
         <CCard class="mb-4">
           <CCardHeader> Traffic &amp; Sales </CCardHeader>
@@ -381,6 +381,6 @@ const tableExample = [
             </CTable>
           </CCardBody>
         </CCard>
-      </CCol> -->
+      </CCol>
   </div>
 </template>

@@ -22,8 +22,8 @@
                   <ul>
                     <li v-for="item in nearestMaintenance" :key="item.id" class="mb-4">
                       <CCard class="mb-3">
-                        <CCardBody>
-                          - Asset {{ item.assetName }} harus dimaintenance pada {{ formatDate(item.maintenanceOrSubmitted) }}
+                        <CCardBody class="d-flex justify-content-between align-items-center">
+                          <span>- Asset {{ item.assetName }} harus dimaintenance pada {{ formatDate(item.maintenanceOrSubmitted) }}</span>
                           <router-link to="/pages/ScanQr">
                             <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 ml-2">
                               Maintenance Sekarang
@@ -43,8 +43,8 @@
         </CRow>
 
         <!-- Konten Jadwal Maintenance Submitted -->
-        <CRow>
-          <CCol v-if="!loading && (role_id !== 5 && role_id !== 6)" :lg="12">
+        <CRow v-if="!loading && role_id !== 6">
+          <CCol :lg="12">
             <CCard class="mb-3">
               <CCardHeader>
                 <strong>Pengajuan</strong>
@@ -54,8 +54,8 @@
                   <ul>
                     <li v-for="item in submittedMaintenance" :key="item.id" class="mb-4">
                       <CCard class="mb-3">
-                        <CCardBody>
-                          - Asset {{ item.assetName }} dilakukan pengajuan pada {{ formatDate(item.maintenanceOrSubmitted) }}
+                        <CCardBody class="d-flex justify-content-between align-items-center">
+                          <span>- Asset {{ item.assetName }} dilakukan pengajuan pada {{ formatDate(item.maintenanceOrSubmitted) }}</span>
                           <router-link to="/pages/ListPengajuan">
                             <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 ml-2">
                               Lihat Detail
@@ -86,8 +86,8 @@
                   <ul>
                     <li v-for="item in overdueMaintenance" :key="item.id" class="mb-4">
                       <CCard class="mb-3">
-                        <CCardBody>
-                          - Asset {{ item.assetName }} terlambat sejak {{ formatDate(item.maintenanceOrSubmitted) }}
+                        <CCardBody class="d-flex justify-content-between align-items-center">
+                          <span>- Asset {{ item.assetName }} terlambat sejak {{ formatDate(item.maintenanceOrSubmitted) }}</span>
                           <router-link to="/pages/ScanQr">
                             <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 ml-2">
                               Maintenance Sekarang
@@ -185,7 +185,7 @@ export default {
 
         // Pisahkan notifikasi berdasarkan status
         this.nearestMaintenance = notifications
-          .filter((item) => item.status !== 'late' && item.status !== 'submitted') // Notifikasi selain late dan submitted
+          .filter((item) => item.status === 'waiting') // Notifikasi dengan status waiting
           .map((item) => ({
             id: item.idNotification,
             assetName: item.assetName,
@@ -228,3 +228,15 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.d-flex {
+  display: flex;
+}
+.justify-content-between {
+  justify-content: space-between;
+}
+.align-items-center {
+  align-items: center;
+}
+</style>

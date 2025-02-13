@@ -5,6 +5,7 @@ import nav from '@/_nav.js'
 
 import simplebar from 'simplebar-vue'
 import 'simplebar-vue/dist/simplebar.min.css'
+import jwt_decode from 'jwt-decode'
 
 // Normalisasi path untuk menyamakan format
 const normalizePath = (path) =>
@@ -37,10 +38,28 @@ const AppSidebarNav = defineComponent({
     const firstRender = ref(true)
     const sidebarKey = ref(0) // Reactive key for forcing re-render
 
-    const roleId = localStorage.getItem("role_id");  // Ambil roleId dari localStorage
+    const outlet_id = ref(null)
+    const area_id = ref(null)
+    const role_id = ref(null)
+
+    const parseToken = () => {
+      const token = localStorage.getItem('token')
+      if (token) {
+        const decoded = jwt_decode(token)
+        outlet_id.value = decoded.outlet_id
+        area_id.value = decoded.area_id
+        role_id.value = decoded.role_id
+        console.log('Outlet ID:', outlet_id.value)
+        console.log('Area ID:', area_id.value)
+        console.log('Role ID:', role_id.value)
+      } else {
+        console.error('Token not found in local storage')
+      }
+    }
 
     onMounted(() => {
       firstRender.value = false
+      parseToken() // Panggil parseToken saat komponen dimount
     })
 
     // Watch for changes to force refresh
@@ -51,7 +70,7 @@ const AppSidebarNav = defineComponent({
     // Fungsi untuk memfilter menu berdasarkan roleId
     const filterMenuByRole = (menu) => {
       // Jika roleId adalah 5 atau 6, sembunyikan menu tertentu
-      if (roleId === '6' || roleId === '5') {
+      if (role_id.value === 5 || role_id.value === 6) {
         if (menu.name === 'Masters' || menu.name === 'Laporan') {
           return false; // Menyembunyikan menu
         }
@@ -157,5 +176,3 @@ const AppSidebarNav = defineComponent({
 })
 
 export { AppSidebarNav }
-
-  

@@ -29,7 +29,6 @@ const logout = async () => {
     )
 
     // Hapus data dari localStorage
-    localStorage.removeItem('role_id')
     localStorage.removeItem('token')
 
     // Arahkan ke halaman login

@@ -63,13 +63,14 @@
                         </div>
                         <div v-if="showAdditionalFields" class="mb-3 flex space-x-4">
                             <div class="flex-1">
-                                <CFormLabel for="submission_quantity">Jumlah Kebutuhan</CFormLabel>
+                                <CFormLabel for="submission_quantity">Jumlah</CFormLabel>
                                 <CFormInput id="submission_quantity" v-model="submission_quantity" type="number"
-                                    placeholder="Masukkan jumlah kebutuhan" />
+                                    placeholder="Masukkan jumlah" />
                             </div>
                             <div class="flex-1">
                                 <CFormLabel for="submission_price">Harga Satuan</CFormLabel>
-                                <CFormInput id="submission_price" v-model="submission_price" type="number"
+                                <CFormInput id="submission_price" :value="formattedPrice"
+                                    @input="updatePrice($event.target.value)" type="text"
                                     placeholder="Masukkan harga satuan" />
                             </div>
                         </div>
@@ -151,6 +152,9 @@ export default {
     computed: {
         showAdditionalFields() {
             return this.submission_category !== 'Pengabaian Kondisi Aset';
+        },
+        formattedPrice() {
+            return this.submission_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
     },
 
@@ -212,6 +216,9 @@ export default {
             } else {
                 console.error("No file selected");
             }
+        },
+        updatePrice(value) {
+            this.submission_price = value.replace(/\./g, '');
         },
 
         async submitForm() {

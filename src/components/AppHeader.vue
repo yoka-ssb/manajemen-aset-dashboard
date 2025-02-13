@@ -130,7 +130,7 @@ const showConfirmationModal = () => {
 
 const closeModal = () => {
   showModal.value = false;
-  router.push('/pages/Notification'); 
+  router.push('/pages/Notification');
 };
 
 </script>
@@ -164,10 +164,11 @@ const closeModal = () => {
           <CModalTitle>Notifikasi Maintenance</CModalTitle>
         </CModalHeader>
         <CModalBody>
-  <p v-if="totalWaiting > 0">Anda memiliki {{ totalWaiting }} jadwal maintenance terdekat!</p>
-  <p v-if="totalLate > 0">Anda memiliki {{ totalLate }} jadwal maintenance terlewat!</p>
-  <p v-if="role_id !== 5 && role_id !== 6 && totalSubmitted > 0">Ada pengajuan {{ totalSubmitted }} masuk!</p>
-</CModalBody>
+          <p v-if="totalWaiting > 0">Anda memiliki {{ totalWaiting }} jadwal maintenance terdekat!</p>
+          <p v-if="totalLate > 0">Anda memiliki {{ totalLate }} jadwal maintenance terlewat!</p>
+          <p v-if="role_id !== 5 && role_id !== 6 && totalSubmitted > 0">Ada pengajuan {{ totalSubmitted }} masuk!</p>
+          <p v-if="role_id === 6 && totalSubmitted > 0">Pantau Status {{ totalSubmitted }} Pengajuan Anda!</p>
+        </CModalBody>
 
         <CModalFooter>
           <button class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 mr-2" @click="closeModal">

@@ -70,6 +70,18 @@
                                         placeholder="area auto value" readonly />
                                 </div>
                             </div>
+                            <div v-if="submissionCategory !== 'Pengabaian Kondisi Aset'" class="mb-3 flex space-x-4">
+                                <div class="flex-1 mr-4">
+                                    <CFormLabel for="submissionQuantity">Jumlah</CFormLabel>
+                                    <CFormInput id="submissionQuantity" :value="formatRupiah(submissionQuantity)" type="text"
+                                        placeholder="jumlah auto value" readonly />
+                                </div>
+                                <div class="flex-1">
+                                    <CFormLabel for="submissionPrice">Harga Satuan</CFormLabel>
+                                    <CFormInput id="submissionPrice" :value="formatRupiah(submissionPrice)" type="text"
+                                        placeholder="harga satuan auto value" readonly />
+                                </div>
+                            </div>
                             <div class="mb-3">
                                 <div class="flex items-start">
                                     <!-- Image Section -->
@@ -123,6 +135,8 @@ export default {
             submissionCategory: "",
             submissionName: "",
             submissionArea: "",
+            submissionPrice: "",
+            submissionQuantity: "", // Tambahkan ini
             submissionPrName: "",
             nip: "",
             submissionDate: "",
@@ -158,8 +172,9 @@ export default {
                     this.submissionOutlet = submissionData.submissionOutlet || '';
                     this.submissionArea = submissionData.submissionArea || '';
                     this.nip = submissionData.nip || '';
+                    this.submissionPrice = submissionData.submissionPrice || '';
+                    this.submissionQuantity = submissionData.submissionQuantity || ''; // Tambahkan ini
                     this.submissionPrName = submissionData.submissionPrName || '';
-                    this.submissionQuantity = submissionData.submissionQuantity || '';
                     this.submissionCategory = submissionData.submissionCategory || '';
                     const formattedDate = new Date(submissionData.submissionDate).toLocaleDateString();
                     this.submissionDate = formattedDate;
@@ -188,7 +203,12 @@ export default {
                 this.isLoading = false;
             }
         },
+        formatRupiah(value) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        },
         downloadPDF() {
+            const formattedPrice = this.formatRupiah(this.submissionPrice);
+            const totalAnggaran = this.formatRupiah(this.submissionQuantity * this.submissionPrice);
             const content = `
   <style>
             body { color: black; font-size: 12px; }
@@ -267,8 +287,8 @@ export default {
                 <td>1.</td>
                 <td>${this.submissionAssetName}</td>
                 <td>${this.submissionQuantity}</td>
-                <td></td>
-                <td></td>
+                <td>${formattedPrice}</td>
+                <td>${totalAnggaran}</td>
             </tr>
         </table>
         <br>
@@ -276,9 +296,11 @@ export default {
             <tr>
                 <td><strong>Dibuat oleh</strong></td>
                 <td><strong>Diketahui oleh</strong></td>
+                <td><strong>Diketahui oleh</strong></td>
                 <td colspan="2"><strong>Disetujui oleh</strong></td>
             </tr>
             <tr>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td><strong>Keuangan</strong></td>
@@ -289,14 +311,17 @@ export default {
                 <td class="left-align"><strong>Tgl</strong></td>
                 <td class="left-align"><strong>Tgl</strong></td>
                 <td class="left-align"><strong>Tgl</strong></td>
+                <td class="left-align"><strong>Tgl</strong></td>
             </tr>
             <tr>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td style="height: 50px;"></td>
                 <td style="height: 50px;"></td>
             </tr>
             <tr>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -329,7 +354,7 @@ export default {
                 <td></td>
             </tr>
             <tr>
-                <td><strong>Telah ada dalam budget Divisi/Departement/Outlet ............................ / Belum ada dalam budget</strong></td>
+                <td><strong>Telah ada dalam budget Divisi/Departement/Outlet / ............................ / Belum ada dalam budget</strong></td>
                 <td></td>
             </tr>
         </table>
