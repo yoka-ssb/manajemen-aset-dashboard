@@ -8,34 +8,10 @@
                 <CCardBody>
                     <CForm @submit.prevent="submitForm">
 
-                        <div class="mb-3">
-                            <CFormLabel for="asset_name">Nama Aset/Perkap</CFormLabel>
-                            <CFormInput id="asset_name" v-model="asset_name" type="text"
-                                placeholder="masukkan nama aset/perkap" />
-                        </div>
-
-                        <div class="mb-3">
-                            <CFormLabel for="asset_brand">Nama Merk Aset/Perkap</CFormLabel>
-                            <CFormInput id="asset_brand" v-model="asset_brand" type="text"
-                                placeholder="masukkan merk aset/perkap" />
-                        </div>
-
-                        <div class="mb-3">
-                            <CFormLabel for="asset_image">Lampiran (Gambar Aset)</CFormLabel>
-                            <CFormInput id="asset_image" ref="assetImage" type="file" accept="image/*"
-                                placeholder="masukkan gambar aset/perkap jpg,jpeg, png" @change="handleFileChange" />
-                        </div>
-
-                        <div class="mb-3">
-                            <CFormLabel for="asset_specification">Spesifikasi Aset/Perkap </CFormLabel>
-                            <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3" placeholder="masukkan spesifikasi/komponent/ukuran aset/perkap">
-                            </CFormTextarea>
-                        </div>
-
                         <div v-if="isKlasifikasiaRequired" class="mb-4">
                             <CFormLabel for="asset_classification">Pilih Klasifikasi</CFormLabel>
                             <select id="asset_classification" v-model="selectedKlasifikasi"
-                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchKlasifikasi">
+                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchKlasifikasi" required>
                                 <option value="">Pilih Klasifikasi</option>
                                 <option v-for="klasifikasi in klasifikasis" :key="klasifikasi.classificationId"
                                     :value="klasifikasi.classificationId">
@@ -43,11 +19,34 @@
                                 </option>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <CFormLabel for="asset_name">Nama Aset/Perkap</CFormLabel>
+                            <CFormInput id="asset_name" v-model="asset_name" type="text"
+                                placeholder="masukkan nama aset/perkap" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <CFormLabel for="asset_brand">Nama Merk Aset/Perkap</CFormLabel>
+                            <CFormInput id="asset_brand" v-model="asset_brand" type="text"
+                                placeholder="masukkan merk aset/perkap" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <CFormLabel for="asset_image">Lampiran (Gambar Aset)</CFormLabel>
+                            <CFormInput id="asset_image" ref="assetImage" type="file" accept="image/*"
+                                placeholder="masukkan gambar aset/perkap jpg,jpeg, png" @change="handleFileChange" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <CFormLabel for="asset_specification">Spesifikasi Aset/Perkap </CFormLabel>
+                            <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3" placeholder="masukkan spesifikasi/komponent/ukuran aset/perkap" required>
+                            </CFormTextarea>
+                        </div>
 
                         <div class="mb-4">
                             <CFormLabel for="personal_responsible">Penanggung Jawab</CFormLabel>
                             <CFormInput id="personal_responsible" v-model="personal_responsible" type="text"
-                                placeholder="masukkan penanggung jawab/pengguna aset/perkap" />
+                                placeholder="masukkan penanggung jawab/pengguna aset/perkap" required />
                         </div>
 
                         <div class="mb-3 flex space-x-8">
@@ -55,9 +54,9 @@
                                 <CFormLabel for="asset_condition">Kondisi Aset</CFormLabel>
                                 <div class="flex space-x-4">
                                     <CFormCheck id="Baru" v-model="asset_condition" type="radio" name="asset_condition"
-                                        value="Baru" label="Baru" />
+                                        value="Baru" label="Baru" required />
                                     <CFormCheck id="Bekas" v-model="asset_condition" type="radio" name="asset_condition"
-                                        value="Bekas" label="Bekas" />
+                                        value="Bekas" label="Bekas" required />
                                 </div>
                             </div>
 
@@ -65,9 +64,9 @@
                                 <CFormLabel for="asset_status">Status Aset</CFormLabel>
                                 <div class="flex space-x-4">
                                     <CFormCheck id="Baik" v-model="asset_status" type="radio" name="asset_status"
-                                        value="Baik" label="Baik" />
+                                        value="Baik" label="Baik" required />
                                     <CFormCheck id="Buruk" v-model="asset_status" type="radio" name="asset_status"
-                                        value="Buruk" label="Buruk" />
+                                        value="Buruk" label="Buruk" required />
                                 </div>
                             </div>
                         </div>
@@ -75,32 +74,32 @@
                         <div class="mb-3">
                             <CFormLabel for="asset_purchase_date">Tanggal Pembelian Aset</CFormLabel>
                             <CFormInput id="asset_purchase_date" v-model="asset_purchase_date" type="date"
-                                placeholder="masukkan tanggal pembelian aset" />
+                                placeholder="masukkan tanggal pembelian aset" required />
                         </div>
 
                         <div class="mb-3">
                             <CFormLabel for="classification_acquisition_value">Nilai Perolehan Aset</CFormLabel>
                             <CFormInput id="classification_acquisition_value" :value="formattedAcquisitionValue"
                                 @input="updateAcquisitionValue($event.target.value)" type="text"
-                                placeholder="masukkan nilai perolehan" />
+                                placeholder="masukkan nilai perolehan" required />
                         </div>
 
                         <div class="mb-3">
                             <CFormLabel for="asset_quantity_standar">Jumlah Standar Aset/Perkap </CFormLabel>
                             <CFormInput id="asset_quantity_standar" v-model="asset_quantity_standard"
-                                type="number" placeholder="masukkan jumlah standar" />
+                                type="number" placeholder="masukkan jumlah standar" required />
                         </div>
 
                         <div class="mb-3">
                             <CFormLabel for="asset_quantity">Jumlah Aset/Perkap</CFormLabel>
                             <CFormInput id="asset_quantity" v-model="asset_quantity"
-                                type="number" placeholder="masukkan jumlah aset/perkap" />
+                                type="number" placeholder="masukkan jumlah aset/perkap" required />
                         </div>
 
                         <div v-if="isAreaRequired" class="mb-4">
                             <CFormLabel for="area_id">Pilih Area</CFormLabel>
                             <select id="area_id" v-model="selectedArea"
-                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets">
+                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets" required>
                                 <option value="">Pilih Area</option>
                                 <option v-for="area in areas" :key="area.areaId" :value="area.areaId">
                                     {{ area.areaName }}
@@ -111,7 +110,7 @@
                         <div v-if="isOutletRequired" class="mb-4">
                             <CFormLabel for="outlet_id">Pilih Lokasi</CFormLabel>
                             <select id="outlet_id" v-model="selectedOutlet"
-                                class="border border-gray-300 rounded-lg p-2 w-full">
+                                class="border border-gray-300 rounded-lg p-2 w-full" required>
                                 <option value="">Pilih Lokasi</option>
                                 <option v-for="outlet in outlets" :key="outlet.outletId" :value="outlet.outletId">{{
                                     outlet.outletName }}</option>
@@ -121,7 +120,7 @@
                         <div v-if="isPicRequired" class="mb-4">
                             <CFormLabel for="asset_pic">Pilih PIC Aset</CFormLabel>
                             <select id="asset_pic" v-model="selectedPic"
-                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets">
+                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets" required>
                                 <option value="">Pilih PIC</option>
                                 <option v-for="role in PicOption" :key="role.roleId" :value="role.roleId">
                                     {{ role.roleName }}
@@ -141,7 +140,12 @@
             </CCard>
         </CCol>
     </CRow>
+
+    <div v-if="loading" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
 </template>
+
 <script>
 import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -167,13 +171,14 @@ export default {
             asset_pic: "",
             personal_responsible: "",
             classification_acquisition_value: "",
-            asset_quantity_standard: 0, // Tambahkan state untuk menyimpan jumlah standar
-            asset_quantity: 0, // Tambahkan state untuk menyimpan jumlah aset/perkap
+            asset_quantity_standard: "", // Inisialisasi sebagai string kosong
+            asset_quantity: "", // Inisialisasi sebagai string kosong
             isAreaRequired: true,
             isOutletRequired: true,
             isKlasifikasiaRequired: true,
             isPicRequired: true,
             isPersonalRequired: true,
+            loading: false, // Tambahkan state untuk loading
         };
     },
     computed: {
@@ -199,8 +204,8 @@ export default {
         this.asset_purchase_date = "";
         this.asset_status = "Baik";
         this.classification_acquisition_value = "";
-        this.asset_quantity_standard = 0; // Inisialisasi jumlah standar
-        this.asset_quantity = 0; // Inisialisasi jumlah aset/perkap
+        this.asset_quantity_standard = ""; // Inisialisasi sebagai string kosong
+        this.asset_quantity = ""; // Inisialisasi sebagai string kosong
     },
 
     methods: {
@@ -288,6 +293,14 @@ export default {
                 return;
             }
 
+            // Validasi form
+            if (!this.asset_name || !this.asset_brand || !this.asset_image || !this.asset_specification || !this.selectedKlasifikasi || !this.personal_responsible || !this.asset_condition || !this.asset_status || !this.asset_purchase_date || !this.classification_acquisition_value || !this.asset_quantity_standard || !this.asset_quantity || !this.selectedArea || !this.selectedOutlet || !this.selectedPic) {
+                alert("Semua field harus diisi.");
+                return;
+            }
+
+            this.loading = true; // Set loading to true when submit starts
+
             let uploadedFilePath = null;
             try {
                 const imageFormData = new FormData();
@@ -306,21 +319,21 @@ export default {
                 const payload = {
                     assets: [
                         {
-                    asset_name: this.asset_name,
-                    personal_responsible: this.personal_responsible,
-                    asset_brand: this.asset_brand,
-                    asset_image: uploadedFilePath,
-                    asset_specification: this.asset_specification,
-                    asset_condition: this.asset_condition,
-                    asset_status: this.asset_status,
-                    asset_purchase_date: this.formatDate(this.asset_purchase_date),
-                    classification_acquisition_value: this.classification_acquisition_value,
-                    asset_quantity_standard: parseInt(this.asset_quantity_standard), // Konversi ke angka
+                            asset_name: this.asset_name,
+                            personal_responsible: this.personal_responsible,
+                            asset_brand: this.asset_brand,
+                            asset_image: uploadedFilePath,
+                            asset_specification: this.asset_specification,
+                            asset_condition: this.asset_condition,
+                            asset_status: this.asset_status,
+                            asset_purchase_date: this.formatDate(this.asset_purchase_date),
+                            classification_acquisition_value: this.classification_acquisition_value,
+                            asset_quantity_standard: parseInt(this.asset_quantity_standard), // Konversi ke angka
                             asset_quantity: parseInt(this.asset_quantity), // Tambahkan jumlah aset/perkap ke payload
-                    outlet_id: this.selectedOutlet,
-                    area_id: this.selectedArea,
-                    asset_pic: this.selectedPic,
-                    asset_classification: this.selectedKlasifikasi,
+                            outlet_id: this.selectedOutlet,
+                            area_id: this.selectedArea,
+                            asset_pic: this.selectedPic,
+                            asset_classification: this.selectedKlasifikasi,
                         }
                     ]
                 };
@@ -355,8 +368,40 @@ export default {
                         console.error("Failed to rollback uploaded file:", deleteError.response ? deleteError.response.data : deleteError);
                     }
                 }
+            } finally {
+                this.loading = false; // Set loading to false when submit ends
             }
         }
     }
 };
 </script>
+
+<style scoped>
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

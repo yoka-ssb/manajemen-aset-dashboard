@@ -154,13 +154,14 @@ export default {
 
 generateQRCode() {
   const canvasEl = this.$refs.qrcode;
-  const assetName = this.asetData.assetName; // Replace with the actual asset name field
+  const assetName = this.asetData.assetName; // Nama aset untuk overlay
+  const qrContent = `${this.asetData.assetIdHash}&`; // Tambahkan "&" setelah assetIdHash
 
   if (canvasEl && this.asetData.assetIdHash) {
-    // Generate QR Code
+    // Generate QR Code dengan tambahan "&"
     QRCode.toCanvas(
       canvasEl,
-      this.asetData.assetIdHash,
+      qrContent,
       {
         width: 300,
         margin: 2,
@@ -204,6 +205,7 @@ generateQRCode() {
 
 
 
+
     downloadQRCode() {
       const qrCodeElement = this.$refs.qrcode;
       if (!qrCodeElement) {
@@ -220,4 +222,3 @@ generateQRCode() {
   },
 };
 </script>
-koreksi

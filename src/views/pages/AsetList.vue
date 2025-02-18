@@ -34,7 +34,7 @@
 
         <CTableBody>
           <CTableRow v-for="(asset, index) in assets" :key="asset.assetId">
-            <CTableHeaderCell scope="row">{{ index + 1 }}</CTableHeaderCell>
+            <CTableHeaderCell scope="row">{{ (page - 1) * pageSize + index + 1 }}</CTableHeaderCell>
             <CTableDataCell>{{ asset.assetName }}</CTableDataCell>
             <CTableDataCell>{{ asset.assetBrand }}</CTableDataCell>
             <CTableDataCell>{{ asset.outletName }}</CTableDataCell>
@@ -58,7 +58,7 @@
         class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
         Prev
       </button>
-      <span>Page {{ page }} </span>
+      <span>Page {{ page }} of {{ totalPages }}</span>
       <button @click="changePage(page + 1)" :disabled="page === totalPages"
         class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
         Next
@@ -82,6 +82,7 @@ export default {
       page: 1,
       totalPages: 1,
       totalAssets: 0,
+      pageSize: 10,
       sortOrder: 'asc',
       user_role_id: null,
       user_outlet_id: null,
@@ -124,7 +125,7 @@ export default {
         const response = await axios.get(apiUrl + "/api/assets", {
           params: {
             page_number: this.page,
-            page_size: 10,
+            page_size: this.pageSize,
             q: this.searchAssets,
             user_role_id: this.user_role_id,
             user_outlet_id: this.user_outlet_id,
@@ -136,10 +137,15 @@ export default {
         });
 
         this.assets = response.data.data;
-        this.totalAssets = response.data.total;
-        this.totalPages = Math.ceil(this.totalAssets / 10);
+        this.totalAssets = response.data.totalCount;
+        this.totalPages = Math.ceil(this.totalAssets / this.pageSize);
       } catch (error) {
-        console.error("Error fetching assets:", error);
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem('token');
+          this.$router.push({ name: 'Login' });
+        } else {
+          console.error("Error fetching assets:", error);
+        }
       } finally {
         this.loading = false;
       }

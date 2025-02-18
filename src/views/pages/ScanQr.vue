@@ -17,11 +17,9 @@
 
 <script>
 import { ref, onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";  
+import { useRouter, onBeforeRouteLeave } from "vue-router";  
 import jsQR from "jsqr";
 import axios from "axios";
-
-const apiUrl = import.meta.env.VITE_API_URL;
 
 export default {
   name: "QrCodeReader",
@@ -60,32 +58,37 @@ export default {
 
           if (code) {
             console.log("QR Code detected:", code.data);
+
+            if (!code.data.endsWith("&")) {
+              console.log("Scanning... QR belum lengkap, menunggu '&'");
+              requestAnimationFrame(scan);
+              return;
+            }
+
+            console.log("QR Code lengkap, melanjutkan validasi...");
+            const cleanHash = code.data.slice(0, -1);
             const token = localStorage.getItem("token");
 
             axios
-              .get( apiUrl + `/api/assets/hash`, {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-                params: { hash_id: code.data },
+              .get(import.meta.env.VITE_API_URL + `/api/assets/hash`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { hash_id: cleanHash },
               })
               .then((response) => {
                 if (response.status === 200) {
                   console.log("Valid QR Code, redirecting...");
-                  router.push({ name: "ViewAsetScan", params: { IdHash: code.data } });
+                  router.push({ name: "ViewAsetScan", params: { IdHash: cleanHash } });
                 } else {
                   throw new Error("Invalid response status");
                 }
               })
               .catch((error) => {
                 console.error("Error validating QR Code:", error);
-                // Do not redirect to 404, continue scanning
               });
 
             return;
           }
         }
-
         requestAnimationFrame(scan);
       };
 
@@ -104,11 +107,15 @@ export default {
       }
     });
 
-    return {
-      video,
-    };
+    // Tambahkan refresh saat meninggalkan halaman ini
+    onBeforeRouteLeave(() => {
+      window.location.reload();
+    });
+
+    return { video };
   },
 };
+
 </script>
 
 <style scoped>

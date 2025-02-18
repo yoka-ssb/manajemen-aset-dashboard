@@ -71,7 +71,12 @@ const AppSidebarNav = defineComponent({
     const filterMenuByRole = (menu) => {
       // Jika roleId adalah 5 atau 6, sembunyikan menu tertentu
       if (role_id.value === 5 || role_id.value === 6) {
-        if (menu.name === 'Masters' || menu.name === 'Laporan') {
+        if (menu.name === 'Masters' || menu.name === 'Buat Pengajuan') {
+          return false; // Menyembunyikan menu
+        }
+      } else {
+        // Jika roleId selain 5 dan 6, sembunyikan menu tertentu
+        if (menu.name === 'Daftar Aset' || menu.name === 'Daftar Perkap' || menu.name === 'Scan Qr') {
           return false; // Menyembunyikan menu
         }
       }

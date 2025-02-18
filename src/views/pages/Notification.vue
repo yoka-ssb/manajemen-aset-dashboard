@@ -37,6 +37,11 @@
                 <CCardText v-else>
                   Tidak tersedia
                 </CCardText>
+                <div v-if="nearestMaintenance.length && totalPages.nearest > 1" class="pagination">
+                  <button @click="prevPage('nearest')" :disabled="pageNumber.nearest === 1">Previous</button>
+                  <span>Page {{ pageNumber.nearest }} of {{ totalPages.nearest }}</span>
+                  <button @click="nextPage('nearest')" :disabled="pageNumber.nearest === totalPages.nearest">Next</button>
+                </div>
               </CCardBody>
             </CCard>
           </CCol>
@@ -69,6 +74,11 @@
                 <CCardText v-else>
                   Tidak tersedia
                 </CCardText>
+                <div v-if="submittedMaintenance.length && totalPages.submitted > 1" class="pagination">
+                  <button @click="prevPage('submitted')" :disabled="pageNumber.submitted === 1">Previous</button>
+                  <span>Page {{ pageNumber.submitted }} of {{ totalPages.submitted }}</span>
+                  <button @click="nextPage('submitted')" :disabled="pageNumber.submitted === totalPages.submitted">Next</button>
+                </div>
               </CCardBody>
             </CCard>
           </CCol>
@@ -101,6 +111,11 @@
                 <CCardText v-else>
                   Tidak tersedia
                 </CCardText>
+                <div v-if="overdueMaintenance.length && totalPages.overdue > 1" class="pagination">
+                  <button @click="prevPage('overdue')" :disabled="pageNumber.overdue === 1">Previous</button>
+                  <span>Page {{ pageNumber.overdue }} of {{ totalPages.overdue }}</span>
+                  <button @click="nextPage('overdue')" :disabled="pageNumber.overdue === totalPages.overdue">Next</button>
+                </div>
               </CCardBody>
             </CCard>
           </CCol>
@@ -143,6 +158,16 @@ export default {
       nearestMaintenance: [],
       overdueMaintenance: [],
       submittedMaintenance: [],
+      pageNumber: {
+        nearest: 1,
+        overdue: 1,
+        submitted: 1,
+      },
+      totalPages: {
+        nearest: 1,
+        overdue: 1,
+        submitted: 1,
+      },
     };
   },
   methods: {
@@ -154,6 +179,8 @@ export default {
 
         let params = {
           role_id: role_id.value,
+          page: this.pageNumber.nearest,
+          pageSize: 10,
         };
 
         // Kondisi untuk role_id selain 5 dan 6
@@ -207,13 +234,23 @@ export default {
             assetName: item.assetName,
             maintenanceOrSubmitted: item.maintenanceOrSubmitted,
           }));
+
+        // Update total pages
+        this.totalPages.nearest = Math.ceil(response.data.totalWaiting / 10);
+        this.totalPages.overdue = Math.ceil(response.data.totalLate / 10);
+        this.totalPages.submitted = Math.ceil(response.data.totalSubmitted / 10);
+
       } catch (error) {
-        console.error("Gagal memuat data:", error);
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem('token');
+          this.$router.push({ name: 'Login' });
+        } else {
+          console.error("gagal:", error);
+        }
       } finally {
         this.loading = false;
       }
     },
-
     // Metode untuk memformat tanggal
     formatDate(dateString) {
       const date = new Date(dateString);
@@ -221,6 +258,18 @@ export default {
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       return `${day}-${month}-${year}`;
+    },
+    nextPage(type) {
+      if (this.pageNumber[type] < this.totalPages[type]) {
+        this.pageNumber[type]++;
+        this.fetchNotifications();
+      }
+    },
+    prevPage(type) {
+      if (this.pageNumber[type] > 1) {
+        this.pageNumber[type]--;
+        this.fetchNotifications();
+      }
     }
   },
   mounted() {
@@ -238,5 +287,24 @@ export default {
 }
 .align-items-center {
   align-items: center;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+.pagination button {
+  background-color: #f0ad4e;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+.pagination button:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
 }
 </style>

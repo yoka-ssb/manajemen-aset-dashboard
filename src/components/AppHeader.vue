@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useColorModes } from '@coreui/vue'
 
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
@@ -16,7 +16,6 @@ const router = useRouter()
 const headerClassNames = ref('mb-4 p-0')
 const { colorMode, setColorMode } = useColorModes('coreui-free-vue-admin-template-theme')
 const sidebar = useSidebarStore()
-const notificationCount = ref(0)
 const totalWaiting = ref(0)
 const totalLate = ref(0)
 const totalSubmitted = ref(0)
@@ -41,6 +40,7 @@ const parseToken = () => {
     console.error('Token not found in local storage')
   }
 }
+
 const fetchAllNotifications = async () => {
   try {
     const token = localStorage.getItem('token')
@@ -98,17 +98,23 @@ const fetchNotifications = async () => {
     }
 
     const data = response.data
-    notificationCount.value = data.totalCount
     totalWaiting.value = data.totalWaiting
     totalLate.value = data.totalLate
     totalSubmitted.value = data.totalSubmitted
   } catch (error) {
     console.error('Failed to fetch notifications:', error)
-    notificationCount.value = 0
     totalWaiting.value = 0
     totalLate.value = 0
   }
 }
+
+const notificationCount = computed(() => {
+  if (role_id.value === 5 || role_id.value === 6) {
+    return totalWaiting.value
+  } else {
+    return totalWaiting.value + totalLate.value + totalSubmitted.value
+  }
+})
 
 onMounted(() => {
   document.addEventListener('scroll', () => {
@@ -167,7 +173,7 @@ const closeModal = () => {
           <p v-if="totalWaiting > 0">Anda memiliki {{ totalWaiting }} jadwal maintenance terdekat!</p>
           <p v-if="totalLate > 0">Anda memiliki {{ totalLate }} jadwal maintenance terlewat!</p>
           <p v-if="role_id !== 5 && role_id !== 6 && totalSubmitted > 0">Ada pengajuan {{ totalSubmitted }} masuk!</p>
-          <p v-if="role_id === 6 && totalSubmitted > 0">Pantau Status {{ totalSubmitted }} Pengajuan Anda!</p>
+          <!-- <p v-if="role_id !== 5 && role_id !== 6 && totalSubmitted > 0">Pantau Status {{ totalSubmitted }} Pengajuan Anda!</p> -->
         </CModalBody>
 
         <CModalFooter>

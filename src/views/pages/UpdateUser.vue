@@ -14,12 +14,12 @@
                         <div class="mb-3">
                             <CFormLabel for="user_full_name">Nama Lengkap Pengguna</CFormLabel>
                             <CFormInput id="user_full_name" v-model="user_full_name" type="text"
-                                placeholder="masukkan nama pengguna" />
+                                placeholder="masukkan nama pengguna" required />
                         </div>
                         <div class="mb-3">
                             <CFormLabel for="user_email">Email Pengguna</CFormLabel>
                             <CFormInput id="user_email" v-model="user_email" type="email"
-                                placeholder="masukkan email" />
+                                placeholder="masukkan email" required />
                         </div>
 
                         <!-- Role Selection -->

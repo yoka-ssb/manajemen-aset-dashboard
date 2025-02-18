@@ -6,8 +6,8 @@
         </div>
 
         <div v-if="loading" class="loading-overlay">
-      <div class="spinner"></div>
-    </div>
+            <div class="spinner"></div>
+        </div>
 
         <div class="overflow-x-auto rounded-lg border border-gray-200">
             <CTable>
@@ -24,8 +24,8 @@
                     </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                    <CTableRow v-for="(submission, index) in submissions" :key="submissions.submissionId">
-                        <CTableHeaderCell scope="row">{{ (page - 1) * 10 + index + 1 }}</CTableHeaderCell>
+                    <CTableRow v-for="(submission, index) in submissions" :key="submission.submissionId">
+                        <CTableHeaderCell scope="row">{{ (page - 1) * pageSize + index + 1 }}</CTableHeaderCell>
                         <CTableDataCell>{{ submission.submissionName }}</CTableDataCell>
                         <CTableDataCell>{{ submission.submissionCategory }}</CTableDataCell>
                         <CTableDataCell>{{ formatDate(submission.submissionDate) }}</CTableDataCell>
@@ -35,7 +35,8 @@
                         <CTableDataCell>
                             <div class="flex space-x-2">
                                 <button @click="DetailPengajuan(submission.submissionId)"
-                                    class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600">View Detail</button>
+                                    class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600">View
+                                    Detail</button>
                             </div>
                         </CTableDataCell>
                     </CTableRow>
@@ -49,7 +50,7 @@
                 class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
                 Prev
             </button>
-            <span>Page {{ page }} </span>
+            <span>Page {{ page }} of {{ totalPages }}</span>
             <button @click="changePage(page + 1)" :disabled="page === totalPages"
                 class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
                 Next
@@ -57,13 +58,13 @@
         </div>
     </div>
 </template>
-
 <script>
 import axios from 'axios';
 import { debounce } from 'lodash';
-import DetailPengajuan from './DetailPengajuan.vue';
+import jwt_decode from 'jwt-decode';
 
 const apiUrl = import.meta.env.VITE_API_URL;
+
 export default {
     data() {
         return {
@@ -72,17 +73,40 @@ export default {
             page: 1,
             totalPages: 1,
             totalSubmissions: 0,
+            pageSize: 10,
             sortOrder: 'asc',
+            nip: '',
+            area_id: '',
+            outlet_id: '',
             loading: false,
         };
     },
 
     methods: {
-        DetailPengajuan(submissionId) {
-            this.$router.push({ name: 'DetailPengajuan', params: { submissionId: submissionId } });
-            console.log("Detail Submissions:", submissionId);
+        async parseToken() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.error('No token found in local storage.');
+                    return;
+                }
+                const decoded = jwt_decode(token);
+                if (decoded) {
+                    this.role_id = decoded.role_id;
+                    this.area_id = decoded.area_id;
+                    this.outlet_id = decoded.outlet_id;
+                } else {
+                    console.error('Invalid token format.');
+                }
+            } catch (error) {
+                console.error('Error decoding token:', error);
+            }
         },
-       
+
+        DetailPengajuan(submissionId) {
+            this.$router.push({ name: 'DetailPengajuan', params: { submissionId } });
+        },
+
         async fetchSubmissions() {
             this.loading = true;
             try {
@@ -94,81 +118,87 @@ export default {
 
                 const response = await axios.get(`${apiUrl}/api/submissions`, {
                     params: {
-                        page_number: this.page, 
-                        page_size: 10,          
-                        q: this.searchSubmission,    
+                        page_number: this.page,
+                        page_size: this.pageSize,
+                        q: this.searchSubmission,
+                        role_id: this.role_id,
+                        area_id: this.area_id,
+                        outlet_id: this.outlet_id,
                     },
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
 
-                this.submissions = response.data.data;
-                this.totalSubmissions = response.data.total;
-                this.totalPages = Math.ceil(this.totalUsers / 10); 
+                this.submissions = response.data.data || [];
+                this.totalSubmissions = response.data.totalCount || 0;
+                this.totalPages = Math.ceil(this.totalSubmissions / this.pageSize);
             } catch (error) {
-                console.error('Error fetching submissions:', error);
-            } finally{
+                if (error.response?.status === 401) {
+                    localStorage.removeItem('token');
+                    this.$router.push({ name: 'Login' });
+                } else {
+                    console.error("Error fetching submissions:", error);
+                }
+            } finally {
                 this.loading = false;
             }
         },
 
         changePage(newPage) {
-            if (newPage < 1 || newPage > this.totalPages) return;
-            this.page = newPage;
-            this.fetchSubmissions();
+            if (newPage >= 1 && newPage <= this.totalPages) {
+                this.page = newPage;
+                this.fetchSubmissions();
+            }
         },
 
         debouncedSearch: debounce(function () {
-            this.page = 1; 
+            this.page = 1;
             this.fetchSubmissions();
         }, 500),
-        
+
         formatDate(dateString) {
+            if (!dateString) return "-";
             const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}-${month}-${year}`;
+            if (isNaN(date)) return "-";
+            return date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
         }
     },
-    watch: {
-        page() {
-            this.fetchSubmissions(); 
-        }
-    },
-    mounted() {
+
+    async mounted() {
+        await this.parseToken();
         this.fetchSubmissions();
     },
 };
 </script>
 
+
 <style scoped>
 .loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+    to {
+        transform: rotate(360deg);
+    }
 }
 </style>

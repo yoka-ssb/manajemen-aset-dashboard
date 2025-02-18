@@ -11,13 +11,13 @@
                         <div class="mb-3">
                             <CFormLabel for="asset_name">Nama Aset</CFormLabel>
                             <CFormInput id="asset_name" v-model="asset_name" type="text"
-                                placeholder="masukkan nama aset" />
+                                placeholder="masukkan nama aset" required />
                         </div>
 
                         <div class="mb-3">
                             <CFormLabel for="asset_brand">Nama Merk</CFormLabel>
                             <CFormInput id="asset_brand" v-model="asset_brand" type="text"
-                                placeholder="masukkan merk aset" />
+                                placeholder="masukkan merk aset" required />
                         </div>
                         <div class="mb-3">
                             <CFormLabel for="asset_image">Lampiran (Gambar Aset)</CFormLabel>
@@ -31,14 +31,14 @@
                         </div>
                         <div class="mb-3">
                             <CFormLabel for="asset_specification">Spesifikasi Aset</CFormLabel>
-                            <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3">
+                            <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3"   placeholder="masukkan spesifikasi" required>
                             </CFormTextarea>
                         </div>
 
                         <div v-if="isKlasifikasiaRequired" class="mb-4">
                             <CFormLabel for="asset_classification">Pilih Klasifikasi</CFormLabel>
                             <select id="asset_classification" v-model="selectedKlasifikasi"
-                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchKlasifikasi">
+                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchKlasifikasi" required>
                                 <option value="">Pilih Klasifikasi</option>
                                 <option v-for="klasifikasi in klasifikasis" :key="klasifikasi.classificationId"
                                     :value="klasifikasi.classificationId">
@@ -50,7 +50,7 @@
                         <div class="mb-4">
                             <CFormLabel for="personal_responsible">Pilih Penanggung jawab</CFormLabel>
                             <CFormInput id="personal_responsible" v-model="personal_responsible" type="text"
-                                placeholder="masukkan penanggung jawab" />
+                                placeholder="masukkan penanggung jawab" required />
                         </div>
 
                         <div class="mb-3 flex space-x-8">
@@ -59,10 +59,10 @@
                                 <div class="flex space-x-4">
                                     <input id="Baru" v-model="asset_condition" type="radio" name="asset_condition"
                                         value="Baru" />
-                                    <label for="Baru">Baru</label>
+                                    <label for="Baru" required>Baru</label>
                                     <input id="Bekas" v-model="asset_condition" type="radio" name="asset_condition"
                                         value="Bekas" />
-                                    <label for="Bekas">Bekas</label>
+                                    <label for="Bekas" required>Bekas</label>
                                 </div>
                             </div>
 
@@ -71,10 +71,10 @@
                                 <div class="flex space-x-4">
                                     <input id="Baik" v-model="asset_status" type="radio" name="asset_status"
                                         value="Baik" />
-                                    <label for="Baik">Baik</label>
+                                    <label for="Baik" required>Baik</label>
                                     <input id="Buruk" v-model="asset_status" type="radio" name="asset_status"
                                         value="Buruk" />
-                                    <label for="Buruk">Buruk</label>
+                                    <label for="Buruk" required>Buruk</label>
                                 </div>
                             </div>
                         </div>
@@ -82,19 +82,19 @@
                         <div class="mb-3">
                             <CFormLabel for="asset_purchase_date">Tanggal Pembelian Aset</CFormLabel>
                             <CFormInput id="asset_purchase_date" v-model="asset_purchase_date" type="date"
-                                placeholder="masukkan tanggal pembelian aset" />
+                                placeholder="masukkan tanggal pembelian aset" required />
                         </div>
 
                         <div class="mb-3">
                             <CFormLabel for="classification_acquisition_value">Nilai Perolehan Aset</CFormLabel>
                             <CFormInput id="classification_acquisition_value" v-model="classification_acquisition_value"
-                                type="number" placeholder="masukkan nilai perolehan" />
+                                type="number" placeholder="masukkan nilai perolehan"  required/>
                         </div>
 
                         <div v-if="isAreaRequired" class="mb-4">
                             <CFormLabel for="area_id">Pilih Area</CFormLabel>
                             <select id="area_id" v-model="selectedArea"
-                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets">
+                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets" required>
                                 <option value="">Pilih Area</option>
                                 <option v-for="area in areas" :key="area.areaId" :value="area.areaId">
                                     {{ area.areaName }}
@@ -105,7 +105,7 @@
                         <div v-if="isOutletRequired" class="mb-4">
                             <CFormLabel for="outlet_id">Pilih Lokasi</CFormLabel>
                             <select id="outlet_id" v-model="selectedOutlet"
-                                class="border border-gray-300 rounded-lg p-2 w-full">
+                                class="border border-gray-300 rounded-lg p-2 w-full" required>
                                 <option value="">Pilih Lokasi</option>
                                 <option v-for="outlet in outlets" :key="outlet.outletId" :value="outlet.outletId">
                                     {{ outlet.outletName }}
@@ -115,7 +115,7 @@
                         <div v-if="isPicRequired" class="mb-4">
                             <CFormLabel for="asset_pic">Pilih PIC Aset</CFormLabel>
                             <select id="asset_pic" v-model="selectedPic"
-                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets">
+                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchOutlets" required>
                                 <option value="">Pilih PIC</option>
                                 <option v-for="role in PicOption" :key="role.roleId" :value="role.roleId">
                                     {{ role.roleName }}

@@ -54,6 +54,8 @@
                                     <option value="Pengabaian Kondisi Aset">Pengabaian Kondisi Aset</option>
                                     <option value="Pemenuhan Aset/Perkap">Pemenuhan Aset/Perkap</option>
                                 </CFormSelect>
+                                <p v-if="errors.submission_category" class="text-red-500 text-sm mt-1">{{
+                                    errors.submission_category }}</p>
                             </div>
                             <div class="flex-1">
                                 <CFormLabel for="submission_outlet">Lokasi</CFormLabel>
@@ -65,34 +67,41 @@
                             <div class="flex-1">
                                 <CFormLabel for="submission_quantity">Jumlah</CFormLabel>
                                 <CFormInput id="submission_quantity" v-model="submission_quantity" type="number"
-                                    placeholder="Masukkan jumlah" />
+                                    placeholder="Masukkan jumlah" required />
+                                <p v-if="errors.submission_quantity" class="text-red-500 text-sm mt-1">{{
+                                    errors.submission_quantity }}</p>
                             </div>
-                            <div class="flex-1">
+                            <div v-if="showAdditionalFields" class="flex-1">
                                 <CFormLabel for="submission_price">Harga Satuan</CFormLabel>
                                 <CFormInput id="submission_price" :value="formattedPrice"
-                                    @input="updatePrice($event.target.value)" type="text"
-                                    placeholder="Masukkan harga satuan" />
+                                    @input="updatePrice($event.target.value)" type="number"
+                                    placeholder="Masukkan harga satuan" required />
+                                <p v-if="errors.submission_price" class="text-red-500 text-sm mt-1">{{
+                                    errors.submission_price }}</p>
                             </div>
                         </div>
                         <div v-if="showAdditionalFields" class="mb-3 flex items-center justify-between">
                             <div class="flex-1">
                                 <CFormLabel for="attachment">Lampiran (Bukti Aset)</CFormLabel>
                                 <CFormInput id="attachment" ref="Attachment" type="file" accept="image/*"
-                                    @change="handleFileChange" placeholder="Masukkan lampiran" />
+                                    @change="handleFileChange" placeholder="Masukkan lampiran" required />
+                                <p v-if="errors.attachment" class="text-red-500 text-sm mt-1">{{ errors.attachment }}
+                                </p>
                             </div>
                         </div>
                         <div class="mb-3">
                             <CFormLabel for="submission_description">Keterangan Pengajuan Aset</CFormLabel>
                             <CFormTextarea id="submission_description" v-model="submission_description" rows="3"
-                                placeholder="Masukkan keterangan">
+                                placeholder="Masukkan keterangan" required>
                             </CFormTextarea>
+                            <p v-if="errors.submission_description" class="text-red-500 text-sm mt-1">{{
+                                errors.submission_description }}</p>
                         </div>
                     </CForm>
                     <div class="flex justify-end mt-4">
                         <button
-                            class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 flex items-center"
-                            type="button" @click="handleSubmit" :disabled="isSubmitting">
-                            <!-- Loading spinner here -->
+                            class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center ml-4"
+                            type="button" @click="submitForm('submit')" :disabled="isSubmitting">
                             <span v-if="isSubmitting" class="spinner-border spinner-border-sm mr-2" role="status"
                                 aria-hidden="true"></span>
                             Submit
@@ -111,7 +120,6 @@
                             </CButton>
                         </CModalFooter>
                     </CModal>
-
                 </CCardBody>
             </CCard>
         </CCol>
@@ -133,19 +141,20 @@ export default {
             submission_outlet: "",
             submission_pr_name: "",
             submission_role_name: "",
-            submission_category: "",
+            submission_category: "", // Inisialisasi sebagai string kosong
             submission_name: "",
             submission_description: "",
             submission_area: "",
-            submission_quantity: 0, // Tambahkan state untuk menyimpan jumlah kebutuhan
-            submission_price: 0, // Tambahkan state untuk menyimpan harga satuan
+            submission_quantity: "", // Inisialisasi sebagai string kosong
+            submission_price: "", // Inisialisasi sebagai string kosong
             attachment: null,
             submission_status: "Diajukan",
             nip: "",
-            isSubmitting: false, 
-            showUploadErrorModal: false, 
+            isSubmitting: false,
+            showUploadErrorModal: false,
             outletId: null, // Tambahkan state untuk menyimpan outletId
             areaId: null, // Tambahkan state untuk menyimpan areaId
+            errors: {}, // Tambahkan state untuk menyimpan pesan error per field
         };
     },
 
@@ -177,6 +186,16 @@ export default {
     },
 
     methods: {
+        handleAddSubmit() {
+        this.submission_status = 'add'; // Set status menjadi 'add'
+        this.submitForm(); // Panggil submitForm setelah mengubah status
+    },
+
+    // Pastikan handleSubmit tetap ada untuk button submit lainnya
+    handleSubmit() {
+        this.submission_status = 'submit'; // Set status menjadi 'submit' untuk submit biasa
+        this.submitForm(); // Panggil submitForm
+    },
         async fetchAssetData() {
             const token = localStorage.getItem("token");
             if (!token) {
@@ -222,8 +241,33 @@ export default {
         },
 
         async submitForm() {
-            this.isSubmitting = true; 
-            this.showUploadErrorModal = false; 
+            this.isSubmitting = true;
+
+            // Hilangkan pesan error sebelum validasi
+            this.errors = {};
+
+            if (this.showAdditionalFields) {
+                if (!this.submission_category) {
+                    this.errors.submission_category = "Kategori Pengajuan harus dipilih!";
+                }
+                if (!this.submission_quantity) {
+                    this.errors.submission_quantity = "Jumlah harus diisi!";
+                }
+                if (!this.submission_price) {
+                    this.errors.submission_price = "Harga Satuan harus diisi!";
+                }
+                if (!this.attachment) {
+                    this.errors.attachment = "Lampiran harus diunggah!";
+                }
+                if (!this.submission_description) {
+                    this.errors.submission_description = "Keterangan Pengajuan Aset harus diisi!";
+                }
+
+                if (Object.keys(this.errors).length > 0) {
+                    this.isSubmitting = false;
+                    return;
+                }
+            }
 
             const token = localStorage.getItem("token");
             if (!token) {
@@ -251,7 +295,7 @@ export default {
 
                     if (uploadResponse.status === 204) {
                         console.error("File upload gagal dengan status 204.");
-                        this.showUploadErrorModal = true; 
+                        this.showUploadErrorModal = true;
                         throw new Error("File upload gagal.");
                     }
 
@@ -294,8 +338,8 @@ export default {
                 );
 
                 if (response.status === 200) {
-                    this.$router.push({ name: 'AsetList' });
-                }
+                    this.$router.push({ name: 'ListPengajuan' });
+            }
             } catch (error) {
                 console.error("There was an error:", error.response ? error.response.data : error);
 
@@ -315,7 +359,7 @@ export default {
                     }
                 }
             } finally {
-                this.isSubmitting = false; 
+                this.isSubmitting = false;
             }
         }
 

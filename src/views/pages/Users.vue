@@ -15,8 +15,8 @@
         </div>
 
         <div v-if="loading" class="loading-overlay">
-      <div class="spinner"></div>
-    </div>
+            <div class="spinner"></div>
+        </div>
 
         <div class="overflow-x-auto rounded-lg border border-gray-200">
             <CTable>
@@ -32,11 +32,10 @@
                 </CTableHead>
                 <CTableBody>
                     <CTableRow v-for="(user, index) in users" :key="user.nip">
-                        <CTableHeaderCell scope="row">{{ (page - 1) * 10 + index + 1 }}</CTableHeaderCell>
+                        <CTableHeaderCell scope="row">{{ (page - 1) * pageSize + index + 1 }}</CTableHeaderCell>
                         <CTableDataCell>{{ user.nip }}</CTableDataCell>
                         <CTableDataCell>{{ user.userFullName }}</CTableDataCell>
                         <CTableDataCell>{{ user.userEmail }}</CTableDataCell>
-                        <!-- <CTableDataCell>Unknow</CTableDataCell> -->
                         <CTableDataCell>{{ user.roleName }}</CTableDataCell>
                         <CTableDataCell>
                             <div class="flex space-x-2">
@@ -58,7 +57,7 @@
                 class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
                 Prev
             </button>
-            <span>Page {{ page }} </span>
+            <span>Page {{ page }} of {{ totalPages }}</span>
             <button @click="changePage(page + 1)" :disabled="page === totalPages"
                 class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
                 Next
@@ -80,27 +79,11 @@ export default {
             page: 1,
             totalPages: 1,
             totalUsers: 0,
+            pageSize: 10,
             sortOrder: 'asc',
             loading: false,
         };
     },
-
-    // computed: {
-    //     // Membuat computed property untuk mendapatkan nama role berdasarkan roleId
-    //     roleName() {
-    //         return (roleId) => {
-    //             const roles = {
-    //                 6: 'Outlet',
-    //                 1: 'Super Admin',
-    //                 2: 'GA Pusat',
-    //                 5: 'GA Area',
-    //                 4: 'Keuangan',
-    //                 3: 'IT', // Ganti dengan roleId dan nama sesuai kebutuhan
-    //             };
-    //             return roles[roleId] || 'Unknown'; // Jika roleId tidak ditemukan, tampilkan 'Unknown'
-    //         };
-    //     }
-    // },
 
     methods: {
         UpdateUser(nip) {
@@ -124,7 +107,7 @@ export default {
                 const response = await axios.get(`${apiUrl}/api/users`, {
                     params: {
                         page_number: this.page, 
-                        page_size: 10,          
+                        page_size: this.pageSize,          
                         q: this.searchUsers,    
                     },
                     headers: {
@@ -133,11 +116,16 @@ export default {
                 });
 
                 this.users = response.data.data;
-                this.totalUsers = response.data.total;
-                this.totalPages = Math.ceil(this.totalUsers / 10); 
+                this.totalUsers = response.data.totalCount;
+                this.totalPages = Math.ceil(this.totalUsers / this.pageSize); 
             } catch (error) {
-                console.error('Error fetching users:', error);
-            } finally{
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem('token');
+                    this.$router.push({ name: 'Login' });
+                } else {
+                    console.error("Error fetching users:", error);
+                }
+            } finally {
                 this.loading = false;
             }
         },
@@ -163,8 +151,6 @@ export default {
     },
 };
 </script>
-
-
 
 <style scoped>
 .loading-overlay {
