@@ -186,12 +186,6 @@ export default {
     },
 
     methods: {
-        handleAddSubmit() {
-        this.submission_status = 'add'; // Set status menjadi 'add'
-        this.submitForm(); // Panggil submitForm setelah mengubah status
-    },
-
-    // Pastikan handleSubmit tetap ada untuk button submit lainnya
     handleSubmit() {
         this.submission_status = 'submit'; // Set status menjadi 'submit' untuk submit biasa
         this.submitForm(); // Panggil submitForm
@@ -338,8 +332,11 @@ export default {
                 );
 
                 if (response.status === 200) {
-                    this.$router.push({ name: 'ListPengajuan' });
-            }
+                    console.log("Submission successful, redirecting to ListPengajuan...");
+                    this.$router.push({ name: 'List Pengajuan' });
+                } else {
+                    console.error("Unexpected response status:", response.status);
+                }
             } catch (error) {
                 console.error("There was an error:", error.response ? error.response.data : error);
 

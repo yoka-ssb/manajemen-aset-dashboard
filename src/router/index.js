@@ -132,6 +132,11 @@ const routes = [
       name: 'List Pengajuan', 
       component: () => import('@/views/pages/ListPengajuan.vue'),
     },
+    {
+      path: '/pages/PengajuanGabungan/:submissionParentId', 
+      name: 'PengajuanGabungan',
+      component: () => import('@/views/pages/PengajuanGabungan.vue'), 
+    },
 
       // {
       //   path: '/theme',

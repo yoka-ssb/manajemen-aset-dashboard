@@ -3,46 +3,97 @@
         <div class="mb-4 flex justify-between items-center">
             <input v-model="searchSubmission" @input="debouncedSearch" type="text" placeholder="Cari Nama Pengaju..."
                 class="px-4 py-2 border rounded-lg" />
+            <div class="flex space-x-2">
+                <button v-if="view === 'satuan' && !showCheckboxes" @click="handlePilih" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                    Pilih
+                </button>
+                <button v-if="view === 'satuan' && showCheckboxes && isAnySubmissionSelected" @click="handleSimpan" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                    Simpan
+                </button>
+                <button @click="toggleView('satuan')" :class="{'bg-blue-500': view === 'satuan', 'bg-gray-500': view !== 'satuan'}" class="text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                    Satuan
+                </button>
+                <button @click="toggleView('gabungan')" :class="{'bg-blue-500': view === 'gabungan', 'bg-gray-500': view !== 'gabungan'}" class="text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                    Gabungan
+                </button>
+            </div>
         </div>
 
         <div v-if="loading" class="loading-overlay">
             <div class="spinner"></div>
         </div>
 
-        <div class="overflow-x-auto rounded-lg border border-gray-200">
-            <CTable>
-                <CTableHead>
-                    <CTableRow>
-                        <CTableHeaderCell scope="col">No</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Nama Pengaju</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Kategori</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Tanggal Pengajuan</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Lokasi</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Area</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Status</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Action</CTableHeaderCell>
-                    </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                    <CTableRow v-for="(submission, index) in submissions" :key="submission.submissionId">
-                        <CTableHeaderCell scope="row">{{ (page - 1) * pageSize + index + 1 }}</CTableHeaderCell>
-                        <CTableDataCell>{{ submission.submissionName }}</CTableDataCell>
-                        <CTableDataCell>{{ submission.submissionCategory }}</CTableDataCell>
-                        <CTableDataCell>{{ formatDate(submission.submissionDate) }}</CTableDataCell>
-                        <CTableDataCell>{{ submission.submissionOutlet }}</CTableDataCell>
-                        <CTableDataCell>{{ submission.submissionArea }}</CTableDataCell>
-                        <CTableDataCell>{{ submission.submissionStatus }}</CTableDataCell>
-                        <CTableDataCell>
-                            <div class="flex space-x-2">
-                                <button @click="DetailPengajuan(submission.submissionId)"
-                                    class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600">View
-                                    Detail</button>
-                            </div>
-                        </CTableDataCell>
-                    </CTableRow>
-                </CTableBody>
-            </CTable>
-        </div>
+        <transition name="slide-fade">
+            <div v-if="view === 'gabungan'" class="overflow-x-auto rounded-lg border border-gray-200">
+                <!-- Gabungan content here -->
+                <CTable>
+                    <CTableHead>
+                        <CTableRow>
+                            <CTableHeaderCell scope="col">No</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">NIP</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Tanggal Pengajuan</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Lokasi</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Area</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Action</CTableHeaderCell>
+                        </CTableRow>
+                    </CTableHead>
+                    <CTableBody>
+                        <CTableRow v-for="(submission, index) in submissions" :key="submission.submissionParentId">
+                            <CTableHeaderCell scope="row">{{ (page - 1) * pageSize + index + 1 }}</CTableHeaderCell>
+                            <CTableDataCell>{{ submission.nip }}</CTableDataCell>
+                            <CTableDataCell>{{ formatDate(submission.createdAt) }}</CTableDataCell>
+                            <CTableDataCell>{{ submission.outletName }}</CTableDataCell>
+                            <CTableDataCell>{{ submission.areaName }}</CTableDataCell>
+                            <CTableDataCell>
+                                <div class="flex space-x-2">
+                                    <button @click="fetchSubmissionDetails(submission.submissionParentId)"
+                                        class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600">Lihat Detail</button>
+                                </div>
+                            </CTableDataCell>
+                        </CTableRow>
+                    </CTableBody>
+                </CTable>
+            </div>
+        </transition>
+
+        <transition name="slide-fade">
+            <div v-if="view === 'satuan'" class="overflow-x-auto rounded-lg border border-gray-200">
+                <!-- Satuan content here -->
+                <CTable>
+                    <CTableHead>
+                        <CTableRow>
+                            <CTableHeaderCell scope="col">No</CTableHeaderCell>
+                            <CTableHeaderCell scope="col" v-if="showCheckboxes">Select</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Nama Pengaju</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Kategori</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Tanggal Pengajuan</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Lokasi</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Area</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Status</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Action</CTableHeaderCell>
+                        </CTableRow>
+                    </CTableHead>
+                    <CTableBody>
+                        <CTableRow v-for="(submission, index) in submissions" :key="submission.submissionId">
+                            <CTableHeaderCell scope="row">{{ (page - 1) * pageSize + index + 1 }}</CTableHeaderCell>
+                            <CTableDataCell v-if="showCheckboxes"><input type="checkbox" v-model="selectedSubmissions" :value="submission.submissionId"></CTableDataCell>
+                            <CTableDataCell>{{ submission.submissionName }}</CTableDataCell>
+                            <CTableDataCell>{{ submission.submissionCategory }}</CTableDataCell>
+                            <CTableDataCell>{{ formatDate(submission.submissionDate) }}</CTableDataCell>
+                            <CTableDataCell>{{ submission.submissionOutlet }}</CTableDataCell>
+                            <CTableDataCell>{{ submission.submissionArea }}</CTableDataCell>
+                            <CTableDataCell>{{ submission.submissionStatus }}</CTableDataCell>
+                            <CTableDataCell>
+                                <div class="flex space-x-2">
+                                    <button @click="DetailPengajuan(submission.submissionId)"
+                                        class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600">Lihat Detail</button>
+                                </div>
+                            </CTableDataCell>
+                        </CTableRow>
+                    </CTableBody>
+                </CTable>
+            </div>
+        </transition>
 
         <!-- Pagination -->
         <div class="mt-4 flex justify-between items-center">
@@ -58,6 +109,7 @@
         </div>
     </div>
 </template>
+
 <script>
 import axios from 'axios';
 import { debounce } from 'lodash';
@@ -79,7 +131,16 @@ export default {
             area_id: '',
             outlet_id: '',
             loading: false,
+            view: 'satuan', 
+            showCheckboxes: false,
+            selectedSubmissions: [],
         };
+    },
+
+    computed: {
+        isAnySubmissionSelected() {
+            return this.selectedSubmissions.length > 0;
+        }
     },
 
     methods: {
@@ -95,6 +156,7 @@ export default {
                     this.role_id = decoded.role_id;
                     this.area_id = decoded.area_id;
                     this.outlet_id = decoded.outlet_id;
+                    this.nip = decoded.sub;
                 } else {
                     console.error('Invalid token format.');
                 }
@@ -116,15 +178,27 @@ export default {
                     return;
                 }
 
-                const response = await axios.get(`${apiUrl}/api/submissions`, {
-                    params: {
-                        page_number: this.page,
-                        page_size: this.pageSize,
-                        q: this.searchSubmission,
-                        role_id: this.role_id,
-                        area_id: this.area_id,
-                        outlet_id: this.outlet_id,
-                    },
+                const params = {
+                    page_number: this.page,
+                    page_size: this.pageSize,
+                    q: this.searchSubmission,
+                };
+
+                let endpoint = `${apiUrl}/api/submissions`;
+                if (this.view === 'gabungan') {
+                    endpoint = `${apiUrl}/api/parents`;
+                    params.nip = this.nip;
+                } else {
+                    params.parent_id = false; // Send parent_id as false for satuan
+                    if (this.role_id === 5) {
+                        params.area_id = this.area_id; // Send area_id for role_id 5
+                    } else if (this.role_id === 6) {
+                        params.outlet_id = this.outlet_id; // Send outlet_id for role_id 6
+                    }
+                }
+
+                const response = await axios.get(endpoint, {
+                    params,
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -145,6 +219,40 @@ export default {
             }
         },
 
+        fetchSubmissionDetails(submissionParentId) {
+                        this.$router.push({ name: 'PengajuanGabungan', params: { submissionParentId } });
+        },
+
+        async handleSimpan() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.error('No token found in local storage.');
+                    return;
+                }
+
+                const payload = {
+                    nip: String(this.nip),
+                    submission_ids: this.selectedSubmissions,
+                    outlet_id: this.outlet_id,
+                    area_id: this.area_id
+                };
+
+                await axios.post(`${apiUrl}/api/parents`, payload, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                // Reset the selection and hide checkboxes
+                this.selectedSubmissions = [];
+                this.showCheckboxes = false;
+                this.fetchSubmissions();
+            } catch (error) {
+                console.error("Error saving submissions:", error);
+            }
+        },
+
         changePage(newPage) {
             if (newPage >= 1 && newPage <= this.totalPages) {
                 this.page = newPage;
@@ -162,6 +270,16 @@ export default {
             const date = new Date(dateString);
             if (isNaN(date)) return "-";
             return date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        },
+
+        handlePilih() {
+            this.showCheckboxes = !this.showCheckboxes;
+        },
+
+        toggleView(view) {
+            this.view = view;
+            this.showCheckboxes = false; // Hide checkboxes when switching views
+            this.fetchSubmissions();
         }
     },
 
@@ -171,7 +289,6 @@ export default {
     },
 };
 </script>
-
 
 <style scoped>
 .loading-overlay {
@@ -200,5 +317,10 @@ export default {
     to {
         transform: rotate(360deg);
     }
+}
+
+.slide-fade-enter, .slide-fade-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
 }
 </style>
