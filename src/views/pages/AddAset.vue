@@ -11,7 +11,8 @@
                         <div v-if="isKlasifikasiaRequired" class="mb-4">
                             <CFormLabel for="asset_classification">Pilih Klasifikasi</CFormLabel>
                             <select id="asset_classification" v-model="selectedKlasifikasi"
-                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchKlasifikasi" required>
+                                class="border border-gray-300 rounded-lg p-2 w-full" @change="handleKlasifikasiChange"
+                                required>
                                 <option value="">Pilih Klasifikasi</option>
                                 <option v-for="klasifikasi in klasifikasis" :key="klasifikasi.classificationId"
                                     :value="klasifikasi.classificationId">
@@ -21,8 +22,19 @@
                         </div>
                         <div class="mb-3">
                             <CFormLabel for="asset_name">Nama Aset/Perkap</CFormLabel>
-                            <CFormInput id="asset_name" v-model="asset_name" type="text"
-                                placeholder="masukkan nama aset/perkap" required />
+                            <div v-if="selectedKlasifikasi == 9">
+                                <select id="asset_name" v-model="selectedAsset"
+                                    class="border border-gray-300 rounded-lg p-2 w-full" required>
+                                    <option value="">Pilih Nama Aset</option>
+                                    <option v-for="asset in assets" :key="asset.id_asset_naming" :value="asset">
+                                        {{ asset.assetNaming }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-else>
+                                <CFormInput id="asset_name" v-model="asset_name" type="text"
+                                    placeholder="masukkan nama aset/perkap" required />
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -34,12 +46,14 @@
                         <div class="mb-3">
                             <CFormLabel for="asset_image">Lampiran (Gambar Aset)</CFormLabel>
                             <CFormInput id="asset_image" ref="assetImage" type="file" accept="image/*"
-                                placeholder="masukkan gambar aset/perkap jpg,jpeg, png" @change="handleFileChange" required />
+                                placeholder="masukkan gambar aset/perkap jpg,jpeg, png" @change="handleFileChange"
+                                required />
                         </div>
 
                         <div class="mb-3">
                             <CFormLabel for="asset_specification">Spesifikasi Aset/Perkap </CFormLabel>
-                            <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3" placeholder="masukkan spesifikasi/komponent/ukuran aset/perkap" required>
+                            <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3"
+                                placeholder="masukkan spesifikasi/komponent/ukuran aset/perkap" required>
                             </CFormTextarea>
                         </div>
 
@@ -86,14 +100,14 @@
 
                         <div class="mb-3">
                             <CFormLabel for="asset_quantity_standar">Jumlah Standar Aset/Perkap </CFormLabel>
-                            <CFormInput id="asset_quantity_standar" v-model="asset_quantity_standard"
-                                type="number" placeholder="masukkan jumlah standar" required />
+                            <CFormInput id="asset_quantity_standar" v-model="asset_quantity_standard" type="number"
+                                placeholder="masukkan jumlah standar" required />
                         </div>
 
                         <div class="mb-3">
                             <CFormLabel for="asset_quantity">Jumlah Aset/Perkap</CFormLabel>
-                            <CFormInput id="asset_quantity" v-model="asset_quantity"
-                                type="number" placeholder="masukkan jumlah aset/perkap" required />
+                            <CFormInput id="asset_quantity" v-model="asset_quantity" type="number"
+                                placeholder="masukkan jumlah aset/perkap" required />
                         </div>
 
                         <div v-if="isAreaRequired" class="mb-4">
@@ -179,12 +193,15 @@ export default {
             isPicRequired: true,
             isPersonalRequired: true,
             loading: false, // Tambahkan state untuk loading
+            assets: [], // Tambahkan state untuk assets
+            selectedAsset: null,
+            manualAssetName: "",
         };
     },
     computed: {
         formattedAcquisitionValue() {
             return this.classification_acquisition_value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
+        },
     },
     created() {
         this.fetchOutlets();
@@ -226,7 +243,7 @@ export default {
         fetchAreas() {
             const token = localStorage.getItem("token");
             axios
-                .get(apiUrl+ "/api/areas", { headers: { Authorization: `Bearer ${token}` } })
+                .get(apiUrl + "/api/areas", { headers: { Authorization: `Bearer ${token}` } })
                 .then((response) => {
                     console.log("Areas fetched:", response.data.data);
                     this.areas = response.data.data;
@@ -262,6 +279,35 @@ export default {
                 });
         },
 
+        fetchAssets() {
+            const token = localStorage.getItem("token");
+            axios
+                .get(apiUrl + "/api/mstAssets", { headers: { Authorization: `Bearer ${token}` } })
+                .then((response) => {
+                    console.log("Assets fetched:", response.data.data);
+                    this.assets = response.data.data.map(asset => ({
+                        id_asset_naming: asset.idAssetNaming,
+                        assetNaming: asset.assetNaming,
+                        classificationId: asset.classificationId
+                    }));
+                })
+                .catch((error) => {
+                    console.error("Error fetching assets:", error);
+                    this.assets = [];
+                });
+        },
+
+        handleKlasifikasiChange() {
+            console.log("Selected Klasifikasi:", this.selectedKlasifikasi);
+            if (this.selectedKlasifikasi == 9) {
+                console.log("Item Perkap selected");
+                this.fetchAssets();
+            } else {
+                this.selectedAsset = null;
+                this.asset_name = "";
+            }
+        },
+
         handleSubmit() {
             console.log("Submit button clicked");
             this.submitForm();
@@ -293,12 +339,6 @@ export default {
                 return;
             }
 
-            // Validasi form
-            if (!this.asset_name || !this.asset_brand || !this.asset_image || !this.asset_specification || !this.selectedKlasifikasi || !this.personal_responsible || !this.asset_condition || !this.asset_status || !this.asset_purchase_date || !this.classification_acquisition_value || !this.asset_quantity_standard || !this.asset_quantity || !this.selectedArea || !this.selectedOutlet || !this.selectedPic) {
-                alert("Semua field harus diisi.");
-                return;
-            }
-
             this.loading = true; // Set loading to true when submit starts
 
             let uploadedFilePath = null;
@@ -319,7 +359,8 @@ export default {
                 const payload = {
                     assets: [
                         {
-                            asset_name: this.asset_name,
+                            asset_name: this.selectedKlasifikasi == 9 ? this.selectedAsset.assetNaming : this.asset_name,
+                            id_asset_naming: this.selectedKlasifikasi == 9 ? parseInt(this.selectedAsset.id_asset_naming) || null : null,
                             personal_responsible: this.personal_responsible,
                             asset_brand: this.asset_brand,
                             asset_image: uploadedFilePath,
@@ -328,12 +369,12 @@ export default {
                             asset_status: this.asset_status,
                             asset_purchase_date: this.formatDate(this.asset_purchase_date),
                             classification_acquisition_value: this.classification_acquisition_value,
-                            asset_quantity_standard: parseInt(this.asset_quantity_standard), // Konversi ke angka
-                            asset_quantity: parseInt(this.asset_quantity), // Tambahkan jumlah aset/perkap ke payload
+                            asset_quantity_standard: parseInt(this.asset_quantity_standard),
+                            asset_quantity: parseInt(this.asset_quantity),
                             outlet_id: this.selectedOutlet,
                             area_id: this.selectedArea,
                             asset_pic: this.selectedPic,
-                            asset_classification: this.selectedKlasifikasi,
+                            asset_classification: this.selectedKlasifikasi
                         }
                     ]
                 };
@@ -378,30 +419,30 @@ export default {
 
 <style scoped>
 .loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+    to {
+        transform: rotate(360deg);
+    }
 }
 </style>
