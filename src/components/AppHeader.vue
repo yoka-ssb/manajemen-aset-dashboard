@@ -110,7 +110,7 @@ const fetchNotifications = async () => {
 
 const notificationCount = computed(() => {
   if (role_id.value === 5 || role_id.value === 6) {
-    return totalWaiting.value
+    return totalWaiting.value + totalLate.value
   } else {
     return totalWaiting.value + totalLate.value + totalSubmitted.value
   }

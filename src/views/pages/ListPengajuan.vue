@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="mb-4 flex justify-between items-center">
-            <input v-model="searchSubmission" @input="debouncedSearch" type="text" placeholder="Cari Nama Pengaju..."
+            <input v-if="view === 'satuan'" v-model="searchSubmission" @input="debouncedSearch" type="text" placeholder="Cari Nama Pengaju..."
                 class="px-4 py-2 border rounded-lg" />
             <div class="flex space-x-2">
                 <button v-if="view === 'satuan' && !showCheckboxes" @click="handlePilih" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
@@ -30,6 +30,7 @@
                     <CTableHead>
                         <CTableRow>
                             <CTableHeaderCell scope="col">No</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">ID Pengajuan</CTableHeaderCell>
                             <CTableHeaderCell scope="col">NIP</CTableHeaderCell>
                             <CTableHeaderCell scope="col">Tanggal Pengajuan</CTableHeaderCell>
                             <CTableHeaderCell scope="col">Lokasi</CTableHeaderCell>
@@ -40,6 +41,7 @@
                     <CTableBody>
                         <CTableRow v-for="(submission, index) in submissions" :key="submission.submissionParentId">
                             <CTableHeaderCell scope="row">{{ (page - 1) * pageSize + index + 1 }}</CTableHeaderCell>
+                            <CTableDataCell>P - {{ submission.submissionParentId }}</CTableDataCell>
                             <CTableDataCell>{{ submission.nip }}</CTableDataCell>
                             <CTableDataCell>{{ formatDate(submission.createdAt) }}</CTableDataCell>
                             <CTableDataCell>{{ submission.outletName }}</CTableDataCell>
@@ -220,7 +222,7 @@ export default {
         },
 
         fetchSubmissionDetails(submissionParentId) {
-                        this.$router.push({ name: 'PengajuanGabungan', params: { submissionParentId } });
+            this.$router.push({ name: 'PengajuanGabungan', params: { submissionParentId } });
         },
 
         async handleSimpan() {
