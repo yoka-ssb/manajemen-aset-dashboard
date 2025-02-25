@@ -76,8 +76,9 @@ export default {
               })
               .then((response) => {
                 if (response.status === 200) {
+                  const classificationId = response.data.classificationId; // Extract classificationId from response
                   console.log("Valid QR Code, redirecting...");
-                  router.push({ name: "ViewAsetScan", params: { IdHash: cleanHash } });
+                  router.push({ name: "ViewAsetScan", params: { IdHash: cleanHash, classificationId } });
                 } else {
                   throw new Error("Invalid response status");
                 }
@@ -108,9 +109,9 @@ export default {
     });
 
     // Tambahkan refresh saat meninggalkan halaman ini
-    onBeforeRouteLeave(() => {
-      window.location.reload();
-    });
+    // onBeforeRouteLeave(() => {
+    //   window.location.reload();
+    // });
 
     return { video };
   },
