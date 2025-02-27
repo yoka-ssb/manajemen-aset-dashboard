@@ -2,11 +2,7 @@
     <CRow>
         <CCol :xs="12">
             <CCard class="mb-4">
-                <CCardHeader class="d-flex justify-content-end">
-                    <CButton class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center ml-4"
-                        @click="downloadPDF">
-                        Download PDF
-                    </CButton>
+                <CCardHeader class="d-flex justify-content-between">
                 </CCardHeader>
 
                 <CCardBody id="submissionDetails">
@@ -119,10 +115,13 @@
                                     </div>
                                 </div>
                             </CForm>
-                            <hr />
                         </div>
                     </div>
+                    <div class="flex space-x-2">
+                        <button @click="downloadPDF"
+                            class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600">Download PDF</button>
 
+                    </div>
                 </CCardBody>
             </CCard>
         </CCol>
@@ -149,6 +148,7 @@ export default {
 
     mounted() {
         this.fetchSubmissionsData();
+        console.log(this.submissions);
     },
 
     methods: {
@@ -228,6 +228,7 @@ export default {
             return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         },
         downloadPDF() {
+            console.log("Download PDF on click");
             const content = `
         <style>
             body { color: black; font-size: 12px; }
