@@ -17,15 +17,15 @@
 
 <script>
 import { ref, onMounted, onUnmounted } from "vue";
-import { useRouter, onBeforeRouteLeave } from "vue-router";  
 import jsQR from "jsqr";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
 export default {
   name: "QrCodeReader",
   setup() {
     const video = ref(null);
-    const router = useRouter(); 
+    const router = useRouter();
 
     const startCamera = () => {
       if (video.value) {
@@ -76,9 +76,11 @@ export default {
               })
               .then((response) => {
                 if (response.status === 200) {
-                  const classificationId = response.data.classificationId; // Extract classificationId from response
+                  const classificationId = response.data.data.assetClassification;
                   console.log("Valid QR Code, redirecting...");
-                  router.push({ name: "ViewAsetScan", params: { IdHash: cleanHash, classificationId } });
+                  router.push({ name: "ViewAsetScan", params: { IdHash: cleanHash, classificationId } }).then(() => {
+                    window.location.reload();
+                  });
                 } else {
                   throw new Error("Invalid response status");
                 }
@@ -108,15 +110,9 @@ export default {
       }
     });
 
-    // Tambahkan refresh saat meninggalkan halaman ini
-    // onBeforeRouteLeave(() => {
-    //   window.location.reload();
-    // });
-
     return { video };
   },
 };
-
 </script>
 
 <style scoped>
