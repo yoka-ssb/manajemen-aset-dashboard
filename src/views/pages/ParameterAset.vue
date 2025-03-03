@@ -12,11 +12,11 @@
           <CCol v-else :lg="12">
             <CCard class="mb-3">
               <CCardBody>
-                <strong>Pastikan Aset memenuhi beberapa kondisi berikut:</strong>
+                <strong>{{ headerText }}</strong>
                 <CCardText v-if="parameter_kesehatan_aset.length">
                   <ul>
                     <li v-for="(param, index) in parameter_kesehatan_aset" :key="index">
-                      - {{ param }}
+                      {{ param }}
                     </li>
                   </ul>
                 </CCardText>
@@ -33,13 +33,13 @@
               @click="updateAsetStatus('Baik')"
               class="bg-orange-500 text-white p-2 rounded-lg hover:bg-orange-600 mr-2"
             >
-              Kondisi Baik
+              Kondisi Sesuai Standar
             </button>
             <button
               @click="showConfirmationModalKKB"
               class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600"
             >
-              Kondisi Kurang Baik
+              Kondisi Tidak Sesuai Standar
             </button>
           </CCol>
         </CRow>
@@ -82,24 +82,50 @@ export default {
     };
   },
   created() {
-    this.fetchClassificationData(this.klasifikasiId);
     const urlSegments = this.$route.path.split("/");
     this.assetId = urlSegments[urlSegments.length - 2];
     this.fetchClassificationData(this.klasifikasiId);
   },
+  computed: {
+    headerText() {
+      return this.klasifikasiId === '9'
+        ? 'Pastikan quantity memenuhi standar berikut:'
+        : 'Pastikan Aset memenuhi beberapa kondisi berikut:';
+    },
+  },
   methods: {
     fetchClassificationData(klasifikasiId) {
       this.loading = true;
+      if (klasifikasiId === '9') {
+        this.fetchAssetData(this.assetId);
+      } else {
+        axios
+          .get(`${apiUrl}/api/classifications/${klasifikasiId}`, {
+            headers: { Authorization: `Bearer ${this.token}` },
+          })
+          .then((response) => {
+            const assetHealthyParamMap = response.data.data.assetHealthyParamMap;
+            this.parameter_kesehatan_aset = Object.values(assetHealthyParamMap).map(param => param.trim());
+          })
+          .catch((error) => {
+            console.error("Gagal mengambil data klasifikasi:", error);
+          })
+          .finally(() => {
+            this.loading = false; 
+          });
+      }
+    },
+    fetchAssetData(assetId) {
       axios
-        .get(`${apiUrl}/api/classifications/${klasifikasiId}`, {
+        .get(`${apiUrl}/api/assets/${assetId}`, {
           headers: { Authorization: `Bearer ${this.token}` },
         })
         .then((response) => {
-          const assetHealthyParamMap = response.data.data.assetHealthyParamMap;
-          this.parameter_kesehatan_aset = Object.values(assetHealthyParamMap).map(param => param.trim());
+          const assetQuantityStandard = response.data.data.assetQuantityStandard;
+          this.parameter_kesehatan_aset = assetQuantityStandard ? [assetQuantityStandard] : [];
         })
         .catch((error) => {
-          console.error("Gagal mengambil data klasifikasi:", error);
+          console.error("Gagal mengambil data aset:", error);
         })
         .finally(() => {
           this.loading = false; 

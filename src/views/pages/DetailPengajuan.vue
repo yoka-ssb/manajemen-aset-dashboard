@@ -106,9 +106,11 @@
                             </div>
                         </CForm>
                     </div>
-                    <CButton color="primary" @click="downloadPDF">
-                        Download PDF
-                    </CButton>
+                    <div class="flex space-x-2">
+                        <button @click="downloadPDF"
+                            class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600">Download PDF</button>
+
+                    </div>
                 </CCardBody>
             </CCard>
         </CCol>

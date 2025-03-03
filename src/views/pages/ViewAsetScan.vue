@@ -83,7 +83,7 @@ const uploadUrl = import.meta.env.VITE_UPLOAD_URL;
 export default {
     data() {
         return {
-            IdHash: this.$route.params.IdHash,
+            IdHash: this.$route.params.IdHash || '',
             assetMaintenanceDate: "",
             assetId: "",
             assetName: "",
