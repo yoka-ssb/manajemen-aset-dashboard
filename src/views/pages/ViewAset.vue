@@ -19,6 +19,9 @@
                                         <CCardText>
                                             {{ assetSpecification || 'Tidak tersedia' }}
                                         </CCardText>
+                                        <CCardText>
+                                            <strong>Posisi Aset/Perkap:</strong> {{ positionName || 'Tidak tersedia' }}
+                                        </CCardText>
                                     </CCardBody>
                                 </CCard>
                             </CCol>
@@ -109,6 +112,7 @@ export default {
             assetPicName: "",
             personalResponsible: "",
             assetAge: "",  
+            positionName: "",
             loading: false,      
         };
     },
@@ -145,6 +149,7 @@ export default {
                     this.classificationAcquisitionValue = aset.classificationAcquisitionValue || "Tidak tersedia";
                     this.classificationLastBookValue = aset.classificationLastBookValue || "Tidak tersedia";
                     this.assetPicName = aset.assetPicName || "Tidak tersedia";
+                    this.positionName = aset.positionName || "TIdak tersedia";
                     this.assetPurchaseDate = aset.assetPurchaseDate
                         ? new Date(aset.assetPurchaseDate).toLocaleDateString("id-ID")
                         : "Tidak tersedia";
