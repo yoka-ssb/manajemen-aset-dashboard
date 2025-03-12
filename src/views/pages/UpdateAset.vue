@@ -31,14 +31,16 @@
                         </div>
                         <div class="mb-3">
                             <CFormLabel for="asset_specification">Spesifikasi Aset</CFormLabel>
-                            <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3"   placeholder="masukkan spesifikasi" required>
+                            <CFormTextarea id="asset_specification" v-model="asset_specification" rows="3"
+                                placeholder="masukkan spesifikasi" required>
                             </CFormTextarea>
                         </div>
 
                         <div v-if="isKlasifikasiaRequired" class="mb-4">
                             <CFormLabel for="asset_classification">Pilih Klasifikasi</CFormLabel>
                             <select id="asset_classification" v-model="selectedKlasifikasi"
-                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchKlasifikasi" required>
+                                class="border border-gray-300 rounded-lg p-2 w-full" @change="fetchKlasifikasi"
+                                required>
                                 <option value="">Pilih Klasifikasi</option>
                                 <option v-for="klasifikasi in klasifikasis" :key="klasifikasi.classificationId"
                                     :value="klasifikasi.classificationId">
@@ -88,7 +90,7 @@
                         <div class="mb-3">
                             <CFormLabel for="classification_acquisition_value">Nilai Perolehan Aset</CFormLabel>
                             <CFormInput id="classification_acquisition_value" v-model="classification_acquisition_value"
-                                type="number" placeholder="masukkan nilai perolehan"  required/>
+                                type="number" placeholder="masukkan nilai perolehan" required />
                         </div>
 
                         <div v-if="isAreaRequired" class="mb-4">
@@ -112,6 +114,19 @@
                                 </option>
                             </select>
                         </div>
+
+                        <div v-if="isPositionRequired" class="mb-4">
+                            <CFormLabel for="position_id">Pilih Posisi perkap/aset</CFormLabel>
+                            <select id="position_id" v-model="selectedPosition"
+                                class="border border-gray-300 rounded-lg p-2 w-full" required>
+                                <option value="">Pilih Posisi</option>
+                                <option v-for="position in positions" :key="position.id" :value="position.id">
+                                    {{ position.positionName }}
+                                </option>
+                            </select>
+                        </div>
+
+
                         <div v-if="isPicRequired" class="mb-4">
                             <CFormLabel for="asset_pic">Pilih PIC Aset</CFormLabel>
                             <select id="asset_pic" v-model="selectedPic"
@@ -154,18 +169,23 @@ export default {
             selectedArea: "",
             selectedOutlet: "",
             selectedKlasifikasi: "",
+            selectedPosition: "",
             areas: [],
+            positions: [],
             outlets: [],
             klasifikasis: [],
             asset_purchase_date: "",
             asset_condition: '',
             asset_status: '',
+            position: "",
             asset_pic: "",
             classification_acquisition_value: "",
             isAreaRequired: true,
             isOutletRequired: true,
             isKlasifikasiaRequired: true,
+            isPositionRequired: true,
             isPicRequired: true,
+            asset_location: "",
         };
     },
 
@@ -183,6 +203,7 @@ export default {
         this.fetchAreas();
         this.fetchOutlets();
         this.fetchPic();
+        this.fetchPositions();
         this.fetchKlasifikasi();
         // this.fetchPersonal();
     },
@@ -225,6 +246,7 @@ export default {
                     this.selectedPic = assetData.assetPic || '';
                     this.assetName = aset.assetName || "Tidak tersedia";
                     this.oldFileName = aset.assetImage ? aset.assetImage.split('/').pop() : null;
+                    this.asset_location = aset.assetLocation || '';
 
                     if (this.selectedArea) {
                         await this.fetchOutlets();
@@ -266,6 +288,26 @@ export default {
                     this.areas = [];
                 });
         },
+
+        fetchPositions() {
+            const token = localStorage.getItem("token");
+            axios
+                .get(apiUrl + "/api/positions", { headers: { Authorization: `Bearer ${token}` } })
+                .then((response) => {
+                    this.positions = response.data.data;
+
+                    if (this.selectedPosition) {
+                        const existingPosition = this.positions.find(position => position.id === Number(this.selectedPosition));
+                        if (!existingPosition) this.selectedPosition = "";
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching position:", error);
+                    this.positions = [];
+                });
+        },
+
+
         fetchOutlets() {
             if (!this.selectedArea) return;
             const token = localStorage.getItem("token");
@@ -361,7 +403,9 @@ export default {
                     outlet_id: this.selectedOutlet,
                     area_id: this.selectedArea,
                     asset_pic: this.selectedPic,
+                    position_id: this.selectedPosition,
                     personal_responsible: this.personal_responsible,
+                    asset_location: this.asset_location,
                 };
 
                 const response = await axios.put(

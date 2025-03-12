@@ -1,19 +1,17 @@
 # Description
 
-Menambahkan fitur untuk scan asset dengan klasifikasi perkap, fix bug notification lonceng, dan fix auto reload page scan
+Menambahkan field position aset pada add & update form, dan menambahkan get di bagian detail asset 
 
 ## Type of change
 
-- [ ] New feature : scan asset parameter classifiaction perkap, healty params = quantity
-- [ ] Bug fix : Count notification lonceng
-- [ ] Bug fix : Button download
-- [ ] Bug fix : auto reload after scan qr
+- [ ] feat: field select position at form add asset
+- [ ] feat: update field select position at form update asset
 
 # How Has This Been Tested?
 
-Sudah diuji dengan flow sistem dari awal insert data asset, scan, sampai dengan laporan kondisi aset
+Sudah diuji dengan melakukan create asset, update aset, dan get aset
 
-- [ ] Test Count notif lonceng sesuai
-- [ ] Test Button download
-- [ ] Test Scan + auto reload page after scan
+- [ ] Test Create aset
+- [ ] Test Update aset
+- [ ] Test get aset
 

@@ -23,6 +23,9 @@
                     <CCardText>
                       {{ assetQuantityStandard || 'Tidak tersedia' }}
                     </CCardText>
+                    <CCardText>
+                      <strong>Posisi Aset/Perkap:</strong> {{ positionName || 'Tidak tersedia' }}
+                    </CCardText>
                   </CCardBody>
                 </CCard>
               </CCol>
@@ -147,6 +150,7 @@ export default {
               this.assetImage = this.defaultImage;
             });
           this.outletName = aset.outletName || "Tidak tersedia";
+          this.positionName = aset.positionName || "TIdak tersedia";
           this.areaName = aset.areaName || "Tidak tersedia";
           this.assetStatus = aset.assetStatus || "Tidak tersedia";
           this.assetAge = aset.assetAge || "Tidak tersedia";

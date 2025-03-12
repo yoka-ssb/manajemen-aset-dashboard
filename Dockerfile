@@ -1,22 +1,26 @@
-# Use the node image from official Docker Hub
-FROM node:16.10.0-alpine3.13 as build-stage
-# set the working directory
+
+
+# Gunakan image Node.js
+FROM node:18-alpine
+
+# Set Working Directory
 WORKDIR /app
-# Copy the working directory in the container
+
+# Copy package.json & package-lock.json dulu
 COPY package*.json ./
-# Install the project dependencies
+
+# Install Dependencies
 RUN npm install
-# Copy the rest of the project files to the container
+
+# Copy Semua File Project
 COPY . .
-# Build the Vue.js application to the production mode to dist folder
+
+# Build Vue
 RUN npm run build
-# Use the lightweight Nginx image from the previous stage for the nginx container
-FROM nginx:stable-alpine as production-stage
-# Copy the build application from the previous stage to the Nginx container
-COPY - from=build-stage /app/dist /usr/share/nginx/html
-# Copy the nginx configuration file
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-# Expose the port 80
-EXPOSE 80
-# Start Nginx to serve the application
-CMD ["nginx", "-g", "daemon off;"]
+
+# Expose Port Vue (biasanya 5173 atau 8080 kalau Vite)
+EXPOSE 3000
+
+# Jalankan aplikasi
+CMD ["npm", "run", "dev"]
+

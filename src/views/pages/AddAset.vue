@@ -131,6 +131,16 @@
                             </select>
                         </div>
 
+                        <div v-if="isPositionRequired" class="mb-4">
+                            <CFormLabel for="outlet_id">Pilih Posisi Aset/Perkap</CFormLabel>
+                            <select id="id" v-model="selectedPosition"
+                                class="border border-gray-300 rounded-lg p-2 w-full" required>
+                                <option value="">Pilih Posisi</option>
+                                <option v-for="position in positions" :key="position.id" :value="position.id">{{
+                                    position.positionName }}</option>
+                            </select>
+                        </div>
+
                         <div v-if="isPicRequired" class="mb-4">
                             <CFormLabel for="asset_pic">Pilih PIC Aset</CFormLabel>
                             <select id="asset_pic" v-model="selectedPic"
@@ -173,10 +183,12 @@ export default {
             PicOption: [],
             selectedPic: "",
             selectedArea: "",
+            selectedPosition:"",
             selectedOutlet: "",
             selectedKlasifikasi: "",
             areas: [],
             outlets: [],
+            position:[],
             klasifikasis: [],
             personals: [],
             asset_condition: "Baru",
@@ -191,6 +203,7 @@ export default {
             isOutletRequired: true,
             isKlasifikasiaRequired: true,
             isPicRequired: true,
+            isPositionRequired: true,
             isPersonalRequired: true,
             loading: false, // Tambahkan state untuk loading
             assets: [], // Tambahkan state untuk assets
@@ -207,6 +220,7 @@ export default {
         this.fetchOutlets();
         this.fetchAreas();
         this.fetchPic();
+        this.fetchPosition();
         this.fetchKlasifikasi();
         this.asset_classification = "";
         this.asset_name = "";
@@ -250,6 +264,20 @@ export default {
                 })
                 .catch((error) => {
                     console.error("Error fetching areas:", error);
+                    this.areas = [];
+                });
+        },
+
+        fetchPosition() {
+            const token = localStorage.getItem("token");
+            axios
+                .get(apiUrl + "/api/positions", { headers: { Authorization: `Bearer ${token}` } })
+                .then((response) => {
+                    console.log("Position fetched:", response.data.data);
+                    this.positions = response.data.data;
+                })
+                .catch((error) => {
+                    console.error("Error fetching position:", error);
                     this.areas = [];
                 });
         },
@@ -373,8 +401,9 @@ export default {
                             asset_quantity: parseInt(this.asset_quantity),
                             outlet_id: this.selectedOutlet,
                             area_id: this.selectedArea,
+                            position_id: this.selectedPosition,
                             asset_pic: this.selectedPic,
-                            asset_classification: this.selectedKlasifikasi
+                            asset_classification: this.selectedKlasifikasi,
                         }
                     ]
                 };

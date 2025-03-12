@@ -19,6 +19,9 @@
                                         <CCardText>
                                             {{ assetSpecification || 'Tidak tersedia' }}
                                         </CCardText>
+                                        <CCardText>
+                                            <strong>Posisi Aset/Perkap:</strong> {{ positionName || 'Tidak tersedia' }}
+                                        </CCardText>
                                     </CCardBody>
                                 </CCard>
                             </CCol>
@@ -146,6 +149,7 @@ axios
                     this.assetStatus = aset.assetStatus || "Tidak tersedia";
                     this.assetAge = aset.assetAge || "Tidak tersedia";
                     this.assetPicName = aset.assetPicName || "Tidak tersedia";
+                    this.positionName = aset.positionName || "TIdak tersedia";
                     this.assetPurchaseDate = aset.assetPurchaseDate
                         ? new Date(aset.assetPurchaseDate).toLocaleDateString()
                         : "Tidak tersedia";
